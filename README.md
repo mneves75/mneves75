@@ -1,75 +1,46 @@
-# Marcus Neves
+# Hey, I'm Marcus 👋
 
-**AI-native full-stack builder** — shipping mobile apps, terminal tools, and whatever solves the problem.
+**30 years building systems where failure isn't an option. Now building with AI.**
 
-Based in Brazil. Building with Claude as copilot.
+Banking. Insurance. Telecom. Government. Real money, real consequences, not demos. I've shipped production code since before Git existed—and I'm more excited about building software today than I've ever been.
 
-**Data & ML** — 30 years building production systems across banking, insurance, telecom, and government. Now I point all of that at ML pipelines and AI products.
+I'm an **AI-native developer** now. Claude is my copilot. The three decades of enterprise experience? That's what keeps me from over-engineering and under-delivering.
 
-Predictive models (scikit-learn, PyTorch). LLM integrations (RAG, LangChain). Data pipelines (Spark, Airflow). The difference: I've shipped systems that process real money and real consequences, not demos.
+## What I'm Building
 
----
+| Project | What it does | Why it matters |
+|---------|--------------|----------------|
+| [iOS Health Sync](https://github.com/mneves75/ai-health-sync-ios) | Sync HealthKit data iPhone ↔ Mac | Your health data. Your devices. No cloud. |
+| [DNSChat](https://github.com/mneves75/dnschat) | LLM chat over DNS queries | Sometimes the constraint is the feature |
+| [Polymarket Analyzer](https://github.com/mneves75/polymarket-analyzer) | Real-time prediction markets TUI | Production-grade terminal tooling |
+| [clawdbot](https://github.com/mneves75/clawdbot) | Personal AI across all messengers | WhatsApp, Telegram, Slack, Discord, Signal, iMessage |
 
-## Philosophy
+## How I Think
 
-> "John Carmack is reviewing my code" — clarity over cleverness, correctness first
+```
+Ship beats perfect.
+Clarity over cleverness.
+Privacy is baseline, not feature.
+Mobile-first is not optional.
+John Carmack is reviewing my code.
+```
 
-> "Ship beats perfect" — a working prototype today beats a perfect plan next month
+## Tech I Reach For
 
-> "Mobile-first, always" — if it doesn't work on a phone, it doesn't work
+**Languages:** TypeScript, Swift
+**Mobile:** React Native, Expo, SwiftUI
+**Backend:** Bun, PostgreSQL, Supabase
+**AI:** Claude (obviously)
 
----
+## Beyond Code
 
-## Featured Work
+I teach AI and development in Portuguese at [conhecendoia.com.br](https://conhecendoia.com.br) — because knowledge shouldn't require a language tax.
 
-### [dnschat](https://github.com/mneves75/dnschat)
-Chat with an LLM through DNS TXT queries. Because why not tunnel AI through the most universal protocol on the internet? Native DNS resolver for iOS/Android with UDP/TCP fallback.
+## Let's Connect
 
-**Stack**: React Native, Expo 54, TypeScript
-
----
-
-### [ai-health-sync-ios](https://github.com/mneves75/ai-health-sync-ios)
-Sync Apple HealthKit data from iPhone to Mac over local network. No cloud. No third parties. Your health data stays yours.
-
-**Stack**: Swift 6, SwiftUI, HealthKit, TLS mutual auth
-
----
-
-### [weather-sunscreen-app](https://github.com/mneves75/weather-sunscreen-app)
-Real-time UV index monitoring with AI-powered sunscreen recommendations. Personalizes by skin type, tracks reapplication timing.
-
-**Stack**: Expo 54, Claude AI, iOS 26 Liquid Glass UI
-
----
-
-### [polymarket-analyzer](https://github.com/mneves75/polymarket-analyzer)
-Terminal UI for real-time prediction market data. WebSocket price feeds, orderbook visualization, market health scoring.
-
-**Stack**: Bun, Blessed TUI, TypeScript
+- 𝕏 [@mneves75](https://x.com/mneves75)
+- Writing about AI-native development and what 30 years of shipping taught me
 
 ---
 
-### Contributing to [clawdbot](https://github.com/clawdbot/clawdbot)
-Personal AI assistant that runs on your own devices—WhatsApp, Telegram, Slack, Discord, Signal, iMessage. Multi-platform messaging with agent-based architecture.
-
-**Stack**: TypeScript, Swift, Multi-platform
-
----
-
-## Currently Building
-
-- **Data analysis tools** — ML pipelines, market intelligence, pattern recognition
-- **AI mobile apps** — Expo 54 + React Native New Architecture
-- **RAG systems** — domain-specific retrieval for coaching and advisory products
-
----
-
-## Tech
-
-TypeScript · React Native · Expo · Next.js · Swift · SwiftUI · Bun · Supabase · PostgreSQL · pgvector · Claude
-
----
-
-**X**: [@mneves75](https://x.com/mneves75) · **Web**: [conhecendoia.com.br](https://conhecendoia.com.br)
-
+*Open source everything. Apache 2.0. Shared knowledge multiplies.*
