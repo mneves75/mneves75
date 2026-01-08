@@ -1,74 +1,63 @@
-# Hi, I'm Marcus Neves
+# Marcus Neves
 
-**AI-native full-stack builder** | Brazil
+**AI-native full-stack builder** — shipping mobile apps, terminal tools, and whatever solves the problem.
 
-Building at the intersection of AI, mobile, and pragmatic engineering.
-
-[![X](https://img.shields.io/badge/@mneves75-000?logo=x&logoColor=white)](https://x.com/mneves75)
-[![Website](https://img.shields.io/badge/conhecendoia.com.br-000?logo=safari&logoColor=white)](https://conhecendoia.com.br)
+Based in Brazil. Building with Claude as copilot.
 
 ---
 
 ## Philosophy
 
-**AI Workflow**
-- "Claude is my copilot, not my replacement" — AI augments, humans architect
-- "RAG > fine-tuning for 90% of use cases" — practical retrieval beats expensive training
-- "Run parallel agent instances" — 3-6 Claude sessions concurrently for exploration
+> "John Carmack is reviewing my code" — clarity over cleverness, correctness first
 
-**Engineering Principles**
-- "Soft deletes or bust" — `deleted_at` timestamps everywhere, never lose data
-- "No `any` types, ever" — `unknown` + type guards or go home
-- "John Carmack is reviewing my code" — clarity > cleverness, correctness first
+> "Ship beats perfect" — a working prototype today beats a perfect plan next month
 
-**Shipping**
-- "Ship beats perfect" — velocity over polish
-- "Build in public" — learning compounds when shared
-- "Mobile-first, always" — if it doesn't work on a phone, it doesn't work
+> "Mobile-first, always" — if it doesn't work on a phone, it doesn't work
 
 ---
 
-## Featured Projects
+## Featured Work
 
-| Project | Description | Tech |
-|---------|-------------|------|
-| [**dnschat**](https://github.com/mneves75/dnschat) | Chat over DNS TXT queries — LLM in your DNS | React Native, Expo 54, TypeScript |
-| [**ai-health-sync-ios**](https://github.com/mneves75/ai-health-sync-ios) | Local HealthKit sync iPhone→Mac, no cloud | Swift 6, SwiftUI, TLS |
-| [**weather-sunscreen-app**](https://github.com/mneves75/weather-sunscreen-app) | UV index + AI sunscreen recs, Liquid Glass UI | Expo 54, Claude AI |
-| [**polymarket-analyzer**](https://github.com/mneves75/polymarket-analyzer) | Real-time prediction market TUI dashboard | Bun, Blessed, WebSocket |
+### [dnschat](https://github.com/mneves75/dnschat)
+Chat with an LLM through DNS TXT queries. Because why not tunnel AI through the most universal protocol on the internet? Native DNS resolver for iOS/Android with UDP/TCP fallback.
+
+**Stack**: React Native, Expo 54, TypeScript
 
 ---
 
-## Tech Stack
+### [ai-health-sync-ios](https://github.com/mneves75/ai-health-sync-ios)
+Sync Apple HealthKit data from iPhone to Mac over local network. No cloud. No third parties. Your health data stays yours.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![React Native](https://img.shields.io/badge/React_Native-61DAFB?logo=react&logoColor=black)
-![Expo](https://img.shields.io/badge/Expo-000020?logo=expo&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=white)
-![Swift](https://img.shields.io/badge/Swift-F05138?logo=swift&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=white)
+**Stack**: Swift 6, SwiftUI, HealthKit, TLS mutual auth
 
-![Claude](https://img.shields.io/badge/Claude-CC785C?logo=anthropic&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![pgvector](https://img.shields.io/badge/pgvector-4169E1?logo=postgresql&logoColor=white)
+---
+
+### [weather-sunscreen-app](https://github.com/mneves75/weather-sunscreen-app)
+Real-time UV index monitoring with AI-powered sunscreen recommendations. Personalizes by skin type, tracks reapplication timing.
+
+**Stack**: Expo 54, Claude AI, iOS 26 Liquid Glass UI
+
+---
+
+### [polymarket-analyzer](https://github.com/mneves75/polymarket-analyzer)
+Terminal UI for real-time prediction market data. WebSocket price feeds, orderbook visualization, market health scoring.
+
+**Stack**: Bun, Blessed TUI, TypeScript
 
 ---
 
 ## Currently Building
 
-- **LEANN** — semantic search infrastructure (Python + pgvector)
+- **Data analysis tools** — ML pipelines, market intelligence, pattern recognition
 - **AI mobile apps** — Expo 54 + React Native New Architecture
-- **RAG pipelines** — domain-specific knowledge retrieval
+- **RAG systems** — domain-specific retrieval for coaching and advisory products
 
 ---
 
-## Stats
+## Tech
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=mneves75&show_icons=true&theme=dark&hide_border=true)
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=mneves75&layout=compact&theme=dark&hide_border=true)
+TypeScript · React Native · Expo · Next.js · Swift · SwiftUI · Bun · Supabase · PostgreSQL · pgvector · Claude
 
 ---
 
-<sub>Built with Claude • Ship beats perfect</sub>
+**X**: [@mneves75](https://x.com/mneves75) · **Web**: [conhecendoia.com.br](https://conhecendoia.com.br)
