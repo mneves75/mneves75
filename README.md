@@ -4,6 +4,8 @@
 
 Based in Brazil. Building with Claude as copilot.
 
+**Data & ML** — I turn messy datasets into decisions. Data analysis, ML pipelines, pattern recognition. The interesting problems live where the data is ambiguous and the stakes are real.
+
 ---
 
 ## Philosophy
