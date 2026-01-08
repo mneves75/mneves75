@@ -4,7 +4,9 @@
 
 Based in Brazil. Building with Claude as copilot.
 
-**Data & ML** — I turn messy datasets into decisions. Data analysis, ML pipelines, pattern recognition. The interesting problems live where the data is ambiguous and the stakes are real.
+**Data & ML** — 30 years building production systems across banking, insurance, telecom, and government. Now I point all of that at ML pipelines and AI products.
+
+Predictive models (scikit-learn, PyTorch). LLM integrations (RAG, LangChain). Data pipelines (Spark, Airflow). The difference: I've shipped systems that process real money and real consequences, not demos.
 
 ---
 
