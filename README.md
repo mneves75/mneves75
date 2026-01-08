@@ -61,3 +61,4 @@ TypeScript · React Native · Expo · Next.js · Swift · SwiftUI · Bun · Supa
 ---
 
 **X**: [@mneves75](https://x.com/mneves75) · **Web**: [conhecendoia.com.br](https://conhecendoia.com.br)
+
