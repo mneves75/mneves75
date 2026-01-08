@@ -46,6 +46,13 @@ Terminal UI for real-time prediction market data. WebSocket price feeds, orderbo
 
 ---
 
+### Contributing to [clawdbot](https://github.com/clawdbot/clawdbot)
+Personal AI assistant that runs on your own devices—WhatsApp, Telegram, Slack, Discord, Signal, iMessage. Multi-platform messaging with agent-based architecture.
+
+**Stack**: TypeScript, Swift, Multi-platform
+
+---
+
 ## Currently Building
 
 - **Data analysis tools** — ML pipelines, market intelligence, pattern recognition
