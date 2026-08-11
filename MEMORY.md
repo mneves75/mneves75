@@ -4,7 +4,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-08-10)
 
-- **1.1.1 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `a4e7aa9c…`) and staging (`a38c4acf…`): 30 projects, generated sitemap, HSTS. Versioning restarted at 1.0.0 when the 6101-commit history was squashed to a single root commit and first tagged; the 1.1.0 site is the direct successor of the pre-tag 1.4.1 build, not a rollback. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
+- **1.2.0 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `257350d3…`) and staging (`ca2659a2…`): 31 projects, every one with a source-backed case study, generated sitemap, HSTS. Versioning restarted at 1.0.0 when the 6101-commit history was squashed to a single root commit and first tagged; the 1.1.0 site is the direct successor of the pre-tag 1.4.1 build, not a rollback. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
 - Tree committed and pushed 2026-08-10.
 
 ## Key decisions + why

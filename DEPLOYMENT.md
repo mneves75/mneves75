@@ -39,14 +39,14 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
-- Worker version: `a38c4acf-939d-406b-9d40-35bc644c47a7` (1.1.1, tag `v1.1.1-beta1`; routes override active — workers.dev only)
+- Worker version: `ca2659a2-85aa-4a00-9ffc-c2ff7bc507c0` (1.2.0, tag `v1.2.0-beta1`; routes override active — workers.dev only)
 - Published command observed: `2026-08-10`.
-- Remote smoke verified: the three new project routes returned 200 in both locales, `/sitemap.xml` returned 70 URLs, `/work/` rendered 30 rows per locale, and HSTS was present. The first probe within seconds of the deploy returned stale 404s from an edge-cache HIT — re-probe with a cache-busting query before concluding a deploy failed.
+- Remote smoke verified: `/sitemap.xml` returned 72 URLs, `/work/` rendered 31 rows per locale, the new `ai-calories-tracker` routes returned 200 in both locales, no page rendered a case-study TODO block, and HSTS was present. The first probe within seconds of the deploy returned stale 404s from an edge-cache HIT — re-probe with a cache-busting query before concluding a deploy failed.
 
 ### Latest production evidence
 
 - Published URLs: `https://mvneves.dev` (custom domain) and `https://mvneves-dev.mvneves.workers.dev`
-- Worker version: `a4e7aa9c-3f66-4d62-b304-cd62c87cba3d` (1.1.1, tag `v1.1.1`, 2026-08-10) — `/work/skills/`, `/work/polymarket-analyzer/`, and both locales of `language-benchmarks` returned 200; `/sitemap.xml` 70 URLs; 30 project rows per locale; HSTS served; unknown route 404; `www` served the same assets. A stale edge-cache HIT can lag a minute after deploy.
+- Worker version: `257350d3-47cb-48a4-ae04-ad5dfa5999a3` (1.2.0, tag `v1.2.0`, 2026-08-11) — both locales of `ai-calories-tracker`, the corrected `maturity-toolbox`, and the pt-BR `llmdeepdive` page returned 200; `/sitemap.xml` 72 URLs; 31 project rows per locale; zero case-study TODO blocks; HSTS served; unknown route 404; `www` served the same assets. A stale edge-cache HIT can lag a minute after deploy.
 - Both `mvneves.dev` and `www.mvneves.dev` custom domains are attached declaratively via `routes` (`custom_domain: true`) in `wrangler.jsonc` — Wrangler provisions DNS records and certificates on deploy. Neither hostname had a DNS record before 2026-08-10.
 - Remote smoke verified on both hostnames: `/`, `/pt-br/`, `/work/` 200, unknown route 404 (apex), pt-BR copy and `og-image-pt.png` served over valid TLS. `www` serves the same assets; every page's canonical URL points at the apex, so search engines consolidate on `mvneves.dev`.
 - Optional dashboard follow-ups (Redirect Rules): replace the `www` custom domain with a strict `www → apex` 301, and add `mvneves.app → mvneves.dev` (that zone is not managed by this Worker config).
