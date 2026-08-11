@@ -4,7 +4,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-08-10)
 
-- **1.4.1 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `773e7060…`) and staging (`f248abfc…`): the 1.4.0 "Working Instrument v3: Terminal on Paper" redesign plus the four "Como penso" principles translated to pt-BR. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
+- **1.1.0 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `71b954da…`) and staging (`bfc3f0c6…`): 30 projects, generated sitemap, HSTS. Versioning restarted at 1.0.0 when the 6101-commit history was squashed to a single root commit and first tagged; the 1.1.0 site is the direct successor of the pre-tag 1.4.1 build, not a rollback. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
 - Tree committed and pushed 2026-08-10.
 
 ## Key decisions + why
