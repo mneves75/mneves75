@@ -4,7 +4,35 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.2] - Unreleased
+## [1.2.0] - 2026-08-11
+
+### Added
+
+- Case studies for all 22 projects that previously showed a "case study pending" TODO, each written
+  from a primary source: the repository README for the open-source work, the live site for the rest.
+  The work index no longer renders a single TODO block.
+- [`ai-calories-tracker`](https://github.com/mneves75/ai-calories-tracker) — a Bun monorepo pairing an
+  Expo client with a Cloudflare Workers API. 31 projects, 15 public repositories.
+- `ProjectDetail.astro` throws at build time when a diagram step has no pt-BR label, and the route
+  test fails if a case-study TODO block reappears.
+
+### Fixed
+
+- `maturity-toolbox` was described as a "business maturity assessment tool". The live site is Carlos
+  Magno's 52-week maturity method with an AI companion; the title, summary, stack, and status now
+  match the source.
+- The pt-BR page for `llmdeepdive` rendered the English diagram step "teach-back" because the label
+  map had no entry for it. The new build-time guard is what surfaced it.
+- 18 projects showed their category twice in the detail meta row, because the kicker repeated the
+  category label. Each now carries a kicker that says something the category does not.
+
+### Verification
+
+- `bun run check` — 0 errors, 0 warnings, 0 hints.
+- `bun run build` — 73 static pages.
+- `bun run test` — 73 route outputs, 31 project rows per locale, 72 sitemap URLs, no TODO blocks.
+- autoreview (codex `gpt-5.6-sol`, high) clean, 0.98.
+- Real-UI pass at 1440px (pt-BR case study and diagram) and 390px (new project page).
 
 ## [1.1.1] - 2026-08-10
 

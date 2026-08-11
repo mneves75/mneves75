@@ -119,5 +119,5 @@ No analytics is required for launch. If measurement becomes necessary, prefer Cl
 - [ ] Confirm custom domains and redirect rules return the expected 301/200 behavior.
 - [ ] Check `/robots.txt`, `/sitemap.xml`, canonical, hreflang, and OG metadata on both locales.
 - [ ] Run `bun run check && bun run build` from a clean checkout.
-- [ ] Confirm the generated sitemap includes all 30 project slugs in both locales.
+- [ ] Confirm the generated sitemap includes all 31 project slugs in both locales.
 - [ ] Inspect desktop and mobile screenshots after deployment.

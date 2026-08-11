@@ -6,7 +6,7 @@
 
 **REFERENCES:** herdr.dev (paper/ink base, terminal panels as centerpiece, small radii on panels only) and conhecendotudo.com.br (editorial-brutalista devices: kinetic masthead, numbered indices, scramble decoder, hidden terminal). Adapted, not copied — the palette stays graphite/bone/copper so the personal site reads as a sibling of the studio, not a twin.
 
-**STORY:** Visitors read a statement backed by a live-looking session of verifiable facts, inspect constraints behind selected work, browse 30 public projects, then choose public proof or a channel.
+**STORY:** Visitors read a statement backed by a live-looking session of verifiable facts, inspect constraints behind selected work, browse 31 public projects, then choose public proof or a channel.
 
 **FIRST VIEWPORT:** Quiet paper field with a faint 72px engineering grid, oversized statement with a cycling decoder word, a dark `mn@dev` terminal panel rendering only verifiable numbers, and a count-up stat rail on a hairline.
 
