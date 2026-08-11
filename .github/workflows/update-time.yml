@@ -1,0 +1,51 @@
+name: Update Last Seen
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-last-seen
+  cancel-in-progress: false
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Update timestamp
+        run: |
+          # Get current time in Sao Paulo timezone
+          TIMESTAMP=$(TZ='America/Sao_Paulo' date '+%Y-%m-%d %H:%M:%S %Z')
+
+          # Update README using sed with comment markers
+          sed -i "s/<!--LAST_SEEN_BEGIN-->.*/<!--LAST_SEEN_BEGIN-->Last seen: ${TIMESTAMP}<!--LAST_SEEN_END-->/" README.md
+
+          # Verify the change was made
+          if ! grep -q "Last seen: ${TIMESTAMP}" README.md; then
+            echo "Error: Failed to update timestamp"
+            exit 1
+          fi
+
+          echo "Updated timestamp to: ${TIMESTAMP}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Only commit if there are changes
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git add README.md
+          git commit -m "chore: update last seen [skip ci]"
+          git push

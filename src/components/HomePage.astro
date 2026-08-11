@@ -1,0 +1,333 @@
+---
+import { href, principles, projects, range, recommendations, site, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const featured = projects.filter((project) => project.featured);
+const openSourceCount = projects.filter((project) => project.openSource).length;
+const decoderWords = locale === 'en'
+  ? ['AI-native software', 'developer tools', 'data systems', 'local-first apps']
+  : ['software AI-native', 'ferramentas dev', 'sistemas de dados', 'apps local-first'];
+const marqueeItems = [...range.map((item) => item[locale]), locale === 'en' ? 'open source' : 'open source', locale === 'en' ? 'teaching in pt-BR' : 'ensino em pt-BR'];
+const copy = locale === 'en' ? {
+  kicker: 'Marcus Neves / software · data · AI',
+  statement: 'Three decades shipping production systems.',
+  building: 'Now building',
+  intro: 'I build software, data systems, developer tools, and AI products for real-world constraints.',
+  selected: 'Selected work',
+  selectedNote: 'Projects are the evidence. Start with the constraint.',
+  allWork: 'See all work',
+  think: 'How I think',
+  thinkNote: 'Principles are useful when they change what gets built.',
+  range: 'Engineering range',
+  rangeNote: 'Breadth is useful when it changes the decision.',
+  trust: 'Trusted to lead. Still hands-on.',
+  trustNote: 'Recommendations from people who worked with Marcus.',
+  allRec: 'Read all recommendations',
+  teaching: 'Open knowledge is part of the work.',
+  teachingBody: 'I teach AI and development in Portuguese at Conhecendo IA — because knowledge should not require a language tax.',
+  visit: 'Visit Conhecendo IA',
+  contact: 'Have a real constraint?',
+  contactBody: 'GitHub is the best place to see what is in motion. For everything else, start there.',
+  reach: 'Open a channel',
+  statYears: 'years in production',
+  statProjects: 'public projects',
+  statOss: 'open source',
+  termFocus: 'AI-native software',
+  termFeatured: 'featured → all work',
+} : {
+  kicker: 'Marcus Neves / software · dados · IA',
+  statement: 'Três décadas entregando sistemas de produção.',
+  building: 'Agora construindo',
+  intro: 'Construo software, sistemas de dados, ferramentas para desenvolvedores e produtos de IA para restrições do mundo real.',
+  selected: 'Trabalho selecionado',
+  selectedNote: 'Os projetos são a evidência. Comece pela restrição.',
+  allWork: 'Ver todo o trabalho',
+  think: 'Como penso',
+  thinkNote: 'Princípios são úteis quando mudam o que é construído.',
+  range: 'Amplitude de engenharia',
+  rangeNote: 'Amplitude é útil quando muda a decisão.',
+  trust: 'Confiam em mim para liderar. Ainda hands-on.',
+  trustNote: 'Recomendações de pessoas que trabalharam com Marcus.',
+  allRec: 'Ler todas as recomendações',
+  teaching: 'Conhecimento aberto faz parte do trabalho.',
+  teachingBody: 'Ensino IA e desenvolvimento em português no Conhecendo IA — porque conhecimento não deveria pagar pedágio de idioma.',
+  visit: 'Visitar Conhecendo IA',
+  contact: 'Você tem uma restrição real?',
+  contactBody: 'O GitHub é o melhor lugar para ver o que está em movimento. Para o resto, comece por lá.',
+  reach: 'Abrir um canal',
+  statYears: 'anos em produção',
+  statProjects: 'projetos públicos',
+  statOss: 'open source',
+  termFocus: 'software AI-native',
+  termFeatured: 'em destaque → todo o trabalho',
+};
+// The English "Three decades shipping" phrase is a public claim asserted by the route tests.
+---
+
+<section class="hero section spot-zone" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="route-label">{copy.kicker}</p>
+    <h1 id="hero-title">
+      <span class="statement">{copy.statement}</span>
+      <span class="building">{copy.building} <span class="decoder" data-scramble-cycle={JSON.stringify(decoderWords)}>{decoderWords[0]}</span></span>
+    </h1>
+    <p class="hero-lede">{copy.intro}</p>
+    <div class="cta-row">
+      <a class="button" href={href(locale, '/work/')} data-magnetic>{copy.selected}</a>
+      <a class="button secondary" href={site.github} target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </div>
+
+  <div class="hero-term term">
+    <div class="term-bar"><span>mn@dev — session</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+    <div class="term-body">
+      <p><span class="t-prompt">$</span> <span class="t-cmd">mn</span> --status</p>
+      <p><span class="t-key t-dim">shipping</span><span>30 {locale === 'en' ? 'years' : 'anos'}</span></p>
+      <p><span class="t-key t-dim">projects</span><span>{projects.length} {locale === 'en' ? 'public' : 'públicos'}</span></p>
+      <p><span class="t-key t-dim">open_src</span><span>{openSourceCount} repos</span></p>
+      <p><span class="t-key t-dim">stack</span><span class="t-str">typescript · swift · rust · astro · cloudflare</span></p>
+      <p><span class="t-key t-dim">focus</span><span>{copy.termFocus}</span></p>
+      <p class="t-gap"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> work/ --featured</p>
+      <p class="t-files">{featured.map((project) => <a href={href(locale, `/work/${project.slug}/`)}>{project.slug}</a>)}</p>
+      <p><span class="t-dim">&gt; {featured.length} {copy.termFeatured}</span></p>
+      <p><span class="t-prompt">$</span> <span class="t-cursor" aria-hidden="true"></span></p>
+    </div>
+  </div>
+
+  <div class="stat-rail" aria-label={locale === 'en' ? 'Track record' : 'Histórico'}>
+    <div class="stat"><span class="stat-num num-mono" data-countup="30">30</span><span class="label-mono">{copy.statYears}</span></div>
+    <div class="stat"><span class="stat-num num-mono" data-countup={String(projects.length)}>{projects.length}</span><span class="label-mono">{copy.statProjects}</span></div>
+    <div class="stat"><span class="stat-num num-mono" data-countup={String(openSourceCount)}>{openSourceCount}</span><span class="label-mono">{copy.statOss}</span></div>
+  </div>
+</section>
+
+<div class="masthead-band" aria-hidden="true">
+  <div class="mn-masthead">MARCUS <span class="hollow">NEVES</span></div>
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>{marqueeItems.join(' ✺ ')} ✺ </span>
+      <span aria-hidden="true">{marqueeItems.join(' ✺ ')} ✺ </span>
+    </div>
+  </div>
+</div>
+
+<section class="section reveal" aria-labelledby="selected-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">01 / {locale === 'en' ? 'proof' : 'prova'}</p><h2 id="selected-title">{copy.selected}</h2></div>
+    <p>{copy.selectedNote}</p>
+  </div>
+  <div class="index-list">
+    {featured.map((project, index) => (
+      <a class="index-row featured-row" href={href(locale, `/work/${project.slug}/`)}>
+        <span class="idx">0{index + 1}</span>
+        <span class="featured-main"><span class="featured-title">{project.title}</span><span class="featured-summary">{project.summary[locale]}</span></span>
+        <span class="label-mono featured-kicker">{project.kicker[locale]}</span>
+        <span class="row-arrow" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </div>
+  <div class="page-actions"><a class="text-link" href={href(locale, '/work/')}>{copy.allWork}</a></div>
+</section>
+
+<section class="section reveal" aria-labelledby="principles-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">02 / {locale === 'en' ? 'operating system' : 'sistema operacional'}</p><h2 id="principles-title">{copy.think}</h2></div>
+    <p>{copy.thinkNote}</p>
+  </div>
+  <div class="principles-grid">
+    {principles.map((principle, index) => <div class="principle"><span class="idx">0{index + 1}</span><strong>{principle[locale]}</strong></div>)}
+  </div>
+</section>
+
+<section class="section reveal" aria-labelledby="range-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">03 / {locale === 'en' ? 'range' : 'amplitude'}</p><h2 id="range-title">{copy.range}</h2></div>
+    <p>{copy.rangeNote}</p>
+  </div>
+  <div class="range-list">
+    {range.map((item, index) => <div class="range-item"><span class="idx">0{index + 1}</span><h3>{item[locale]}</h3><p>{item.note[locale]}</p></div>)}
+  </div>
+</section>
+
+<section class="section reveal" aria-labelledby="trust-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">04 / {locale === 'en' ? 'evidence' : 'evidência'}</p><h2 id="trust-title">{copy.trust}</h2></div>
+    <p>{copy.trustNote}</p>
+  </div>
+  <div class="quote-list">
+    {recommendations.slice(0, 2).map((recommendation, index) => (
+      <figure class="home-quote">
+        <span class="idx">[0{index + 1}]</span>
+        <blockquote lang={locale === 'pt' ? 'pt-BR' : 'en'}><p>{recommendation.quote[locale]}</p></blockquote>
+        <figcaption class="label-mono"><strong>{recommendation.name}</strong> — {recommendation.role[locale]}</figcaption>
+      </figure>
+    ))}
+  </div>
+  <div class="page-actions"><a class="text-link" href={href(locale, '/recommendations/')}>{copy.allRec}</a></div>
+</section>
+
+<section class="section reveal" aria-labelledby="teaching-title">
+  <div class="teaching-band">
+    <div><p class="eyebrow">05 / {locale === 'en' ? 'open knowledge' : 'conhecimento aberto'}</p><h2 id="teaching-title">{copy.teaching}</h2></div>
+    <div><p>{copy.teachingBody}</p><div class="page-actions"><a class="text-link" href={site.teaching} target="_blank" rel="noreferrer">{copy.visit}</a></div></div>
+  </div>
+</section>
+
+<section class="section reveal" aria-labelledby="contact-cta-title">
+  <div class="contact-cta">
+    <div><p class="eyebrow">06 / {locale === 'en' ? 'next' : 'próximo'}</p><h2 id="contact-cta-title">{copy.contact}</h2></div>
+    <div class="contact-cta-copy"><p>{copy.contactBody}</p><div class="page-actions"><a class="button" href={href(locale, '/contact/')}>{copy.reach}</a></div></div>
+  </div>
+</section>
+
+<style>
+  /* Hero — copy left, terminal right, stat rail across the bottom. */
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+    padding-top: clamp(3.5rem, 8vw, 6.5rem);
+    padding-bottom: 0;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 35% 25%, black, transparent 72%);
+    mask-image: radial-gradient(ellipse 75% 65% at 35% 25%, black, transparent 72%);
+    opacity: .5;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(14rem circle at var(--sx, 50%) var(--sy, 50%), color-mix(in srgb, var(--signal) 7%, transparent), transparent 70%);
+    transition: opacity 320ms var(--ease-out);
+  }
+  .hero:hover::after { opacity: 1; }
+  .hero-copy, .hero-term, .stat-rail { position: relative; }
+  .hero h1 { margin: 1.1rem 0 0; font-size: var(--step-3); font-weight: 800; letter-spacing: -.045em; line-height: .98; }
+  .hero h1 .statement { display: block; max-width: 16ch; }
+  .hero h1 .building { display: block; margin-top: .35em; }
+  .decoder { display: inline-block; color: var(--signal-text); font-variant-numeric: tabular-nums; }
+  .hero-lede { max-width: 46ch; margin: 1.5rem 0 0; color: var(--ink-soft); font-size: var(--step-1); }
+  .cta-row { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem; }
+
+  .hero-term { align-self: center; }
+  .t-key { display: inline-block; width: 9ch; }
+  .t-gap { margin-top: .8rem !important; }
+  .t-files { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; }
+  .t-files a { color: var(--term-str); }
+  .t-files a:hover, .t-files a:focus-visible { color: var(--term-accent); text-decoration: underline; }
+
+  .stat-rail { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 6vw, 5rem); margin-top: clamp(2.5rem, 5vw, 4rem); border-top: 1px solid var(--line); padding-block: 1.4rem; }
+  .stat { display: grid; gap: .3rem; }
+  .stat-num { font-family: var(--mono); font-size: clamp(2rem, 3.6vw, 3.2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1; color: var(--ink); }
+
+  /* Masthead band — full-bleed name + discipline marquee. */
+  .masthead-band { margin-inline: calc(var(--gutter) * -1); overflow: hidden; border-bottom: 1px solid var(--line); padding-top: clamp(2rem, 5vw, 3.5rem); }
+  .mn-masthead {
+    padding-inline: var(--gutter);
+    font-family: var(--display);
+    font-size: clamp(2.8rem, 10.4vw, 10.5rem);
+    font-stretch: 100%;
+    font-weight: 900;
+    letter-spacing: -.04em;
+    line-height: .9;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .mn-masthead .hollow { color: transparent; -webkit-text-stroke: 2px var(--signal); }
+  .marquee { overflow: hidden; margin-top: clamp(1.2rem, 3vw, 2rem); border-top: 1px solid var(--line); padding-block: .6rem; }
+  .marquee-track { display: inline-flex; white-space: nowrap; color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  .marquee-track span { padding-right: .5rem; }
+
+  /* Featured ledger rows */
+  .featured-row { grid-template-columns: 2.6rem minmax(0, 1fr) minmax(9rem, .32fr) 2rem; }
+  .featured-main { display: grid; gap: .3rem; min-width: 0; }
+  .featured-title { font-family: var(--display); font-size: var(--step-1); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+  .featured-summary { color: var(--muted); font-size: .92rem; }
+  .featured-kicker { text-align: right; }
+  .featured-row .row-arrow { justify-self: end; }
+
+  /* Principles / range */
+  .principles-grid { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); }
+  .principle { min-height: 8rem; border-bottom: 1px solid var(--line); padding: 1.35rem 1rem 1.35rem 0; }
+  .principle:nth-child(odd) { border-right: 1px solid var(--line); }
+  .principle:nth-child(even) { padding-left: 1.35rem; }
+  .principle .idx { display: block; margin-bottom: .9rem; }
+  .principle strong { display: block; max-width: 12ch; font-family: var(--display); font-size: clamp(1.5rem, 2.5vw, 2.7rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; }
+  .range-list { border-top: 1px solid var(--line); }
+  .range-item { display: grid; grid-template-columns: 2.6rem minmax(11rem, .4fr) 1fr; gap: 1.2rem; align-items: baseline; border-bottom: 1px solid var(--line); padding-block: 1.2rem; }
+  .range-item h3 { margin: 0; font-size: var(--step-1); font-weight: 700; letter-spacing: -.03em; }
+  .range-item p { margin: 0; color: var(--muted); }
+
+  /* Recommendations teaser */
+  .quote-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .home-quote { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; margin: 0; border-bottom: 1px solid var(--line); padding-block: 2rem; }
+  .home-quote blockquote { min-width: 0; max-width: 60ch; margin: 0; }
+  .home-quote blockquote p { margin: 0; font-family: var(--display); font-size: clamp(1.25rem, 1.9vw, 1.9rem); font-weight: 500; letter-spacing: -.025em; line-height: 1.2; overflow-wrap: break-word; }
+  .home-quote blockquote p::before { content: '“'; color: var(--signal-text); }
+  .home-quote figcaption { grid-column: 2; margin-top: 1rem; }
+  .home-quote figcaption strong { color: var(--ink); font-weight: 400; }
+
+  /* Teaching + contact CTA */
+  .teaching-band, .contact-cta { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem; align-items: end; }
+  .teaching-band h2, .contact-cta h2 { margin: 0; max-width: 14ch; font-size: clamp(1.9rem, 4vw, 3.6rem); font-weight: 800; letter-spacing: -.04em; line-height: .98; }
+  .teaching-band p, .contact-cta p { max-width: 48ch; margin: 0; color: var(--ink-soft); }
+
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: 1fr; align-items: start; }
+    .hero-term { max-width: 34rem; }
+    .featured-row { grid-template-columns: 2.2rem minmax(0, 1fr) 2rem; }
+    .featured-kicker { display: none; }
+  }
+  @media (max-width: 700px) {
+    .hero { padding-top: 3rem; }
+    .hero h1 { font-size: clamp(1.9rem, 8.4vw, 3.2rem); }
+    .stat-rail { gap: 1.6rem; justify-content: space-between; }
+    .principles-grid { grid-template-columns: 1fr; }
+    .principle, .principle:nth-child(even) { border-right: 0; padding: 1.2rem 0; }
+    .range-item { grid-template-columns: 2.2rem 1fr; }
+    .range-item p { grid-column: 2; }
+    .home-quote { grid-template-columns: 1fr; gap: .6rem; }
+    .home-quote figcaption { grid-column: 1; }
+    .teaching-band, .contact-cta { grid-template-columns: 1fr; gap: 1.3rem; align-items: start; }
+  }
+</style>
+
+<style is:global>
+  /* Motion for the home page — gated on data-motion, keyframes must stay global. */
+  html[data-motion='on'] .page-home .hero :is(.route-label, h1, .hero-lede, .cta-row) { animation: mn-hero-enter 600ms var(--ease-out) both; }
+  html[data-motion='on'] .page-home .hero h1 { animation-delay: 90ms; }
+  html[data-motion='on'] .page-home .hero .hero-lede { animation-delay: 180ms; }
+  html[data-motion='on'] .page-home .hero .cta-row { animation-delay: 270ms; }
+  html[data-motion='on'] .page-home .hero-term { animation: mn-hero-enter 700ms var(--ease-out) 250ms both; }
+  html[data-motion='on'] .page-home .stat-rail { animation: mn-hero-enter 600ms var(--ease-out) 380ms both; }
+  @keyframes mn-hero-enter { from { opacity: 0; transform: translateY(1rem); } }
+
+  /* Kinetic masthead: variable-font width rides the scroll (native SDA only). */
+  @supports (animation-timeline: view()) {
+    html[data-motion='on'] .mn-masthead {
+      animation: mn-masthead-stretch 1ms linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+  @keyframes mn-masthead-stretch { from { font-stretch: 80%; } to { font-stretch: 125%; } }
+
+  html[data-motion='on'] .page-home .marquee-track { animation: mn-marquee 34s linear infinite; }
+  .page-home .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes mn-marquee { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .page-home .marquee { overflow-x: auto; }
+  }
+</style>

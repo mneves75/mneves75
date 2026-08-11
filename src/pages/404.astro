@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout locale="en" currentPath="/404/" title="404 — Marcus Neves" description="This route does not exist on mvneves.dev." noindex>
+  <section class="not-found">
+    <p class="label-mono">404 / route not found</p>
+    <h1 class="display">Wrong turn.</h1>
+    <div class="term">
+      <div class="term-bar"><span>MN://404</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+      <div class="term-body">
+        <p><span class="t-prompt">mn@dev:~$</span> <span class="t-cmd">cd</span> <span class="t-str">/this-route/</span></p>
+        <p><span class="t-dim">&gt;</span> no such route</p>
+        <p><span class="t-dim">&gt;</span> try: <a href="/">home</a> <span class="t-dim">·</span> <a href="/work/">work index</a> <span aria-hidden="true">↵</span></p>
+        <p><span class="t-prompt">mn@dev:~$</span><span class="t-cursor" aria-hidden="true"></span></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found { max-width: 38rem; margin-inline: auto; padding-block: clamp(5rem, 14vw, 10rem); }
+  .not-found h1 { margin: .9rem 0 2.6rem; font-size: var(--step-3); }
+  .not-found .term-body a { color: var(--term-str); text-decoration: underline; text-underline-offset: .2em; }
+  .not-found .term-body a:hover, .not-found .term-body a:focus-visible { color: var(--term-accent); }
+</style>

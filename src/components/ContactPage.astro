@@ -1,0 +1,47 @@
+---
+import { site, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en' ? { title: 'Open a channel.', intro: 'If there is a real constraint, a useful repo, or a question worth working through, start with the public work.', channels: 'Channels', heading: 'Four public doors.', github: 'GitHub', linkedin: 'LinkedIn', x: 'X / @mneves75', teaching: 'Conhecendo IA', note: 'No contact form. No database. No invented email.' } : { title: 'Abra um canal.', intro: 'Se existe uma restrição real, um repositório útil ou uma pergunta que vale a pena trabalhar, comece pelo trabalho público.', channels: 'Canais', heading: 'Quatro portas públicas.', github: 'GitHub', linkedin: 'LinkedIn', x: 'X / @mneves75', teaching: 'Conhecendo IA', note: 'Sem formulário. Sem banco de dados. Sem e-mail inventado.' };
+const channels = [
+  { protocol: 'github://mneves75', label: copy.github, url: site.github },
+  { protocol: 'linkedin://mvneves', label: copy.linkedin, url: site.linkedin },
+  { protocol: 'x://mneves75', label: copy.x, url: site.x },
+  { protocol: 'teach://conhecendoia.com.br', label: copy.teaching, url: site.teaching },
+];
+---
+
+<section class="page-intro">
+  <p class="eyebrow">MN://CONTACT</p>
+  <h1>{copy.title}</h1>
+  <p class="lede">{copy.intro}</p>
+</section>
+
+<section class="section reveal">
+  <div class="section-heading">
+    <div><p class="eyebrow">01 / {copy.channels}</p><h2>{copy.heading}</h2></div>
+    <p>{copy.note}</p>
+  </div>
+  <div class="index-list channels">
+    {channels.map((channel) => (
+      <a class="index-row channel" href={channel.url} target="_blank" rel="noreferrer">
+        <span class="label-mono protocol">{channel.protocol}</span>
+        <span class="channel-label">{channel.label}</span>
+        <span class="row-arrow" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .channel { grid-template-columns: minmax(0, 18rem) minmax(0, 1fr) auto; align-items: center; }
+  .channel .protocol { text-transform: lowercase; }
+  .channel .channel-label { font-family: var(--display); font-size: var(--step-1); font-weight: 700; letter-spacing: -.035em; }
+  .channel:hover .protocol, .channel:focus-visible .protocol { color: var(--signal-text); }
+
+  @media (max-width: 700px) {
+    .channel { grid-template-columns: minmax(0, 1fr) auto; gap: .35rem 1rem; }
+    .channel .protocol { grid-column: 1 / -1; order: -1; overflow-wrap: anywhere; }
+  }
+</style>

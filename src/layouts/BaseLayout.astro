@@ -1,0 +1,315 @@
+---
+import SignalTrace from '../components/SignalTrace.astro';
+import Terminal from '../components/Terminal.astro';
+import { href, localeConfig, nav, site, type Locale } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  currentPath: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const { locale, title, description, currentPath, type = 'website', noindex = false } = Astro.props;
+const withTrailingSlash = (path: string) => {
+  const normalized = `/${path}`.replace(/\/{2,}/g, '/').replace(/\/$/, '');
+  return normalized ? `${normalized}/` : '/';
+};
+const pagePath = href(locale, currentPath);
+const canonicalPath = withTrailingSlash(pagePath);
+const canonical = `${site.domain}${canonicalPath}`;
+const otherLocale: Locale = locale === 'en' ? 'pt' : 'en';
+const alternatePath = locale === 'pt'
+  ? currentPath.replace(/^\/pt-br/, '') || '/'
+  : currentPath;
+const alternateUrl = `${site.domain}${withTrailingSlash(href(otherLocale, alternatePath))}`;
+const defaultPath = locale === 'pt' ? alternatePath : currentPath;
+const defaultUrl = `${site.domain}${withTrailingSlash(defaultPath)}`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  name: title,
+  url: canonical,
+  inLanguage: localeConfig[locale].html,
+  mainEntity: {
+    '@type': 'Person',
+    name: site.name,
+    url: site.domain,
+    jobTitle: 'Software Developer · Data Analyst · AI Builder',
+    sameAs: [site.github, site.linkedin],
+  },
+};
+const lang = localeConfig[locale];
+const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work' : currentPath.startsWith('/work/') ? 'project' : currentPath === '/about/' ? 'about' : currentPath === '/recommendations/' ? 'recommendations' : currentPath === '/contact/' ? 'contact' : 'other';
+---
+
+<!doctype html>
+<html lang={lang.html}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f0eee9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={locale === 'en' ? canonical : alternateUrl} />
+    <link rel="alternate" hreflang="pt-BR" href={locale === 'pt' ? canonical : alternateUrl} />
+    <link rel="alternate" hreflang="x-default" href={defaultUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="/fonts/archivo-100-900-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/space-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Marcus Neves" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`} />
+    <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+    <script is:inline>
+      // Restore theme before first paint; no attribute means the CSS system-preference fallback wins.
+      try {
+        const savedTheme = localStorage.getItem('mn-theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+      } catch {}
+      // Motion is opt-in: reduced-motion users never receive hidden initial states.
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.dataset.motion = 'on';
+    </script>
+  </head>
+  <body class={`page-${pageKind}`}>
+    <a class="skip-link" href="#main">{locale === 'en' ? 'Skip to content' : 'Pular para o conteúdo'}</a>
+    <header class="site-header">
+      <div class="header-row">
+        <a class="brand" href={href(locale, '/')} aria-label={locale === 'en' ? 'Marcus Neves home' : 'Página inicial de Marcus Neves'}>
+          <span class="brand-chip" aria-hidden="true">MN</span>
+          <span>mvneves<span class="tld">.dev</span></span>
+        </a>
+        <nav class="nav" aria-label={locale === 'en' ? 'Primary navigation' : 'Navegação principal'}>
+          {nav.map((item, index) => {
+            const itemHref = href(locale, item.path);
+            const active = currentPath === item.path || currentPath.startsWith(`${item.path}`);
+            return <a href={itemHref} aria-current={active ? 'page' : undefined}><span class="idx" aria-hidden="true">0{index + 1}</span><span data-scramble-hover>{item[locale]}</span></a>;
+          })}
+        </nav>
+        <div class="header-tools">
+          <a class="header-control" href={href(otherLocale, alternatePath)} aria-label={otherLocale === 'en' ? 'Switch to English' : 'Mudar para português'}>{localeConfig[otherLocale].short}</a>
+          <button class="header-control" type="button" data-theme-toggle aria-label={locale === 'en' ? 'Switch theme' : 'Alternar tema'}>◐</button>
+          <button class="header-control" type="button" data-command-open aria-haspopup="dialog" aria-label={locale === 'en' ? 'Open command palette' : 'Abrir paleta de comandos'}>⌘K</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-shell">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <SignalTrace variant="footer" />
+      <div class="footer-row">
+        <span>MN://{locale === 'en' ? 'software / data / AI' : 'software / dados / IA'}</span>
+        <div class="footer-links">
+          <a href={site.github} target="_blank" rel="noreferrer">GitHub ↗</a>
+          <a href={site.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
+          <a href={href(otherLocale, alternatePath)}>{localeConfig[otherLocale].label}</a>
+        </div>
+      </div>
+    </footer>
+
+    <dialog class="command-palette" id="command-palette" aria-labelledby="palette-title">
+      <div class="palette-inner">
+        <div class="term-bar"><span id="palette-title">MN://{locale === 'en' ? 'palette' : 'paleta'}</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <input class="palette-search" data-palette-search type="search" aria-label={locale === 'en' ? 'Search this site' : 'Buscar neste site'} placeholder={locale === 'en' ? 'Search this site…' : 'Buscar neste site…'} autocomplete="off" />
+        <div class="palette-list" data-palette-list>
+          <a href={href(locale, '/work/')} data-palette-item>{locale === 'en' ? 'Go to Work' : 'Ir para Trabalho'}<span>↵</span></a>
+          <a href={site.github} target="_blank" rel="noreferrer" data-palette-item>Open GitHub<span>↗</span></a>
+          <a href={site.linkedin} target="_blank" rel="noreferrer" data-palette-item>Open LinkedIn<span>↗</span></a>
+          <a href={href(otherLocale, alternatePath)} data-palette-item>{locale === 'en' ? 'Switch language' : 'Mudar idioma'}<span>{localeConfig[otherLocale].short}</span></a>
+          <button type="button" data-palette-theme data-palette-item>{locale === 'en' ? 'Switch theme' : 'Alternar tema'}<span>◐</span></button>
+        </div>
+        <div class="palette-hint"><span>↑↓ {locale === 'en' ? 'navigate' : 'navegar'}</span><span>Esc {locale === 'en' ? 'close' : 'fechar'}</span></div>
+      </div>
+    </dialog>
+
+    <Terminal locale={locale} />
+
+    <script>
+      // MN://runtime — theme, palette, header state, reveals, scramble,
+      // count-up, magnetic, spotlight. All motion respects reduced-motion.
+      const root = document.documentElement;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+      // --- Theme ---
+      const themeColors = { light: '#f0eee9', dark: '#0e0e0d' } as const;
+      const applyThemeColor = (theme: 'light' | 'dark') => {
+        // Media-scoped theme-color metas follow the OS, not the manual override.
+        document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.setAttribute('content', themeColors[theme]));
+      };
+      const setTheme = (theme: 'light' | 'dark') => {
+        root.dataset.theme = theme;
+        applyThemeColor(theme);
+        // Storage can be blocked (private mode, cookie policy) — the theme still applies.
+        try { localStorage.setItem('mn-theme', theme); } catch { /* noop */ }
+      };
+      if (root.dataset.theme === 'light' || root.dataset.theme === 'dark') applyThemeColor(root.dataset.theme);
+      const effectiveTheme = (): 'light' | 'dark' =>
+        root.dataset.theme === 'light' || root.dataset.theme === 'dark'
+          ? root.dataset.theme
+          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const toggleTheme = () => setTheme(effectiveTheme() === 'light' ? 'dark' : 'light');
+      document.querySelector('[data-theme-toggle]')?.addEventListener('click', toggleTheme);
+
+      // --- Command palette ---
+      const palette = document.querySelector<HTMLDialogElement>('#command-palette');
+      const search = document.querySelector<HTMLInputElement>('[data-palette-search]');
+      const openPalette = () => { palette?.showModal(); search?.focus(); };
+      document.querySelector('[data-command-open]')?.addEventListener('click', openPalette);
+      document.querySelector('[data-palette-theme]')?.addEventListener('click', () => { toggleTheme(); palette?.close(); });
+      document.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openPalette(); }
+        if (event.key === 'Escape' && palette?.open) palette.close();
+      });
+      search?.addEventListener('input', () => {
+        const value = search.value.toLowerCase().trim();
+        document.querySelectorAll<HTMLElement>('[data-palette-item]').forEach((item) => {
+          item.hidden = Boolean(value) && !(item.textContent ?? '').toLowerCase().includes(value);
+        });
+      });
+
+      // --- Header shrink after scroll ---
+      const onScroll = () => {
+        if (window.scrollY > 24) root.dataset.scrolled = '';
+        else delete root.dataset.scrolled;
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // --- Scroll reveals (.reveal → .is-in, once) ---
+      if (root.dataset.motion === 'on' && 'IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-in');
+              revealObserver.unobserve(entry.target);
+            }
+          }
+        }, { rootMargin: '0px 0px -10% 0px' });
+        document.querySelectorAll('.reveal').forEach((target) => {
+          target.classList.add('reveal-pending');
+          revealObserver.observe(target);
+        });
+      }
+
+      // --- Scramble/decoder ---
+      const GLYPHS = '!<>-_\\/[]{}—=+*^?#█▓▒░01';
+      function scrambleTo(el: HTMLElement, next: string, duration = 700) {
+        const from = el.textContent ?? '';
+        const len = Math.max(from.length, next.length);
+        const start = performance.now();
+        function frame(now: number) {
+          const p = Math.min(1, (now - start) / duration);
+          let out = '';
+          for (let i = 0; i < len; i++) {
+            const reveal = i / len < p * 1.4 - 0.2;
+            out += reveal || p === 1 ? (next[i] ?? '') : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          }
+          el.textContent = out;
+          if (p < 1) requestAnimationFrame(frame);
+          else el.textContent = next;
+        }
+        requestAnimationFrame(frame);
+      }
+
+      document.querySelectorAll<HTMLElement>('[data-scramble-cycle]').forEach((el) => {
+        let words: string[] = [];
+        try { words = JSON.parse(el.dataset.scrambleCycle ?? '[]'); } catch { /* leave static */ }
+        if (words.length < 2) return;
+        if (reducedMotion) { el.textContent = words[0] ?? ''; return; }
+        let i = 0;
+        el.style.minWidth = `${Math.max(...words.map((w) => w.length))}ch`;
+        setInterval(() => {
+          i = (i + 1) % words.length;
+          scrambleTo(el, words[i] ?? '');
+        }, 3200);
+      });
+
+      if (finePointer && !reducedMotion) {
+        document.querySelectorAll<HTMLElement>('[data-scramble-hover]').forEach((el) => {
+          const original = el.textContent ?? '';
+          let busy = false;
+          el.addEventListener('mouseenter', () => {
+            if (busy) return;
+            busy = true;
+            scrambleTo(el, original, 420);
+            setTimeout(() => { busy = false; }, 480);
+          });
+        });
+      }
+
+      // --- Count-up [data-countup] ---
+      const countObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          countObserver.unobserve(el);
+          const raw = el.dataset.countup ?? '0';
+          const target = parseFloat(raw);
+          const suffix = el.dataset.suffix ?? '';
+          if (reducedMotion) { el.textContent = raw + suffix; return; }
+          const start = performance.now();
+          const dur = 1400;
+          function tick(now: number) {
+            const p = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - p, 4);
+            el.textContent = Math.round(target * eased) + suffix;
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }, { threshold: 0.6 });
+      document.querySelectorAll('[data-countup]').forEach((el) => countObserver.observe(el));
+
+      // --- Magnetic buttons [data-magnetic] ---
+      if (finePointer && !reducedMotion) {
+        document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
+          el.addEventListener('mousemove', (e) => {
+            const r = el.getBoundingClientRect();
+            const x = ((e.clientX - r.left) / r.width - 0.5) * 10;
+            const y = ((e.clientY - r.top) / r.height - 0.5) * 8;
+            el.style.transform = `translate(${x}px, ${y}px)`;
+          });
+          el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+        });
+      }
+
+      // --- Cursor spotlight (.spot-zone sets --sx/--sy) ---
+      if (finePointer) {
+        document.addEventListener('pointermove', (e) => {
+          const zone = (e.target as Element).closest?.('.spot-zone') as HTMLElement | null;
+          if (zone) {
+            const r = zone.getBoundingClientRect();
+            zone.style.setProperty('--sx', `${e.clientX - r.left}px`);
+            zone.style.setProperty('--sy', `${e.clientY - r.top}px`);
+          }
+        }, { passive: true });
+      }
+
+      // --- Console hint ---
+      console.log(
+        '%cMN://OS%c — the projects are the evidence.\n%cpsst: type "mn" on any page. // psst: digite "mn" em qualquer página.',
+        'font-family:monospace;font-size:18px;font-weight:bold;color:#c8481f',
+        'font-family:monospace;color:#999',
+        'font-family:monospace;color:#666'
+      );
+    </script>
+  </body>
+</html>

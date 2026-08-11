@@ -1,0 +1,256 @@
+---
+// MN://TERMINAL — site-wide easter egg. Opens on typing "mn" outside a field,
+// or with the Konami code. All content is factual site copy; no invented data.
+import { href, site, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const workHref = href(locale, '/work/');
+const homeHref = href(locale, '/');
+---
+
+<div id="mn-terminal" class="mn-terminal" role="dialog" aria-modal="true" aria-label="MN://TERMINAL" data-lang={locale} data-work={workHref} data-home={homeHref} data-github={site.github} data-linkedin={site.linkedin}>
+  <div class="crt-panel">
+    <p class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+      {locale === 'en'
+        ? 'Hidden site terminal. Type help for the command list; Esc closes.'
+        : 'Terminal escondido do site. Digite help para ver os comandos; Esc fecha.'}
+    </p>
+    <div class="crt-bar">
+      <span>MN://OS — tty1</span>
+      <button id="mn-terminal-close" type="button" aria-label={locale === 'en' ? 'Close terminal' : 'Fechar terminal'}>[ esc ]</button>
+    </div>
+    <div id="mn-screen" class="crt-screen" aria-live="polite"></div>
+    <div class="crt-input-row">
+      <span class="acc">MN://&gt;</span>
+      <input id="mn-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label={locale === 'en' ? 'Terminal command' : 'Comando do terminal'} />
+      <span class="t-cursor" aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('mn-terminal')!;
+  const screen = document.getElementById('mn-screen')!;
+  const input = document.getElementById('mn-input') as HTMLInputElement;
+  const closeBtn = document.getElementById('mn-terminal-close')! as HTMLButtonElement;
+  const pt = overlay.dataset.lang === 'pt';
+  const links = { work: overlay.dataset.work!, home: overlay.dataset.home!, github: overlay.dataset.github!, linkedin: overlay.dataset.linkedin! };
+
+  const BOOT = [
+    'mn@dev:~$ mn --status',
+    '..............................',
+    pt ? '> sinal: recebido    > sistema: pronto' : '> signal: received    > system: ready',
+    pt ? '> você encontrou o terminal escondido. bem-vindo(a).' : '> you found the hidden terminal. welcome.',
+    pt ? '> digite <b>help</b> para ver os comandos.' : '> type <b>help</b> to see available commands.',
+  ];
+
+  const HELP = pt ? [
+    '<b>help</b>      — esta lista',
+    '<b>sobre</b>     — quem é o Marcus',
+    '<b>stack</b>     — com o que ele constrói',
+    '<b>trabalho</b>  — abrir os projetos',
+    '<b>github</b>    — abrir o GitHub',
+    '<b>linkedin</b>  — abrir o LinkedIn',
+    '<b>theme</b>     — alternar claro/escuro',
+    '<b>matrix</b>    — ...você sabe o que faz',
+    '<b>cafe</b>      — combustível',
+    '<b>clear</b>     — limpar a tela',
+    '<b>exit</b>      — fechar (ou esc)',
+  ] : [
+    '<b>help</b>      — this list',
+    '<b>about</b>     — who Marcus is',
+    '<b>stack</b>     — what he builds with',
+    '<b>work</b>      — open the projects',
+    '<b>github</b>    — open GitHub',
+    '<b>linkedin</b>  — open LinkedIn',
+    '<b>theme</b>     — toggle light/dark',
+    '<b>matrix</b>    — ...you know what it does',
+    '<b>coffee</b>    — fuel',
+    '<b>clear</b>     — clear screen',
+    '<b>exit</b>      — close (or esc)',
+  ];
+
+  const UNKNOWN = pt ? [
+    'comando não reconhecido. tenta <b>help</b>.',
+    '404: comando não encontrado (mas o terminal você já encontrou).',
+  ] : [
+    'command not recognized. try <b>help</b>.',
+    '404: command not found (but you did find the terminal).',
+  ];
+
+  let unknownIdx = 0;
+  let previousFocus: HTMLElement | null = null;
+
+  function line(html: string, cls = '') {
+    const div = document.createElement('div');
+    if (cls) div.className = cls;
+    div.innerHTML = html;
+    screen.appendChild(div);
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  function openTerminal() {
+    if (overlay.classList.contains('open')) return;
+    previousFocus = document.activeElement as HTMLElement | null;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    screen.innerHTML = '';
+    BOOT.forEach((l, i) => setTimeout(() => line(l, i < 2 ? 'sys' : ''), 110 * i));
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function closeTerminal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    previousFocus?.focus();
+  }
+
+  function matrixRain() {
+    const glyphs = '01█▓▒░<>/*+#@$%&';
+    let n = 0;
+    const iv = setInterval(() => {
+      let out = '';
+      for (let i = 0; i < 46; i++) out += Math.random() > 0.5 ? glyphs[Math.floor(Math.random() * glyphs.length)] : ' ';
+      line(out, 'sys');
+      if (++n > 12) {
+        clearInterval(iv);
+        line(pt ? '> acorda. os projetos são a evidência.' : '> wake up. the projects are the evidence.', 'acc');
+      }
+    }, 90);
+  }
+
+  function navigate(path: string) {
+    line(`> cd ${path}`, 'sys');
+    setTimeout(() => { window.location.href = path; }, 350);
+  }
+
+  function run(raw: string) {
+    const cmd = raw.trim().toLowerCase();
+    line('<span class="acc">MN://&gt;</span> ' + raw.replace(/</g, '&lt;'), 'ok');
+    if (!cmd) return;
+    switch (cmd) {
+      case 'help':
+      case 'ajuda':
+        HELP.forEach((h) => line(h));
+        break;
+      case 'about':
+      case 'sobre':
+        line(pt
+          ? 'Marcus Neves — três décadas entregando sistemas de produção. Agora construindo software AI-native.'
+          : 'Marcus Neves — three decades shipping production systems. Now building AI-native software.');
+        break;
+      case 'stack':
+        line('typescript · swift · rust · react native · astro · cloudflare · sqlite · llms');
+        line(pt ? '(este site: astro estático, zero framework JS no cliente.)' : '(this site: static astro, zero client-side JS framework.)', 'sys');
+        break;
+      case 'work':
+      case 'trabalho':
+        navigate(links.work);
+        break;
+      case 'home':
+      case 'inicio':
+      case 'início':
+        navigate(links.home);
+        break;
+      case 'github':
+        line(`<a href="${links.github}" target="_blank" rel="noreferrer">github://mneves75</a>`);
+        break;
+      case 'linkedin':
+        line(`<a href="${links.linkedin}" target="_blank" rel="noreferrer">linkedin://mvneves</a>`);
+        break;
+      case 'theme':
+      case 'tema': {
+        // Same storage contract as the header toggle (mn-theme in BaseLayout).
+        const root = document.documentElement;
+        const current = root.dataset.theme === 'light' || root.dataset.theme === 'dark'
+          ? root.dataset.theme
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const next = current === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.setAttribute('content', next === 'dark' ? '#0e0e0d' : '#f0eee9'));
+        try { localStorage.setItem('mn-theme', next); } catch { /* storage may be blocked */ }
+        line(pt ? `> tema: ${next === 'dark' ? 'grafite (dark)' : 'papel (light)'}` : `> theme: ${next === 'dark' ? 'graphite (dark)' : 'paper (light)'}`);
+        break;
+      }
+      case 'matrix':
+        matrixRain();
+        break;
+      case 'cafe':
+      case 'café':
+      case 'coffee':
+        line('      ( (');
+        line('       ) )');
+        line('    ........');
+        line('    |      |]');
+        line('    \\      /');
+        line("     `----'");
+        line(pt ? '> café servido. sistema pronto.' : '> coffee served. system ready.');
+        break;
+      case 'clear':
+      case 'cls':
+        screen.innerHTML = '';
+        break;
+      case 'exit':
+      case 'sair':
+      case 'quit':
+        closeTerminal();
+        break;
+      case 'mn':
+        line(pt ? '> isso. MN. o resto é evidência.' : '> yes. MN. the rest is evidence.');
+        break;
+      case 'sudo':
+        line(pt ? 'permissão negada: ship beats perfect.' : 'permission denied: ship beats perfect.');
+        break;
+      default:
+        line(UNKNOWN[unknownIdx++ % UNKNOWN.length]!);
+    }
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      run(input.value);
+      input.value = '';
+    } else if (e.key === 'Escape') {
+      closeTerminal();
+    }
+  });
+
+  closeBtn.addEventListener('click', closeTerminal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeTerminal();
+  });
+
+  // Triggers: type "mn" outside a field, or the Konami code.
+  const SECRET = 'mn';
+  const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let typed = '';
+  let konamiIdx = 0;
+
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement;
+    const inField = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable;
+
+    if (e.key === 'Escape' && overlay.classList.contains('open')) { closeTerminal(); return; }
+    if (e.key === 'Tab' && overlay.classList.contains('open')) {
+      // Two focusable elements: keep focus inside the dialog.
+      const first = closeBtn;
+      const last = input;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      return;
+    }
+    if (inField || overlay.classList.contains('open')) return;
+
+    if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      typed = (typed + e.key.toLowerCase()).slice(-SECRET.length);
+      if (typed === SECRET) { typed = ''; openTerminal(); return; }
+    }
+    if (e.key === KONAMI[konamiIdx]) {
+      konamiIdx++;
+      if (konamiIdx === KONAMI.length) { konamiIdx = 0; openTerminal(); }
+    } else {
+      konamiIdx = e.key === KONAMI[0] ? 1 : 0;
+    }
+  });
+</script>

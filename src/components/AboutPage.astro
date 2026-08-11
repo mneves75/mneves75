@@ -1,0 +1,70 @@
+---
+import { range, site, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en' ? { title: 'About', intro: 'I build where software, data, and product constraints meet.', body: ['I have been shipping production systems for three decades across banking, insurance, telecom, and government. That history is useful less as a credential than as a filter: it makes unnecessary abstraction, fragile demos, and architecture disconnected from the business harder to defend.', 'Today I work as a software developer, data analyst, and AI-native builder. I move between mobile, backend, data platforms, developer tools, edge infrastructure, and teaching when the problem requires it.', 'Leadership shows up in the way a team gets clarity, makes a decision, and keeps moving. The recommendations on this site are the evidence; the projects are the current practice.'], short: 'The short version', shortHeading: 'Judgment is a technical skill.', experience: 'A working range', experienceNote: 'Not a skills wall. These are the kinds of boundaries I am comfortable crossing.', links: 'Public coordinates', linksHeading: 'Go to the source.', linksNote: 'The public work lives outside this page.', github: 'GitHub profile', linkedin: 'LinkedIn profile', teaching: 'Teaching / Conhecendo IA' } : { title: 'Sobre', intro: 'Construo onde software, dados e restrições de produto se encontram.', body: ['Há três décadas entrego sistemas de produção em bancos, seguros, telecom e governo. Essa história é menos um troféu do que um filtro: ela torna mais difícil defender abstração desnecessária, demo frágil e arquitetura desconectada do negócio.', 'Hoje trabalho como desenvolvedor de software, analista de dados e builder AI-native. Transito entre mobile, backend, plataformas de dados, ferramentas para desenvolvedores, infraestrutura de edge e ensino quando o problema exige.', 'Liderança aparece na forma como um time ganha clareza, decide e continua avançando. As recomendações neste site são a evidência; os projetos são a prática atual.'], short: 'A versão curta', shortHeading: 'Julgamento é uma habilidade técnica.', experience: 'Uma amplitude de trabalho', experienceNote: 'Não é uma parede de skills. São fronteiras que consigo atravessar quando o problema pede.', links: 'Coordenadas públicas', linksHeading: 'Vá à fonte.', linksNote: 'O trabalho público vive fora desta página.', github: 'Perfil no GitHub', linkedin: 'Perfil no LinkedIn', teaching: 'Ensino / Conhecendo IA' };
+---
+
+<section class="page-intro">
+  <p class="eyebrow">MN://ABOUT</p>
+  <h1>{copy.title}</h1>
+  <p class="lede">{copy.intro}</p>
+</section>
+
+<section class="section reveal">
+  <div class="section-heading">
+    <div><p class="eyebrow">01 / {copy.short}</p><h2>{copy.shortHeading}</h2></div>
+    <p>{locale === 'en' ? 'Three decades · production systems' : 'Três décadas · sistemas de produção'}</p>
+  </div>
+  <div class="bio narrow">{copy.body.map((paragraph) => <p>{paragraph}</p>)}</div>
+</section>
+
+<section class="section reveal">
+  <div class="section-heading">
+    <div><p class="eyebrow">02 / {copy.experience}</p><h2>{locale === 'en' ? 'Boundaries I cross.' : 'Fronteiras que atravesso.'}</h2></div>
+    <p>{copy.experienceNote}</p>
+  </div>
+  <ol class="index-list range-list">
+    {range.map((item, index) => (
+      <li class="index-row range-row">
+        <span class="idx" aria-hidden="true">0{index + 1}</span>
+        <h3>{item[locale]}</h3>
+        <p>{item.note[locale]}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <div><p class="eyebrow">03 / {copy.links}</p><h2>{copy.linksHeading}</h2></div>
+    <p>{copy.linksNote}</p>
+  </div>
+  <div class="coordinates">
+    <a class="text-link" href={site.github} target="_blank" rel="noreferrer"><span>github://mneves75</span><span class="muted">{copy.github}</span></a>
+    <a class="text-link" href={site.linkedin} target="_blank" rel="noreferrer"><span>linkedin://mvneves</span><span class="muted">{copy.linkedin}</span></a>
+    <a class="text-link" href={site.teaching} target="_blank" rel="noreferrer"><span>teach://conhecendoia.com.br</span><span class="muted">{copy.teaching}</span></a>
+  </div>
+</section>
+
+<style>
+  .bio p { max-width: 68ch; margin: 0 0 1.2rem; color: var(--ink-soft); }
+  .bio p:first-child { font-size: var(--step-1); }
+  .bio p:last-child { margin-bottom: 0; }
+
+  .range-list { margin: 0; padding: 0; list-style: none; }
+  .range-row { grid-template-columns: 2.5rem minmax(0, 15rem) minmax(0, 1fr); }
+  .range-row h3 { margin: 0; font-size: var(--step-1); letter-spacing: -.035em; }
+  .range-row p { margin: 0; color: var(--ink-soft); }
+
+  .coordinates { display: grid; max-width: 46rem; }
+  .coordinates .text-link .muted { margin-left: auto; }
+
+  @media (max-width: 700px) {
+    .range-row { grid-template-columns: 2.2rem minmax(0, 1fr); }
+    .range-row p { grid-column: 2; }
+    .coordinates .text-link { flex-wrap: wrap; gap: .3rem .8rem; }
+    .coordinates .text-link .muted { margin-left: 0; }
+  }
+</style>

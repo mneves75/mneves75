@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#101212"/>
+  <path d="M0 455h250l72-180h246l70 225h262l77-128h223" fill="none" stroke="#343a38" stroke-width="2"/>
+  <path d="M0 455h250l72-180h246l70 225h262l77-128h223" fill="none" stroke="#ff6b35" stroke-width="2" stroke-dasharray="2 10"/>
+  <g fill="#ff6b35"><circle cx="250" cy="455" r="8"/><circle cx="638" cy="500" r="8"/><circle cx="900" cy="372" r="8"/></g>
+  <text x="80" y="120" fill="#a7aaa1" font-family="monospace" font-size="20" letter-spacing="4">MARCUS NEVES / SOFTWARE · DATA · AI</text>
+  <text x="80" y="238" fill="#f1ede4" font-family="Arial, sans-serif" font-size="72" font-weight="600" letter-spacing="-4">Three decades shipping</text>
+  <text x="80" y="322" fill="#f1ede4" font-family="Arial, sans-serif" font-size="72" font-weight="600" letter-spacing="-4">production systems.</text>
+  <text x="80" y="410" fill="#ff6b35" font-family="Arial, sans-serif" font-size="72" font-weight="600" letter-spacing="-4">Now building AI-native software.</text>
+  <text x="80" y="570" fill="#a7aaa1" font-family="monospace" font-size="16" letter-spacing="2">MVNEVES.DEV</text>
+</svg>

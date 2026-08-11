@@ -1,0 +1,73 @@
+---
+import type { Locale, Project } from '../data/site';
+import { categoryLabels, href } from '../data/site';
+
+interface Props { project: Project; locale: Locale; index: number; }
+const { project, locale, index } = Astro.props;
+const url = href(locale, `/work/${project.slug}/`);
+---
+
+<article class="project-row" data-project-row data-category={project.category}>
+  <span class="idx" aria-hidden="true">{String(index).padStart(2, '0')}</span>
+  <a class="project-image" href={url} tabindex="-1" aria-hidden="true">
+    <img src={project.image} alt={project.alt[locale]} width="640" height="360" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
+  </a>
+  <div class="project-copy">
+    <p class="row-kicker label-mono">{project.kicker[locale]}</p>
+    <h3><a href={url}>{project.title}</a></h3>
+    <p>{project.summary[locale]}</p>
+  </div>
+  <div class="project-taxonomy">
+    <p class="label-mono">{categoryLabels[project.category][locale]}</p>
+    <p class="label-mono stack">{project.stack.join(' · ')}</p>
+  </div>
+  <p class="project-status label-mono">{project.status[locale]}<span class="row-arrow" aria-hidden="true">↗</span></p>
+</article>
+
+<style>
+  .project-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.6rem 7.5rem minmax(0, 1fr) minmax(8rem, 12rem) minmax(7rem, 10rem);
+    gap: 1.4rem;
+    align-items: start;
+    border-bottom: 1px solid var(--line);
+    padding-block: 1.5rem;
+    transition: background var(--t-fast), padding var(--t-fast);
+  }
+  .project-row[data-hidden='true'] { display: none; }
+  .project-row:has(a:hover), .project-row:has(a:focus-visible) { background: var(--paper-soft); padding-inline: .85rem; }
+
+  .idx { padding-top: .3rem; }
+
+  .project-image { display: block; overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); }
+  .project-image img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; filter: grayscale(1) contrast(1.04); transition: filter var(--t-med); }
+  .project-row:has(a:hover) .project-image img, .project-row:has(a:focus-visible) .project-image img { filter: none; }
+
+  .project-copy { display: grid; gap: .4rem; min-width: 0; }
+  .row-kicker { margin: 0; color: var(--signal-text); font-size: .66rem; }
+  .project-copy h3 { margin: 0; font-size: var(--step-1); letter-spacing: -.03em; }
+  .project-copy h3 a { display: inline-block; overflow-wrap: anywhere; }
+  .project-row:has(h3 a:hover) h3 a, .project-copy h3 a:focus-visible { color: var(--signal-text); }
+  .project-copy p { margin: 0; max-width: 46ch; color: var(--muted); font-size: var(--step--1); }
+
+  .project-taxonomy { display: grid; gap: .35rem; min-width: 0; }
+  .project-taxonomy p { margin: 0; overflow-wrap: anywhere; }
+  .project-taxonomy .stack { color: var(--ink-soft); text-transform: none; letter-spacing: .02em; }
+
+  .project-status { display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; margin: 0; text-align: right; }
+  .row-arrow { color: var(--muted); font-family: var(--mono); transition: color var(--t-fast), transform var(--t-fast); }
+  .project-row:has(a:hover) .row-arrow { color: var(--signal-text); transform: translate(3px, -3px); }
+
+  @media (max-width: 920px) {
+    .project-row { grid-template-columns: 2.2rem 6rem minmax(0, 1fr); gap: 1rem; }
+    .project-taxonomy, .project-status { grid-column: 3; }
+    .project-status { flex-direction: row; align-items: baseline; justify-content: flex-start; gap: .7rem; text-align: left; }
+  }
+  @media (max-width: 700px) {
+    .project-row { grid-template-columns: 2.2rem minmax(0, 1fr); }
+    .project-image { grid-column: 2; max-width: 12rem; }
+    .project-copy, .project-taxonomy, .project-status { grid-column: 2; }
+    .project-copy p { max-width: none; }
+  }
+</style>
