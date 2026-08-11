@@ -32,6 +32,11 @@ const work = readFileSync(join(root, 'work', 'index.html'), 'utf8');
 const ptWork = readFileSync(join(root, 'pt-br', 'work', 'index.html'), 'utf8');
 const bolao = readFileSync(join(root, 'work', 'bolao-2026', 'index.html'), 'utf8');
 const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
+const headers = readFileSync(join(root, '_headers'), 'utf8');
+// Security headers are invisible until production serves them; assert them here, not in review.
+for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'"]) {
+  assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
+}
 assert.match(home, /Three decades shipping/);
 assert.match(home, /data-theme-toggle/);
 assert.match(home, /command-palette/);
