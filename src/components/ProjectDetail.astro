@@ -1,0 +1,107 @@
+---
+import ProjectDiagram from './ProjectDiagram.astro';
+import { categoryLabels, href, type Locale, type Project } from '../data/site';
+
+interface Props { locale: Locale; project: Project; }
+const { locale, project } = Astro.props;
+const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', next: 'Next route', open: 'Open another project' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', next: 'Próxima rota', open: 'Abrir outro projeto' };
+const diagramLabels: Record<string, string> = locale === 'pt' ? {
+  prompt: 'prompt', 'DNS TXT': 'DNS TXT', resolver: 'resolver', 'LLM reply': 'resposta do LLM',
+  iPhone: 'iPhone', HealthKit: 'HealthKit', 'local network': 'rede local', Mac: 'Mac',
+  filesystem: 'sistema de arquivos', 'incremental index': 'índice incremental', 'SQLite FTS5': 'SQLite FTS5', 'BM25 results': 'resultados BM25',
+  'profile label': 'rótulo do perfil', CODEX_HOME: 'CODEX_HOME', 'read-only status': 'status somente leitura', 'explicit launch': 'inicialização explícita',
+  concept: 'conceito', lab: 'laboratório', evidence: 'evidência',
+  'procedural scene': 'cena procedural', 'CRT signal': 'sinal CRT', emulator: 'emulador', 'user-owned ROM': 'ROM do usuário',
+  'project config': 'configuração do projeto', account_id: 'account_id', 'Keychain token': 'token do Keychain', guard: 'guarda',
+  'official API': 'API oficial', 'local data': 'dados locais', statistics: 'estatística', 'honest limits': 'limites honestos',
+  'public portfolio listing': 'listagem pública do portfólio', 'verified source link': 'fonte verificada', 'case study pending': 'case study pendente',
+} : {};
+const blocks = project.caseStudyPending ? [] : [
+  { label: copy.problem, text: project.problem[locale] },
+  { label: copy.constraint, text: project.constraint[locale] },
+  { label: copy.approach, text: project.approach[locale] },
+  { label: copy.outcome, text: project.outcome[locale] },
+];
+---
+
+<section class="detail-hero">
+  <p class="eyebrow">{`MN://WORK/${project.slug}`}</p>
+  <h1>{project.title}</h1>
+  <p class="detail-summary">{project.summary[locale]}</p>
+  <p class="detail-meta label-mono"><span>{project.kicker[locale]}</span><span>{categoryLabels[project.category][locale]}</span><span>{project.status[locale]}</span></p>
+  <ul class="stack-chips" aria-label="Stack">
+    {project.stack.map((item) => <li>{item}</li>)}
+  </ul>
+  <figure class="detail-media reveal"><img src={project.image} alt={project.alt[locale]} width="1280" height="680" fetchpriority="high" decoding="async" /></figure>
+  <div class="page-actions"><a class="text-link" href={href(locale, '/work/')}>{copy.back}</a></div>
+</section>
+
+<section class="detail-body section">
+  <div class="detail-content">
+    <ProjectDiagram steps={project.diagram.map((step) => diagramLabels[step] ?? step)} label={copy.route} slug={project.slug} />
+    {project.caseStudyPending ? (
+      <div class="detail-pending">
+        <p class="label-mono todo-tag">TODO</p>
+        <div><h2>{copy.pending}</h2><p>{project.caseStudyPending[locale]}</p></div>
+      </div>
+    ) : blocks.map((block) => (
+      <div class="detail-block"><h2>{block.label}</h2><p>{block.text}</p></div>
+    ))}
+  </div>
+  <aside class="detail-aside">
+    <p class="label-mono">{locale === 'en' ? 'Engineering note' : 'Nota de engenharia'}</p>
+    <p class="muted">{locale === 'en' ? 'The interesting part is not the technology. It is the boundary the technology has to respect.' : 'A parte interessante não é a tecnologia. É o limite que a tecnologia precisa respeitar.'}</p>
+    {(project.source || project.live) && <div class="external-links">
+      {project.source && <a class="text-link" href={project.source} target="_blank" rel="noreferrer">{copy.source}</a>}
+      {project.live && <a class="text-link" href={project.live} target="_blank" rel="noreferrer">{copy.live}</a>}
+    </div>}
+  </aside>
+</section>
+
+<section class="section">
+  <div class="section-heading"><div><p class="eyebrow">{copy.next}</p><h2>{copy.open}</h2></div><p>{locale === 'en' ? 'The index is the wider system.' : 'O índice é o sistema maior.'}</p></div>
+  <div class="page-actions"><a class="button" href={href(locale, '/work/')}>{copy.open}</a></div>
+</section>
+
+<style>
+  .detail-hero { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
+  .detail-hero h1 { max-width: 16ch; margin: .9rem 0 0; overflow-wrap: anywhere; font-size: var(--step-4); font-weight: 800; letter-spacing: -.045em; line-height: .95; }
+  .detail-summary { max-width: 54ch; margin: 1.3rem 0 0; color: var(--ink-soft); font-size: var(--step-1); }
+  .detail-meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: 1.6rem 0 0; }
+  .detail-meta span + span::before { color: var(--line-strong); content: '· '; }
+
+  .stack-chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
+  .stack-chips li { border: 1px solid var(--line); padding: .3rem .55rem; color: var(--muted); font-family: var(--mono); font-size: .66rem; letter-spacing: .05em; }
+
+  .detail-media { overflow: hidden; border: 1px solid var(--line); background: var(--paper-soft); margin: 2.4rem 0 0; padding: .5rem; }
+  .detail-media img { width: 100%; height: auto; filter: grayscale(.55); transition: filter var(--t-med); }
+  .detail-media:hover img { filter: none; }
+
+  .detail-body { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: clamp(1.8rem, 5vw, 4rem); align-items: start; }
+  .detail-content { min-width: 0; }
+
+  .detail-block { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1.2rem 1.6rem; border-bottom: 1px solid var(--line); padding-block: 1.9rem; }
+  .detail-block:first-of-type { border-top: 1px solid var(--line); margin-top: 2.6rem; }
+  .detail-block h2 { margin: 0; color: var(--signal-text); font-family: var(--mono); font-size: .72rem; font-weight: 400; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+  .detail-block p { max-width: 68ch; margin: 0; color: var(--ink-soft); }
+
+  .detail-pending { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.2rem; border: 1px solid var(--line-strong); background: var(--paper-soft); margin-top: 2.6rem; padding: 1.4rem; }
+  .todo-tag { border: 1px solid var(--signal-text); margin: 0; padding: .2rem .45rem; color: var(--signal-text); }
+  .detail-pending h2 { margin: 0 0 .6rem; font-size: var(--step-0); letter-spacing: -.01em; }
+  .detail-pending p { max-width: 68ch; margin: 0; color: var(--ink-soft); }
+
+  .detail-aside { position: sticky; top: 5.5rem; display: grid; gap: .8rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  .detail-aside p { max-width: 34ch; margin: 0; font-size: var(--step--1); }
+  .external-links { display: grid; margin-top: .6rem; }
+
+  @media (max-width: 920px) {
+    .detail-body { grid-template-columns: minmax(0, 1fr); }
+    .detail-aside { position: static; }
+  }
+  @media (max-width: 700px) {
+    .detail-hero h1 { max-width: 100%; font-size: clamp(2rem, 10vw, 4.4rem); }
+    .detail-block { grid-template-columns: minmax(0, 1fr); gap: .7rem; }
+    .detail-pending { grid-template-columns: minmax(0, 1fr); }
+    .todo-tag { justify-self: start; }
+  }
+</style>

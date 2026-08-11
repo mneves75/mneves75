@@ -1,0 +1,12 @@
+{
+  "name": "Marcus Neves — Software · Data · AI",
+  "short_name": "Marcus Neves",
+  "start_url": "/",
+  "display": "minimal-ui",
+  "background_color": "#f0eee9",
+  "theme_color": "#f0eee9",
+  "description": "Three decades shipping production systems. Now building AI-native software.",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

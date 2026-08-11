@@ -1,0 +1,19 @@
+---
+interface Props {
+  variant?: 'hero' | 'detail' | 'footer';
+}
+const { variant = 'hero' } = Astro.props;
+---
+
+<svg class={`signal-trace signal-trace--${variant}`} viewBox="0 0 1200 160" role="img" aria-label="Signal trace connecting the page sections">
+  <path class="trace-solid" d="M0 92H180L235 38H410L465 115H650L705 70H865L920 128H1200" />
+  <path class="trace" d="M0 92H180L235 38H410L465 115H650L705 70H865L920 128H1200" />
+  <circle class="node" cx="180" cy="92" r="6" />
+  <circle class="node-core" cx="180" cy="92" r="2.6" />
+  <circle class="node" cx="465" cy="115" r="6" />
+  <circle class="node-core" cx="465" cy="115" r="2.6" />
+  <circle class="node" cx="705" cy="70" r="6" />
+  <circle class="node-core" cx="705" cy="70" r="2.6" />
+  <circle class="node" cx="920" cy="128" r="6" />
+  <circle class="node-core" cx="920" cy="128" r="2.6" />
+</svg>

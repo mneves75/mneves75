@@ -1,0 +1,138 @@
+---
+import ProjectRow from './ProjectRow.astro';
+import { projects, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en' ? {
+  title: 'Work',
+  intro: 'A source-backed index of software, data, AI, and experiments built under real constraints.',
+  all: 'All',
+  filters: {
+    'AI systems': 'AI systems',
+    'Privacy / local-first': 'Privacy / local-first',
+    'Developer tools': 'Developer tools',
+    'Data / analytics': 'Data / analytics',
+    'Creative engineering': 'Creative engineering',
+    'Web apps': 'Web apps',
+    'Mobile apps': 'Mobile apps',
+    Promotional: 'Promotional',
+  },
+  note: 'Filter the index, then open the source or the constraint.',
+  entries: 'entries indexed',
+} : {
+  title: 'Trabalho',
+  intro: 'Um índice com fontes verificadas: software, dados, IA e experimentos construídos sob restrições reais.',
+  all: 'Todos',
+  filters: {
+    'AI systems': 'Sistemas de IA',
+    'Privacy / local-first': 'Privacidade / local-first',
+    'Developer tools': 'Ferramentas dev',
+    'Data / analytics': 'Dados / analytics',
+    'Creative engineering': 'Engenharia criativa',
+    'Web apps': 'Apps web',
+    'Mobile apps': 'Apps mobile',
+    Promotional: 'Promocional',
+  },
+  note: 'Filtre o índice e abra a fonte ou a restrição.',
+  entries: 'entradas indexadas',
+};
+const categories = Object.keys(copy.filters) as Array<keyof typeof copy.filters>;
+const counts = projects.reduce<Record<string, number>>((totals, project) => {
+  totals[project.category] = (totals[project.category] ?? 0) + 1;
+  return totals;
+}, {});
+---
+
+<section class="page-intro">
+  <p class="eyebrow">MN://WORK</p>
+  <h1>{copy.title}</h1>
+  <p class="lede">{copy.intro}</p>
+  <p class="index-count label-mono">[<span data-countup={projects.length}>{projects.length}</span>] {copy.entries}</p>
+</section>
+
+<section class="section work-index" aria-labelledby="work-index-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">{locale === 'en' ? 'Project index' : 'Índice de projetos'}</p><h2 id="work-index-title">{projects.length} {locale === 'en' ? 'routes through the work' : 'rotas pelo trabalho'}</h2></div>
+    <p>{copy.note}</p>
+  </div>
+  <div class="filter-bar" aria-label={locale === 'en' ? 'Filter projects' : 'Filtrar projetos'}>
+    <button class="filter-button" type="button" data-filter="all" aria-pressed="true">{copy.all}<span class="filter-count num-mono">{projects.length}</span></button>
+    {categories.map((category) => <button class="filter-button" type="button" data-filter={category} aria-pressed="false">{copy.filters[category]}<span class="filter-count num-mono">{counts[category] ?? 0}</span></button>)}
+  </div>
+  <div class="project-list">
+    {projects.map((project, index) => <ProjectRow project={project} locale={locale} index={index + 1} />)}
+  </div>
+</section>
+
+<section class="section repo-note reveal" aria-label={locale === 'en' ? 'Open source note' : 'Nota sobre open source'}>
+  <p class="label-mono">{locale === 'en' ? 'The source is part of the work' : 'O código faz parte do trabalho'}</p>
+  <div class="repo-note-body">
+    <h2>{locale === 'en' ? 'Open the repo when the question gets technical.' : 'Abra o repositório quando a pergunta ficar técnica.'}</h2>
+    <p class="muted narrow">{locale === 'en' ? 'Project pages keep the story short. The repositories hold the implementation details, tests, limits, and current state.' : 'As páginas mantêm a história curta. Os repositórios guardam detalhes de implementação, testes, limites e estado atual.'}</p>
+  </div>
+</section>
+
+  <script is:inline>
+  const buttons = [...document.querySelectorAll('[data-filter]')].map((element) => /** @type {HTMLButtonElement} */ (element));
+  const rows = [...document.querySelectorAll('[data-project-row]')].map((element) => /** @type {HTMLElement} */ (element));
+  buttons.forEach((button) => button.addEventListener('click', () => {
+    const filter = button.dataset.filter;
+    buttons.forEach((item) => item.setAttribute('aria-pressed', item === button ? 'true' : 'false'));
+    rows.forEach((row) => { row.dataset.hidden = filter !== 'all' && row.dataset.category !== filter ? 'true' : 'false'; });
+  }));
+</script>
+
+<style>
+  .index-count { margin: 1.6rem 0 0; }
+  .index-count span { color: var(--signal-text); }
+
+  /* Contiguous lattice: 1px gaps closed by each cell's 1px shadow ring, so a
+     trailing empty grid cell stays paper instead of a block of border colour. */
+  .filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 1px;
+    margin-bottom: 2.8rem;
+    padding: 1px;
+  }
+  .filter-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .7rem;
+    min-height: 2.75rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--paper);
+    padding: .55rem .8rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .06em;
+    line-height: 1.25;
+    text-align: left;
+    text-transform: uppercase;
+    box-shadow: 0 0 0 1px var(--line);
+    transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+  }
+  .filter-button:hover, .filter-button:focus-visible { color: var(--signal-text); box-shadow: 0 0 0 1px var(--signal); }
+  .filter-count { color: var(--signal-text); font-size: .66rem; }
+  .filter-button[aria-pressed='true'] { background: var(--ink); color: var(--paper); box-shadow: 0 0 0 1px var(--ink); }
+  .filter-button:hover, .filter-button:focus-visible, .filter-button[aria-pressed='true'] { position: relative; z-index: 1; }
+  .filter-button[aria-pressed='true'] .filter-count { color: var(--term-accent); }
+
+  .project-list { border-top: 1px solid var(--line); }
+
+  .repo-note { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 3rem); }
+  .repo-note h2 { margin: 0; font-size: var(--step-2); }
+  .repo-note p { margin: 0; }
+  .repo-note-body { display: grid; gap: 1.1rem; }
+
+  @media (max-width: 700px) {
+    .filter-bar { grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); }
+    .filter-button { font-size: .62rem; letter-spacing: .04em; }
+    .repo-note { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+import { recommendations, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en' ? { title: 'Recommendations', intro: 'External evidence from people who worked with Marcus.', count: 'quoted sources', note: 'The wording stays close to the supplied source. No carousel, no polishing.', original: 'Quoted source', heading: 'Trust, without the slogan.', todo: 'Slot 08 — source text not supplied yet. Content TODO, not a placeholder quote.' } : { title: 'Recomendações', intro: 'Evidência externa de pessoas que trabalharam com Marcus.', count: 'fontes citadas', note: 'A redação permanece próxima da fonte fornecida. Sem carrossel, sem polimento.', original: 'Fonte citada', heading: 'Confiança, sem o slogan.', todo: 'Slot 08 — texto-fonte ainda não fornecido. TODO de conteúdo, não um depoimento inventado.' };
+const pad = (value: number) => String(value).padStart(2, '0');
+---
+
+<section class="page-intro">
+  <p class="eyebrow">MN://SIGNAL</p>
+  <h1>{copy.title}</h1>
+  <p class="lede">{copy.intro}</p>
+  <p class="label-mono count">[{pad(recommendations.length)}] {copy.count}</p>
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <div><p class="eyebrow">01 / {copy.original}</p><h2>{copy.heading}</h2></div>
+    <p>{copy.note}</p>
+  </div>
+  <div class="ledger">
+    {recommendations.map((recommendation, index) => (
+      <article class="recommendation">
+        <div class="who">
+          <span class="idx" aria-hidden="true">[{pad(index + 1)}]</span>
+          <cite>{recommendation.name}</cite>
+          <span class="label-mono">{recommendation.role[locale]}</span>
+        </div>
+        <blockquote lang={locale === 'pt' ? 'pt-BR' : 'en'}>{recommendation.quote[locale]}</blockquote>
+      </article>
+    ))}
+    <p class="todo label-mono">{copy.todo}</p>
+  </div>
+</section>
+
+<style>
+  /* "Recommendations" is longer than the shared 14ch h1 measure. */
+  .page-intro h1 { max-width: 20ch; }
+  .count { margin: 1.6rem 0 0; }
+
+  .ledger { border-top: 1px solid var(--line); }
+  .recommendation { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 1.4rem 2.4rem; border-bottom: 1px solid var(--line); padding-block: 2.4rem; }
+  .who { display: grid; align-content: start; gap: .35rem; }
+  .who cite { font-family: var(--display); font-size: var(--step-0); font-style: normal; font-weight: 700; letter-spacing: -.02em; }
+  .recommendation blockquote { position: relative; margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(1.3rem, .9rem + 1.1vw, 2rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.16; text-wrap: pretty; }
+  .recommendation blockquote::before { position: absolute; top: -.1em; left: -.62em; color: var(--signal); content: '\201C'; font-size: 1.4em; line-height: 1; }
+
+  .todo { display: block; border-bottom: 1px solid var(--line); padding-block: 1.4rem; color: var(--signal-text); text-transform: none; }
+
+  @media (max-width: 920px) {
+    .recommendation { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+    .recommendation blockquote { padding-left: .75em; }
+    .recommendation blockquote::before { top: 0; left: 0; font-size: 1.2em; }
+  }
+</style>
