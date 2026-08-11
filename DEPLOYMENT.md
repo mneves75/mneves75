@@ -84,6 +84,30 @@ Expected result: one `301` with the canonical `Location` header. Do not mutate D
 
 `public/_headers` is copied to the static output. It sets security headers, a same-origin CSP, and immutable caching for images/assets. HTML remains revalidatable at the edge; purge only if a deployment has stale HTML or an operational incident requires it.
 
+## Security posture
+
+Reviewed 2026-08-10 against the deployed site and the repository configuration.
+
+Response headers (`public/_headers`, verified served from production before the review): HSTS
+(`max-age=31536000; includeSubDomains`, added in 1.1.0 — production was serving no HSTS header),
+`X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
+`Permissions-Policy` denying camera/microphone/geolocation, `Cross-Origin-Opener-Policy: same-origin`,
+and a same-origin CSP with `frame-ancestors 'none'`, `base-uri 'self'`, and `form-action 'self'`.
+HSTS is deliberately not `preload`: preload is effectively irreversible for the apex domain.
+
+Accepted risk — `script-src`/`style-src` keep `'unsafe-inline'`. The theme-restore script must run
+before first paint to avoid a flash, and the JSON-LD block differs per page, so a hash allowlist
+cannot be expressed in a single static `_headers` file. The site takes no user input, sets no
+cookies, has no auth, loads no third-party script, and renders only compile-time content from
+`src/data/site.ts`, so there is no injection path into those inline blocks. Upgrade path if that
+ever changes: serve HTML through a Worker that injects a per-response nonce.
+
+Supply chain: both workflows pin `actions/checkout` to a commit SHA and declare least-privilege
+`permissions`; CI runs with a read-only token and `persist-credentials: false`; Dependabot watches
+GitHub Actions and the `bun` ecosystem (0 open alerts at review time). A TruffleHog
+`verified,unknown` scan over all 113 tracked and modified files returned no findings. The repository
+holds no secrets, and deployment credentials live only in the operator's local Wrangler session.
+
 ## Analytics
 
 No analytics is required for launch. If measurement becomes necessary, prefer Cloudflare Web Analytics configured at the Cloudflare dashboard. Do not add Google Analytics or a third-party script without a separate product decision and consent/privacy review.
@@ -95,5 +119,5 @@ No analytics is required for launch. If measurement becomes necessary, prefer Cl
 - [ ] Confirm custom domains and redirect rules return the expected 301/200 behavior.
 - [ ] Check `/robots.txt`, `/sitemap.xml`, canonical, hreflang, and OG metadata on both locales.
 - [ ] Run `bun run check && bun run build` from a clean checkout.
-- [ ] Confirm the generated sitemap includes all 27 project slugs in both locales.
+- [ ] Confirm the generated sitemap includes all 30 project slugs in both locales.
 - [ ] Inspect desktop and mobile screenshots after deployment.

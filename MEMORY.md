@@ -16,13 +16,13 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Fonts: latin + latin-ext subsets both vendored with `unicode-range`. The latin-ext file alone LACKS `ã ç é ·` — pt-BR silently falls back without the latin file.
 - Scroll reveals are no-JS-safe: CSS hides only `.reveal.reveal-pending` (class added by the runtime). Never hide `.reveal` directly in CSS.
 - Nav: current page = bold + 2px copper underline; hover = 1px neutral, gated `@media (hover: hover)`. They were identical once and looked like two active pages.
-- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×27, "Three decades shipping" on home, 64 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
+- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×30, "Three decades shipping" on home, 70 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
 
 ## Open items
 
 1. `www.mvneves.dev` now serves the site as a second custom domain (canonical = apex). Optional: replace with a strict 301 Redirect Rule in the dashboard; `mvneves.app → mvneves.dev` redirect still pending (separate zone).
-2. Content ceiling: 19/27 projects show visible case-study TODOs; recommendation slot 08 is a TODO. Highest-ROI next work: write 3–5 real case studies.
-3. No CI gate — `check`/`build`/`test` are manual; only the README last-seen cron exists.
+2. Content ceiling: 22/30 projects show visible case-study TODOs; recommendation slot 08 is a TODO. Highest-ROI next work: write 3–5 real case studies.
+3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
 
 ## Tooling lessons
 

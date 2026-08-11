@@ -10,7 +10,9 @@ const url = href(locale, `/work/${project.slug}/`);
 <article class="project-row" data-project-row data-category={project.category}>
   <span class="idx" aria-hidden="true">{String(index).padStart(2, '0')}</span>
   <a class="project-image" href={url} tabindex="-1" aria-hidden="true">
-    <img src={project.image} alt={project.alt[locale]} width="640" height="360" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
+    {project.image
+      ? <img src={project.image} alt={project.alt[locale]} width="640" height="360" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
+      : <span class="image-plate"><span class="plate-prompt">$</span> {project.slug}</span>}
   </a>
   <div class="project-copy">
     <p class="row-kicker label-mono">{project.kicker[locale]}</p>
@@ -43,6 +45,14 @@ const url = href(locale, `/work/${project.slug}/`);
   .project-image { display: block; overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); }
   .project-image img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; filter: grayscale(1) contrast(1.04); transition: filter var(--t-med); }
   .project-row:has(a:hover) .project-image img, .project-row:has(a:focus-visible) .project-image img { filter: none; }
+  .image-plate {
+    display: flex; align-items: center; gap: .35em;
+    aspect-ratio: 16 / 9; padding-inline: .6rem;
+    background: var(--term-bg); color: var(--term-text);
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .02em;
+    overflow-wrap: anywhere;
+  }
+  .plate-prompt { color: var(--term-cmd); }
 
   .project-copy { display: grid; gap: .4rem; min-width: 0; }
   .row-kicker { margin: 0; color: var(--signal-text); font-size: .66rem; }

@@ -4,6 +4,44 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-10
+
+### Added
+
+- Three public repositories that the work index had never cited: [`skills`](https://github.com/mneves75/skills)
+  (agent tooling), [`language-benchmarks`](https://github.com/mneves75/language-benchmarks) (OU Benchmark
+  across C, Zig, Rust, Swift, V and TypeScript), and
+  [`polymarket-analyzer`](https://github.com/mneves75/polymarket-analyzer) (realtime TUI over Polymarket
+  public APIs). The index now lists 30 projects and 14 public repositories.
+- `src/pages/sitemap.xml.ts` generates the sitemap from `src/data/site.ts`.
+
+### Changed
+
+- `WeatherSunscreen` now links its public repository and counts as open source; its stack reflects the
+  React Native / Expo source rather than a generic mobile listing.
+- `Project.image` is optional. Entries without a verified capture render a terminal plate
+  (`$ <slug>` in the index, `$ gh repo view <owner>/<repo>` on the detail page) instead of borrowing an
+  unrelated image.
+
+### Security
+
+- Added `Strict-Transport-Security: max-age=31536000; includeSubDomains`. Production was serving no
+  HSTS header, so a first plain-HTTP request to the apex was downgradeable. `preload` is deliberately
+  omitted. The rest of the review, including the accepted `'unsafe-inline'` CSP risk and its upgrade
+  path, is documented under "Security posture" in `DEPLOYMENT.md`.
+
+### Fixed
+
+- The sitemap was a hand-maintained `public/sitemap.xml`, so any new project was silently absent from it.
+  It is generated now, and the route smoke test asserts 70 URLs.
+
+### Verification
+
+- `bun run check` — 0 errors, 0 warnings, 0 hints.
+- `bun run build` — 71 static pages.
+- `bun run test` — 71 route outputs, 30 project rows per locale, 70 sitemap URLs.
+- Real-UI pass with agent-browser: work index at 1440px, project detail at 1440px (pt-BR) and 390px (en).
+
 ## [1.0.0] - 2026-08-10
 
 First tagged release. The repository holds two things: the GitHub profile README rendered at
