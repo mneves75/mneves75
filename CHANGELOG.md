@@ -4,6 +4,14 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-08-10
+
+### Fixed
+
+- The terminal plate on an image-less project page centred the `$` prompt against the whole block, so
+  at 390px the prompt floated between the two wrapped lines of the command. It now aligns to the
+  first line.
+
 ## [1.1.0] - 2026-08-10
 
 ### Added
