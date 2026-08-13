@@ -4,7 +4,20 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.1] - Unreleased
+## [1.2.1] - 2026-08-13
+
+### Fixed
+
+- Home masthead `MARCUS NEVES` was sized with `vw` while sitting in the 1160px page
+  column, so the last `S` clipped on desktop. It now sizes from the column (`cqi`).
+  The scroll-driven `font-stretch` animation is gone; it widened the name past the box.
+
+### Verification
+
+- `bun run check` — 0 errors, 0 warnings, 0 hints.
+- `bun run test` — 73 route outputs.
+- Live measure at 1440px on staging and production: text 1025px in 1064px available.
+- Screenshots at 1440 / 1100 / 1920 / 700 / 390.
 
 ## [1.2.0] - 2026-08-11
 

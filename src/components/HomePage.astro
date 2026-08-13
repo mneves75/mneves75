@@ -233,11 +233,11 @@ const copy = locale === 'en' ? {
   .stat-num { font-family: var(--mono); font-size: clamp(2rem, 3.6vw, 3.2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1; color: var(--ink); }
 
   /* Masthead band — full-bleed name + discipline marquee. */
-  .masthead-band { margin-inline: calc(var(--gutter) * -1); overflow: hidden; border-bottom: 1px solid var(--line); padding-top: clamp(2rem, 5vw, 3.5rem); }
+  .masthead-band { container-type: inline-size; margin-inline: calc(var(--gutter) * -1); overflow: hidden; border-bottom: 1px solid var(--line); padding-top: clamp(2rem, 5vw, 3.5rem); }
   .mn-masthead {
     padding-inline: var(--gutter);
     font-family: var(--display);
-    font-size: clamp(2.8rem, 10.4vw, 10.5rem);
+    font-size: clamp(2rem, 10.6cqi, 8.5rem);
     font-stretch: 100%;
     font-weight: 900;
     letter-spacing: -.04em;
@@ -313,16 +313,6 @@ const copy = locale === 'en' ? {
   html[data-motion='on'] .page-home .hero-term { animation: mn-hero-enter 700ms var(--ease-out) 250ms both; }
   html[data-motion='on'] .page-home .stat-rail { animation: mn-hero-enter 600ms var(--ease-out) 380ms both; }
   @keyframes mn-hero-enter { from { opacity: 0; transform: translateY(1rem); } }
-
-  /* Kinetic masthead: variable-font width rides the scroll (native SDA only). */
-  @supports (animation-timeline: view()) {
-    html[data-motion='on'] .mn-masthead {
-      animation: mn-masthead-stretch 1ms linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-  }
-  @keyframes mn-masthead-stretch { from { font-stretch: 80%; } to { font-stretch: 125%; } }
 
   html[data-motion='on'] .page-home .marquee-track { animation: mn-marquee 34s linear infinite; }
   .page-home .marquee:hover .marquee-track { animation-play-state: paused; }
