@@ -39,14 +39,14 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
-- Worker version: `d0edd9c8-ad6e-4048-8d3e-775493fab25b` (1.2.1; routes override active — workers.dev only)
+- Worker version: `e925b458-4e17-45f1-b66f-a9b9dd1855f8` (1.2.2; routes override active — workers.dev only)
 - Published command observed: `2026-08-13`.
-- Remote smoke verified: home masthead at 1440px measured 1025px in 1064px available (`fits: true`). Cache-bust the first probe — a stale edge HIT can lag a minute after deploy.
+- Remote smoke verified: `/pt-br/` 200; published `HomePage.BNJUyL6M.css` contains the hero wrap rules. Cache-bust the first probe — a stale edge HIT can lag a minute after deploy.
 
 ### Latest production evidence
 
 - Published URLs: `https://mvneves.dev` (custom domain) and `https://mvneves-dev.mvneves.workers.dev`
-- Worker version: `6673aeac-d407-4075-be25-33fa4a02576b` (1.2.1, 2026-08-13) — home masthead at 1440px measured 1025px in 1064px available (`fits: true`); custom domains `mvneves.dev` and `www.mvneves.dev` still attached. A stale edge-cache HIT can lag a minute after deploy.
+- Worker version: `4e0cfdbb-23b0-4fca-ada6-840feea0ae7c` (1.2.2, 2026-08-13) — hero decoder wraps in the copy column; custom domains `mvneves.dev` and `www.mvneves.dev` still attached. A stale edge-cache HIT can lag a minute after deploy.
 - Both `mvneves.dev` and `www.mvneves.dev` custom domains are attached declaratively via `routes` (`custom_domain: true`) in `wrangler.jsonc` — Wrangler provisions DNS records and certificates on deploy. Neither hostname had a DNS record before 2026-08-10.
 - Remote smoke verified on both hostnames: `/`, `/pt-br/`, `/work/` 200, unknown route 404 (apex), pt-BR copy and `og-image-pt.png` served over valid TLS. `www` serves the same assets; every page's canonical URL points at the apex, so search engines consolidate on `mvneves.dev`.
 - Optional dashboard follow-ups (Redirect Rules): replace the `www` custom domain with a strict `www → apex` 301, and add `mvneves.app → mvneves.dev` (that zone is not managed by this Worker config).

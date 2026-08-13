@@ -4,6 +4,22 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2026-08-13
+
+### Fixed
+
+- Home hero decoder reserved `18ch` (`software AI-native`) as `inline-block` plus a scripted
+  `minWidth`, so the copper phrase overflowed the copy column and sat under the terminal.
+  The phrase now wraps in the column; the JS width reservation is gone.
+
+### Verification
+
+- `bun run check` — 0 errors, 0 warnings, 0 hints.
+- `bun run test` — 73 route outputs.
+- autoreview `--mode local` — clean.
+- Staging `e925b458-4e17-45f1-b66f-a9b9dd1855f8` then production `4e0cfdbb-23b0-4fca-ada6-840feea0ae7c`.
+  Apex and www `/pt-br/` 200; published CSS has `.hero-copy { min-width: 0 }` and `.decoder { display: block }`.
+
 ## [1.2.1] - 2026-08-13
 
 ### Fixed

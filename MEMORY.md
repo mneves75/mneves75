@@ -4,7 +4,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-08-13)
 
-- **1.2.1 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `6673aeac-d407-4075-be25-33fa4a02576b`) and staging (`d0edd9c8-ad6e-4048-8d3e-775493fab25b`). Masthead name now sizes from the page column (`cqi`), not the viewport. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
+- **1.2.2 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `4e0cfdbb-23b0-4fca-ada6-840feea0ae7c`) and staging (`e925b458-4e17-45f1-b66f-a9b9dd1855f8`). Hero decoder wraps in the copy column instead of sitting under the terminal. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
 - Tree committed and pushed 2026-08-13.
 
 ## Key decisions + why

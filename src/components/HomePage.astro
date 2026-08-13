@@ -214,10 +214,11 @@ const copy = locale === 'en' ? {
   }
   .hero:hover::after { opacity: 1; }
   .hero-copy, .hero-term, .stat-rail { position: relative; }
+  .hero-copy { min-width: 0; }
   .hero h1 { margin: 1.1rem 0 0; font-size: var(--step-3); font-weight: 800; letter-spacing: -.045em; line-height: .98; }
   .hero h1 .statement { display: block; max-width: 16ch; }
   .hero h1 .building { display: block; margin-top: .35em; }
-  .decoder { display: inline-block; color: var(--signal-text); font-variant-numeric: tabular-nums; }
+  .decoder { display: block; max-width: 100%; color: var(--signal-text); overflow-wrap: break-word; }
   .hero-lede { max-width: 46ch; margin: 1.5rem 0 0; color: var(--ink-soft); font-size: var(--step-1); }
   .cta-row { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem; }
 

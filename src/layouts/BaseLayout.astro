@@ -235,7 +235,6 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
         if (words.length < 2) return;
         if (reducedMotion) { el.textContent = words[0] ?? ''; return; }
         let i = 0;
-        el.style.minWidth = `${Math.max(...words.map((w) => w.length))}ch`;
         setInterval(() => {
           i = (i + 1) % words.length;
           scrambleTo(el, words[i] ?? '');
