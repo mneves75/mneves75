@@ -12,7 +12,7 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 
 | Project | What it does | Why it matters |
 |---------|--------------|----------------|
-| [hay](https://github.com/mneves75/hay) | Ranked grep for coding agents — rg's exact matches, reordered so the declaration comes first | Agents read page one. Now page one has the answer. |
+| [hay](https://mneves75.github.io/hay/) | Ranked grep for coding agents — rg's exact matches, reordered so the declaration comes first | Agents read page one. Now page one has the answer. |
 | [DNSChat](https://github.com/mneves75/dnschat) | LLM chat over DNS queries | Sometimes the constraint is the feature |
 | [Open Profile Manager](https://mneves75.github.io/open-profile-manager/) | Local-first Codex profile launcher for macOS | Separate accounts, explicit control, no token handling |
 | [MSX Expert XP-800](https://github.com/mneves75/msx-expert-xp800) · [Live demo](https://msx-expert-xp800.mvneves.workers.dev) | Interactive 3D replica of Brazil's 1985 Gradiente Expert, with a working MSX emulator on a period CRT | Procedural Three.js, an original Z80 game, and user-owned ROMs that never leave the browser |
