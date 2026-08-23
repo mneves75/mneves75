@@ -12,6 +12,7 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 
 | Project | What it does | Why it matters |
 |---------|--------------|----------------|
+| [devtrim](https://mneves75.github.io/devtrim/) | Safe disk hygiene for macOS developer machines: measure, classify, trim with danger-scored guardrails and Trash-first deletion | Reclaimed 250+ GB on my own machine before anyone else ran it |
 | [hay](https://mneves75.github.io/hay/) | Ranked grep for coding agents — rg's exact matches, reordered so the declaration comes first | Agents read page one. Now page one has the answer. |
 | [DNSChat](https://github.com/mneves75/dnschat) | LLM chat over DNS queries | Sometimes the constraint is the feature |
 | [Open Profile Manager](https://mneves75.github.io/open-profile-manager/) | Local-first Codex profile launcher for macOS | Separate accounts, explicit control, no token handling |
