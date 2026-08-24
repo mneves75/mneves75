@@ -4,7 +4,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-08-24)
 
-- **1.3.0** adds `hay` + `devtrim` (33 projects) and a hashed CSP (`scripts/csp-headers.mjs` runs after `astro build`; `script-src` has no `'unsafe-inline'`). Any new inline `<script>` changes the hash set automatically; an inline `style=` attribute would fail the route test. Local `wrangler dev` needs `wrangler@latest` (the pinned workerd rejects compatibility_date 2026-08-09).
+- **1.3.0 is LIVE in production** (Worker `e29dd7d5-c220-43a7-ab8d-da719ea1a7e9`, tag `v1.3.0`; staging `e0c15609…`, tag `v1.3.0-beta2`). Adds `hay` + `devtrim` (33 projects) and a hashed CSP (`scripts/csp-headers.mjs` runs after `astro build`; `script-src` has no `'unsafe-inline'`). Any new inline `<script>` changes the hash set automatically; an inline `style=` attribute would fail the route test. Local `wrangler dev` needs `wrangler@latest` (the pinned workerd rejects compatibility_date 2026-08-09).
+- Lesson: `git commit -- <paths>` with an untracked path in the list fails as a whole; the follow-on `git push` then pushed nothing and the beta tag landed on the old HEAD (deleted, retagged beta2). Always `git add` new files first and check `git log -1` before tagging.
 - Remote history was rewritten 2026-08-19 (public-repo cleanup); local `main` was realigned to `origin/main` on 2026-08-24 (old history kept at `backup/main-pre-rewrite-2026-08-24`).
 
 ## Previous state (2026-08-13)

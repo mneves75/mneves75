@@ -4,6 +4,8 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.3.0] - 2026-08-24
 
 ### Added
@@ -31,6 +33,10 @@ All notable changes to this repository are documented here. The format follows
 - `bun run test` — 77 route outputs; 33 projects in both locales; 76 sitemap URLs.
 - `wrangler dev` with the built `_headers`: theme toggle, `mn` terminal, work filters and the
   hay/devtrim pages work under the hashed policy; positive control per hash.
+- Staging `e0c15609-0381-49dc-9d65-3be4069904a7` (tag `v1.3.0-beta2`) then production
+  `e29dd7d5-c220-43a7-ab8d-da719ea1a7e9` (tag `v1.3.0`), both from `e890e460`. Apex and www: `/`,
+  `/work/hay/`, `/pt-br/work/devtrim/` 200, unknown route 404, hashed `script-src` served, 76 sitemap
+  URLs, 33 work rows. CI green on the same commit.
 
 ## [1.2.2] - 2026-08-13
 
