@@ -12,7 +12,7 @@ Personal site for **Marcus Neves** — software, data, and AI built for real-wor
 
 - English homepage at [`/`](https://mvneves.dev/)
 - Brazilian Portuguese at [`/pt-br/`](https://mvneves.dev/pt-br/)
-- Source-backed work index with 31 typed project detail pages, every one carrying a written case study
+- Source-backed work index with 33 typed project detail pages, every one carrying a written case study
 - About, recommendations, contact, robots, Cloudflare headers, and a `sitemap.xml` generated from `src/data/site.ts`
 - Local project content in `src/data/site.ts`
 - Impeccable design contract in [`DESIGN.md`](../DESIGN.md)

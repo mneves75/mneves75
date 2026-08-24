@@ -16,9 +16,10 @@ The production artifact is `dist/`. No API key, database, server runtime, or bui
 1. Authenticate Wrangler in the intended Cloudflare account: `wrangler login`.
 2. Confirm the target account and project name before deploying: `wrangler whoami`.
 3. Build: `bun run build`.
-4. Deploy the production static asset Worker explicitly: `wrangler deploy --env="" --config wrangler.jsonc`.
-5. In Cloudflare dashboard, add `mvneves.dev` under **Workers & Pages → mvneves-dev → Settings → Domains & Routes → Custom Domains**.
-6. Confirm the domain serves `/`, `/work/`, `/pt-br/`, and a newly added portfolio detail route such as `/work/bolao-2026/` before changing redirects.
+4. `bun run build` also runs `scripts/csp-headers.mjs`, which replaces `script-src 'unsafe-inline'` in `dist/_headers` with sha256 hashes of the inline scripts in the built HTML. Never deploy a `dist/` built any other way; `bun run test` asserts the hashed policy.
+5. Deploy the production static asset Worker explicitly: `wrangler deploy --env="" --config wrangler.jsonc`.
+6. In Cloudflare dashboard, add `mvneves.dev` under **Workers & Pages → mvneves-dev → Settings → Domains & Routes → Custom Domains**.
+7. Confirm the domain serves `/`, `/work/`, `/pt-br/`, and a newly added portfolio detail route such as `/work/bolao-2026/` before changing redirects.
 
 `wrangler.jsonc` intentionally has no account ID or secret. Do not add tokens to the repository or client bundle.
 
@@ -119,5 +120,5 @@ No analytics is required for launch. If measurement becomes necessary, prefer Cl
 - [ ] Confirm custom domains and redirect rules return the expected 301/200 behavior.
 - [ ] Check `/robots.txt`, `/sitemap.xml`, canonical, hreflang, and OG metadata on both locales.
 - [ ] Run `bun run check && bun run build` from a clean checkout.
-- [ ] Confirm the generated sitemap includes all 31 project slugs in both locales.
+- [ ] Confirm the generated sitemap includes all 33 project slugs in both locales.
 - [ ] Inspect desktop and mobile screenshots after deployment.

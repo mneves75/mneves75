@@ -4,6 +4,34 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-08-24
+
+### Added
+
+- [`hay`](https://github.com/mneves75/hay) — a ranked grep for coding agents, with the paired
+  evaluation numbers (MRR 0.266 → 0.404 over 951 queries) and the 25% per-query regression rate
+  taken from the README, negative result included. Featured on the home page.
+- [`devtrim`](https://github.com/mneves75/devtrim) — fail-closed disk hygiene for macOS developer
+  machines, written from the README's safety model. 33 projects, 17 public repositories.
+
+### Security
+
+- `Content-Security-Policy` no longer allows `script-src 'unsafe-inline'`. A post-build step
+  (`scripts/csp-headers.mjs`) hashes the three inline scripts Astro emits and writes them into
+  `dist/_headers`; the route test fails if `'unsafe-inline'` ever returns to `script-src`.
+  Each hash was proven live: corrupting it stops exactly the script it covers.
+- Added `object-src 'none'` and `upgrade-insecure-requests`.
+- The hidden terminal's only inline `style=` attribute became a `.sr-only` class, so the page has
+  no inline style attributes to justify relaxing `style-src-attr` later.
+- The terminal echo now escapes `&` as well as `<`.
+
+### Verification
+
+- `bun run check` — 0 errors, 0 warnings, 0 hints.
+- `bun run test` — 77 route outputs; 33 projects in both locales; 76 sitemap URLs.
+- `wrangler dev` with the built `_headers`: theme toggle, `mn` terminal, work filters and the
+  hay/devtrim pages work under the hashed policy; positive control per hash.
+
 ## [1.2.2] - 2026-08-13
 
 ### Fixed

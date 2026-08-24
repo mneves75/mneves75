@@ -2,7 +2,12 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-08-13)
+## Current state (2026-08-24)
+
+- **1.3.0** adds `hay` + `devtrim` (33 projects) and a hashed CSP (`scripts/csp-headers.mjs` runs after `astro build`; `script-src` has no `'unsafe-inline'`). Any new inline `<script>` changes the hash set automatically; an inline `style=` attribute would fail the route test. Local `wrangler dev` needs `wrangler@latest` (the pinned workerd rejects compatibility_date 2026-08-09).
+- Remote history was rewritten 2026-08-19 (public-repo cleanup); local `main` was realigned to `origin/main` on 2026-08-24 (old history kept at `backup/main-pre-rewrite-2026-08-24`).
+
+## Previous state (2026-08-13)
 
 - **1.2.2 is LIVE in production** at https://mvneves.dev (Worker `mvneves-dev`, version `4e0cfdbb-23b0-4fca-ada6-840feea0ae7c`) and staging (`e925b458-4e17-45f1-b66f-a9b9dd1855f8`). Hero decoder wraps in the copy column instead of sitting under the terminal. Design contract: `DESIGN.md` v3; evidence: `CHANGELOG.md` + `DEPLOYMENT.md`.
 - Tree committed and pushed 2026-08-13.
@@ -16,7 +21,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Fonts: latin + latin-ext subsets both vendored with `unicode-range`. The latin-ext file alone LACKS `ã ç é ·` — pt-BR silently falls back without the latin file.
 - Scroll reveals are no-JS-safe: CSS hides only `.reveal.reveal-pending` (class added by the runtime). Never hide `.reveal` directly in CSS.
 - Nav: current page = bold + 2px copper underline; hover = 1px neutral, gated `@media (hover: hover)`. They were identical once and looked like two active pages.
-- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×31, "Three decades shipping" on home, 72 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
+- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×33, "Three decades shipping" on home, 76 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
 
 ## Open items
 

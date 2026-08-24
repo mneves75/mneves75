@@ -11,7 +11,7 @@ const homeHref = href(locale, '/');
 
 <div id="mn-terminal" class="mn-terminal" role="dialog" aria-modal="true" aria-label="MN://TERMINAL" data-lang={locale} data-work={workHref} data-home={homeHref} data-github={site.github} data-linkedin={site.linkedin}>
   <div class="crt-panel">
-    <p class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+    <p class="sr-only">
       {locale === 'en'
         ? 'Hidden site terminal. Type help for the command list; Esc closes.'
         : 'Terminal escondido do site. Digite help para ver os comandos; Esc fecha.'}
@@ -127,7 +127,7 @@ const homeHref = href(locale, '/');
 
   function run(raw: string) {
     const cmd = raw.trim().toLowerCase();
-    line('<span class="acc">MN://&gt;</span> ' + raw.replace(/</g, '&lt;'), 'ok');
+    line('<span class="acc">MN://&gt;</span> ' + raw.replace(/&/g, '&amp;').replace(/</g, '&lt;'), 'ok');
     if (!cmd) return;
     switch (cmd) {
       case 'help':
