@@ -6,6 +6,10 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- [Skills](https://mneves75.github.io/skills/) entry and README row rewritten for its 1.11.0 state: six skills, `npx skills` install, landing page as the live link.
+
 ## [1.3.0] - 2026-08-24
 
 ### Added

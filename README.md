@@ -22,7 +22,7 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 | [cf-toolkit](https://github.com/mneves75/cf-toolkit) | Safe multi-account Cloudflare Wrangler | Two locks so you never deploy to the wrong account |
 | [ffts-grep](https://github.com/mneves75/ffts-grep) | Fast full-text search indexer with SQLite FTS5 | Sub-10ms queries. Built for Claude Code. |
 | [iOS Health Sync](https://github.com/mneves75/ai-health-sync-ios) | Sync HealthKit data iPhone ↔ Mac | Your health data. Your devices. No cloud. |
-| [Skills](https://github.com/mneves75/skills) | Agent readiness assessment for AI coding tools | The agent isn't broken. Your repo is. |
+| [Skills](https://mneves75.github.io/skills/) | Six skills for AI coding agents: explain, review, verify, orchestrate, score readiness, teach back. `npx skills add mneves75/skills` | Skills that hold the agent to a standard. The agent isn't broken. Your repo is. |
 | [Mega-Sena Analyzer](https://github.com/mneves75/megasena-analyser-webapp) | Lottery statistics and bet generator | Data science for the masses. No predictions, just math. |
 | [Swift Fast Markdown](https://github.com/mneves75/swift-fast-markdown) | High-performance Swift markdown parser | Parsing 100MB/s+ on Apple Silicon |
 | [clawdbot](https://github.com/mneves75/clawdbot) | Personal AI across all messengers | WhatsApp, Telegram, Slack, Discord, Signal, iMessage |
