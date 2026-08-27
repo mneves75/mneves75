@@ -6,9 +6,31 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-27
+
+### Added
+
+- [STOA](https://stoa.mvneves.dev/) — a 12-week Stoicism course in Brazilian Portuguese: 36
+  self-contained lessons, 14 exercises with explicit misuse limits, and a reflective journal that
+  never leaves the reader's device. Filed under Privacy / local-first because that is the defining
+  constraint, not a feature: no account, no backend, no analytics, no cookie, and the whole course
+  works offline from a versioned service worker. 34 projects; sitemap 76 → 78 URLs.
+- Portuguese diagram labels for the new route steps (`lesson`, `practice`, `journal`,
+  `browser-only progress`) — `ProjectDetail.astro` fails the build rather than leak an English step
+  onto a pt-BR page.
+
 ### Changed
 
 - [Skills](https://mneves75.github.io/skills/) entry and README row rewritten for its 1.11.0 state: six skills, `npx skills` install, landing page as the live link.
+
+### Notes
+
+- STOA is listed with a live link and **no source link**: the repository is private, and a 404 in
+  the portfolio is worse than no link at all (verified anonymously — the repo and its advisory URL
+  both return 404 without a session). `openSource: false`, status reads "source private". When the
+  repository is made public, add `source` and flip the flag.
+- No image asset: like `hay` and `devtrim`, the entry renders the terminal plate rather than
+  inventing a capture that does not exist.
 
 ## [1.3.0] - 2026-08-24
 

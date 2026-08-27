@@ -2,9 +2,11 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-08-26)
+## Current state (2026-08-27)
 
-- Skills entry + README row updated (six skills, live link); committed, **not deployed**. Next deploy carries it.
+- **1.4.0**: STOA added (34 projects, sitemap 78). Listed with a live link and **no source link** — `mneves75/stoa` is private, and both the repo and its `/security/advisories/new` URL return 404 anonymously (verified with an unauthenticated request, positive control on a public repo). `openSource: false`. When that repo is made public, add `source` and flip the flag.
+- Carries the pending Skills entry + README row from 2026-08-26.
+- New pt diagram labels: `lesson`, `practice`, `journal`, `browser-only progress`.
 
 ## Previous state (2026-08-24)
 
