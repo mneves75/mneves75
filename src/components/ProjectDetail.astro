@@ -4,7 +4,7 @@ import { categoryLabels, href, type Locale, type Project } from '../data/site';
 
 interface Props { locale: Locale; project: Project; }
 const { locale, project } = Astro.props;
-const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', next: 'Next route', open: 'Open another project' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', next: 'Próxima rota', open: 'Abrir outro projeto' };
+const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', appStore: 'App Store', next: 'Next route', open: 'Open another project' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', appStore: 'App Store', next: 'Próxima rota', open: 'Abrir outro projeto' };
 const diagramLabels: Record<string, string> = locale === 'pt' ? {
   prompt: 'prompt', 'DNS TXT': 'DNS TXT', resolver: 'resolver', 'LLM reply': 'resposta do LLM',
   iPhone: 'iPhone', HealthKit: 'HealthKit', 'local network': 'rede local', Mac: 'Mac',
@@ -145,9 +145,10 @@ const blocks = project.caseStudyPending ? [] : [
   <aside class="detail-aside">
     <p class="label-mono">{locale === 'en' ? 'Engineering note' : 'Nota de engenharia'}</p>
     <p class="muted">{locale === 'en' ? 'The interesting part is not the technology. It is the boundary the technology has to respect.' : 'A parte interessante não é a tecnologia. É o limite que a tecnologia precisa respeitar.'}</p>
-    {(project.source || project.live) && <div class="external-links">
+    {(project.source || project.live || project.appStore) && <div class="external-links">
       {project.source && <a class="text-link" href={project.source} target="_blank" rel="noreferrer">{copy.source}</a>}
       {project.live && <a class="text-link" href={project.live} target="_blank" rel="noreferrer">{copy.live}</a>}
+      {project.appStore && <a class="text-link" href={project.appStore[locale]} target="_blank" rel="noreferrer">{copy.appStore}</a>}
     </div>}
   </aside>
 </section>

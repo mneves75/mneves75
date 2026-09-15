@@ -2,7 +2,11 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-08-27)
+## Current state (2026-09-15)
+
+- **1.5.0**: factual corrections found by cross-checking against conhecendotudo.com.br and GitHub: open-source flag only with a detected license (weathersunscreen, polymarket-analyzer, ai-calories-tracker are public but unlicensed), devtrim v0.9.6, cf-toolkit without the ffts-grep image, hay 0.2.0 figures, nine skills, benchmark stack with V/TypeScript. App Store links (`appStore` field) on dnschat and weathersunscreen, verified live in the public lookup. The other iOS apps are not published yet; do not add store links before they appear in `itunes.apple.com/lookup`.
+
+## Previous state (2026-08-27)
 
 - **1.4.0**: STOA added (34 projects, sitemap 78). Listed with a live link and **no source link** — `mneves75/stoa` is private, and both the repo and its `/security/advisories/new` URL return 404 anonymously (verified with an unauthenticated request, positive control on a public repo). `openSource: false`. When that repo is made public, add `source` and flip the flag.
 - Carries the pending Skills entry + README row from 2026-08-26.

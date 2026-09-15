@@ -6,6 +6,30 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-09-15
+
+### Added
+
+- App Store links on [DNS Chat](https://mvneves.dev/work/dnschat/) and
+  [WeatherSunscreen](https://mvneves.dev/work/weathersunscreen/): the US storefront on English
+  pages, the Brazilian one on pt-BR. Both are the only portfolio apps on this site that are live in
+  the public App Store lookup (`itunes.apple.com/lookup`, br and us). Optional `appStore` field on
+  projects; the detail page renders it next to the source and live links.
+
+### Fixed
+
+- "Open source" label removed from WeatherSunscreen, Polymarket Analyzer and AI Calories Tracker:
+  their repositories are public but have no license (GitHub `licenseInfo` null, no `LICENSE`).
+  Status now reads "Public code · no license yet". Flip back when a license lands.
+- devtrim status showed `v0.3.1` (hay's tag); the latest devtrim release is `v0.9.6`.
+- cf-toolkit used the ffts-grep screenshot; it now renders the terminal plate like other entries
+  without a verified capture.
+- hay outcome carried the 0.1.4 figures. Updated to the README's paired 0.2.0 run: MRR 0.258 →
+  0.458, answer in top ten 44.9% → 77.1%, still worse on 115 of 951 queries (12%).
+- Skills described six skills; the repository README lists nine. Summary, outcome and README row
+  updated.
+- OU Benchmark stack omitted V and TypeScript, which the summary and README include.
+
 ## [1.4.0] - 2026-08-27
 
 ### Added
