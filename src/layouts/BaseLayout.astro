@@ -215,7 +215,9 @@ const ui = locale === 'en'
       // --- Command palette ---
       const palette = document.querySelector<HTMLDialogElement>('#command-palette');
       const search = document.querySelector<HTMLInputElement>('[data-palette-search]');
-      const paletteItems = [...document.querySelectorAll<HTMLElement>('[data-palette-item]')];
+      // Reduced-motion users never see the pause action (CSS hides it), so it must not take focus or count as a match.
+      const paletteItems = [...document.querySelectorAll<HTMLElement>('[data-palette-item]')]
+        .filter((item) => !(reducedMotion && item.matches('[data-palette-motion]')));
       const visibleItems = () => paletteItems.filter((item) => !item.hidden);
       const filterPalette = () => {
         const value = (search?.value ?? '').toLowerCase().trim();
