@@ -1,5 +1,5 @@
 ---
-import { range, site, type Locale } from '../data/site';
+import { pad, range, site, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -28,7 +28,7 @@ const copy = locale === 'en' ? { title: 'About', intro: 'I build where software,
   <ol class="index-list range-list">
     {range.map((item, index) => (
       <li class="index-row range-row">
-        <span class="idx" aria-hidden="true">0{index + 1}</span>
+        <span class="idx" aria-hidden="true">{pad(index + 1)}</span>
         <h3>{item[locale]}</h3>
         <p>{item.note[locale]}</p>
       </li>

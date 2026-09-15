@@ -9,7 +9,7 @@ const workHref = href(locale, '/work/');
 const homeHref = href(locale, '/');
 ---
 
-<div id="mn-terminal" class="mn-terminal" role="dialog" aria-modal="true" aria-label="MN://TERMINAL" data-lang={locale} data-work={workHref} data-home={homeHref} data-github={site.github} data-linkedin={site.linkedin}>
+<dialog id="mn-terminal" class="mn-terminal" aria-label="MN://TERMINAL" data-lang={locale} data-work={workHref} data-home={homeHref} data-github={site.github} data-linkedin={site.linkedin}>
   <div class="crt-panel">
     <p class="sr-only">
       {locale === 'en'
@@ -23,14 +23,14 @@ const homeHref = href(locale, '/');
     <div id="mn-screen" class="crt-screen" aria-live="polite"></div>
     <div class="crt-input-row">
       <span class="acc">MN://&gt;</span>
-      <input id="mn-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label={locale === 'en' ? 'Terminal command' : 'Comando do terminal'} />
+      <input id="mn-input" type="text" autofocus autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" aria-label={locale === 'en' ? 'Terminal command' : 'Comando do terminal'} />
       <span class="t-cursor" aria-hidden="true"></span>
     </div>
   </div>
-</div>
+</dialog>
 
 <script>
-  const overlay = document.getElementById('mn-terminal')!;
+  const overlay = document.getElementById('mn-terminal') as HTMLDialogElement;
   const screen = document.getElementById('mn-screen')!;
   const input = document.getElementById('mn-input') as HTMLInputElement;
   const closeBtn = document.getElementById('mn-terminal-close')! as HTMLButtonElement;
@@ -80,7 +80,7 @@ const homeHref = href(locale, '/');
   ];
 
   let unknownIdx = 0;
-  let previousFocus: HTMLElement | null = null;
+  let bootTimers: number[] = [];
 
   function line(html: string, cls = '') {
     const div = document.createElement('div');
@@ -90,21 +90,23 @@ const homeHref = href(locale, '/');
     screen.scrollTop = screen.scrollHeight;
   }
 
+  // Native modal dialog: the page behind is inert, Esc closes, and focus returns to the opener.
   function openTerminal() {
-    if (overlay.classList.contains('open')) return;
-    previousFocus = document.activeElement as HTMLElement | null;
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    if (document.querySelector('dialog[open]')) return; // one modal at a time
     screen.innerHTML = '';
-    BOOT.forEach((l, i) => setTimeout(() => line(l, i < 2 ? 'sys' : ''), 110 * i));
-    setTimeout(() => input.focus(), 50);
+    overlay.showModal();
+    document.documentElement.classList.add('mn-terminal-open');
+    bootTimers = BOOT.map((l, i) => window.setTimeout(() => line(l, i < 2 ? 'sys' : ''), 110 * i));
   }
 
   function closeTerminal() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    previousFocus?.focus();
+    overlay.close();
   }
+
+  overlay.addEventListener('close', () => {
+    bootTimers.forEach(clearTimeout);
+    document.documentElement.classList.remove('mn-terminal-open');
+  });
 
   function matrixRain() {
     const glyphs = '01█▓▒░<>/*+#@$%&';
@@ -211,38 +213,32 @@ const homeHref = href(locale, '/');
     if (e.key === 'Enter') {
       run(input.value);
       input.value = '';
-    } else if (e.key === 'Escape') {
-      closeTerminal();
     }
   });
 
   closeBtn.addEventListener('click', closeTerminal);
+  // A click on the dialog element itself (not the panel) is a click on the backdrop.
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeTerminal();
   });
+  // The command palette opens the terminal without the key sequence.
+  document.addEventListener('mn:terminal-open', openTerminal);
 
-  // Triggers: type "mn" outside a field, or the Konami code.
+  // Triggers: type "mn" outside a field (both keys within a second), or the Konami code.
   const SECRET = 'mn';
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   let typed = '';
+  let lastTyped = 0;
   let konamiIdx = 0;
 
   document.addEventListener('keydown', (e) => {
     const t = e.target as HTMLElement;
-    const inField = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable;
-
-    if (e.key === 'Escape' && overlay.classList.contains('open')) { closeTerminal(); return; }
-    if (e.key === 'Tab' && overlay.classList.contains('open')) {
-      // Two focusable elements: keep focus inside the dialog.
-      const first = closeBtn;
-      const last = input;
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      return;
-    }
-    if (inField || overlay.classList.contains('open')) return;
+    const inField = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable;
+    if (inField || document.querySelector('dialog[open]')) return;
 
     if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (e.timeStamp - lastTyped > 1000) typed = '';
+      lastTyped = e.timeStamp;
       typed = (typed + e.key.toLowerCase()).slice(-SECRET.length);
       if (typed === SECRET) { typed = ''; openTerminal(); return; }
     }

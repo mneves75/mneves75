@@ -1,7 +1,7 @@
 ---
 import SignalTrace from '../components/SignalTrace.astro';
 import Terminal from '../components/Terminal.astro';
-import { href, localeConfig, nav, site, type Locale } from '../data/site';
+import { href, localeConfig, nav, pad, projects, site, type Locale } from '../data/site';
 import '../styles/global.css';
 
 interface Props {
@@ -28,22 +28,30 @@ const alternatePath = locale === 'pt'
 const alternateUrl = `${site.domain}${withTrailingSlash(href(otherLocale, alternatePath))}`;
 const defaultPath = locale === 'pt' ? alternatePath : currentPath;
 const defaultUrl = `${site.domain}${withTrailingSlash(defaultPath)}`;
+const person = {
+  '@type': 'Person',
+  name: site.name,
+  url: site.domain,
+  jobTitle: locale === 'en' ? 'Software Developer · Data Analyst · AI Builder' : 'Desenvolvedor de software · Analista de dados · Builder de IA',
+  sameAs: [site.github, site.linkedin, site.x],
+};
+// ProfilePage is for pages whose main subject is the person; every other page is a WebPage by him.
+const profilePage = !noindex && (currentPath === '/' || currentPath === '/about/');
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfilePage',
+  '@type': profilePage ? 'ProfilePage' : 'WebPage',
   name: title,
   url: canonical,
   inLanguage: localeConfig[locale].html,
-  mainEntity: {
-    '@type': 'Person',
-    name: site.name,
-    url: site.domain,
-    jobTitle: 'Software Developer · Data Analyst · AI Builder',
-    sameAs: [site.github, site.linkedin],
-  },
+  ...(profilePage ? { mainEntity: person } : { author: person }),
 };
 const lang = localeConfig[locale];
-const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work' : currentPath.startsWith('/work/') ? 'project' : currentPath === '/about/' ? 'about' : currentPath === '/recommendations/' ? 'recommendations' : currentPath === '/contact/' ? 'contact' : 'other';
+const pageKind = noindex ? 'other' : currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work' : currentPath.startsWith('/work/') ? 'project' : currentPath === '/about/' ? 'about' : currentPath === '/recommendations/' ? 'recommendations' : currentPath === '/contact/' ? 'contact' : 'other';
+const ogImage = `${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`;
+const ogImageAlt = locale === 'en' ? 'Marcus Neves — software, data and AI' : 'Marcus Neves — software, dados e IA';
+const ui = locale === 'en'
+  ? { pages: 'Pages', projects: 'Projects', actions: 'Actions', home: 'Home', github: 'Open GitHub', linkedin: 'Open LinkedIn', x: 'Open X', language: 'Switch language', theme: 'Switch theme', motion: 'Pause animations', terminal: 'Open terminal', palette: 'Open command palette', search: 'Search pages, projects, actions…', noResults: 'No match', navigate: 'navigate', open: 'open', close: 'close' }
+  : { pages: 'Páginas', projects: 'Projetos', actions: 'Ações', home: 'Início', github: 'Abrir GitHub', linkedin: 'Abrir LinkedIn', x: 'Abrir X', language: 'Mudar idioma', theme: 'Alternar tema', motion: 'Pausar animações', terminal: 'Abrir terminal', palette: 'Abrir paleta de comandos', search: 'Buscar páginas, projetos, ações…', noResults: 'Nada encontrado', navigate: 'navegar', open: 'abrir', close: 'fechar' };
 ---
 
 <!doctype html>
@@ -54,35 +62,46 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
     <meta name="theme-color" content="#f0eee9" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex" />}
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={locale === 'en' ? canonical : alternateUrl} />
-    <link rel="alternate" hreflang="pt-BR" href={locale === 'pt' ? canonical : alternateUrl} />
-    <link rel="alternate" hreflang="x-default" href={defaultUrl} />
+    {noindex ? <meta name="robots" content="noindex" /> : <>
+      <link rel="canonical" href={canonical} />
+      <link rel="alternate" hreflang="en" href={locale === 'en' ? canonical : alternateUrl} />
+      <link rel="alternate" hreflang="pt-BR" href={locale === 'pt' ? canonical : alternateUrl} />
+      <link rel="alternate" hreflang="x-default" href={defaultUrl} />
+      <meta property="og:url" content={canonical} />
+    </>}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preload" href="/fonts/archivo-100-900-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/space-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Marcus Neves" />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : 'pt_BR'} />
+    <meta property="og:locale:alternate" content={locale === 'en' ? 'pt_BR' : 'en_US'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={`${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <title>{title}</title>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+    {!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     <script is:inline>
-      // Restore theme before first paint; no attribute means the CSS system-preference fallback wins.
-      try {
-        const savedTheme = localStorage.getItem('mn-theme');
-        if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
-      } catch {}
-      // Motion is opt-in: reduced-motion users never receive hidden initial states.
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.dataset.motion = 'on';
+      // Restore theme and the motion choice before first paint; no theme attribute means the CSS system-preference fallback wins.
+      {
+        let motionPaused = false;
+        try {
+          const savedTheme = localStorage.getItem('mn-theme');
+          if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+          motionPaused = localStorage.getItem('mn-motion') === 'off';
+        } catch {}
+        // Motion is opt-in: reduced-motion users and anyone who paused it never receive hidden initial states.
+        if (!motionPaused && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.dataset.motion = 'on';
+      }
     </script>
   </head>
   <body class={`page-${pageKind}`}>
@@ -97,13 +116,14 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
           {nav.map((item, index) => {
             const itemHref = href(locale, item.path);
             const active = currentPath === item.path || currentPath.startsWith(`${item.path}`);
-            return <a href={itemHref} aria-current={active ? 'page' : undefined}><span class="idx" aria-hidden="true">0{index + 1}</span><span data-scramble-hover>{item[locale]}</span></a>;
+            return <a href={itemHref} aria-current={active ? 'page' : undefined}><span class="idx" aria-hidden="true">{pad(index + 1)}</span><span data-scramble-hover>{item[locale]}</span></a>;
           })}
         </nav>
         <div class="header-tools">
           <a class="header-control" href={href(otherLocale, alternatePath)} aria-label={otherLocale === 'en' ? 'Switch to English' : 'Mudar para português'}>{localeConfig[otherLocale].short}</a>
-          <button class="header-control" type="button" data-theme-toggle aria-label={locale === 'en' ? 'Switch theme' : 'Alternar tema'}>◐</button>
-          <button class="header-control" type="button" data-command-open aria-haspopup="dialog" aria-label={locale === 'en' ? 'Open command palette' : 'Abrir paleta de comandos'}>⌘K</button>
+          <button class="header-control" type="button" data-theme-toggle aria-label={ui.theme}>◐</button>
+          <button class="header-control motion-control" type="button" data-motion-toggle aria-pressed="false" aria-label={ui.motion}><span aria-hidden="true" class="motion-glyph"></span></button>
+          <button class="header-control" type="button" data-command-open aria-haspopup="dialog" aria-label={ui.palette}>⌘K</button>
         </div>
       </div>
     </header>
@@ -113,7 +133,7 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
     </main>
 
     <footer class="site-footer">
-      <SignalTrace variant="footer" />
+      <SignalTrace />
       <div class="footer-row">
         <span>MN://{locale === 'en' ? 'software / data / AI' : 'software / dados / IA'}</span>
         <div class="footer-links">
@@ -127,15 +147,24 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
     <dialog class="command-palette" id="command-palette" aria-labelledby="palette-title">
       <div class="palette-inner">
         <div class="term-bar"><span id="palette-title">MN://{locale === 'en' ? 'palette' : 'paleta'}</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
-        <input class="palette-search" data-palette-search type="search" aria-label={locale === 'en' ? 'Search this site' : 'Buscar neste site'} placeholder={locale === 'en' ? 'Search this site…' : 'Buscar neste site…'} autocomplete="off" />
-        <div class="palette-list" data-palette-list>
-          <a href={href(locale, '/work/')} data-palette-item>{locale === 'en' ? 'Go to Work' : 'Ir para Trabalho'}<span>↵</span></a>
-          <a href={site.github} target="_blank" rel="noreferrer" data-palette-item>Open GitHub<span>↗</span></a>
-          <a href={site.linkedin} target="_blank" rel="noreferrer" data-palette-item>Open LinkedIn<span>↗</span></a>
-          <a href={href(otherLocale, alternatePath)} data-palette-item>{locale === 'en' ? 'Switch language' : 'Mudar idioma'}<span>{localeConfig[otherLocale].short}</span></a>
-          <button type="button" data-palette-theme data-palette-item>{locale === 'en' ? 'Switch theme' : 'Alternar tema'}<span>◐</span></button>
+        <input class="palette-search" data-palette-search type="search" aria-label={ui.search} aria-controls="palette-list" placeholder={ui.search} autocomplete="off" enterkeyhint="go" />
+        <div class="palette-list" id="palette-list" data-palette-list>
+          <p class="palette-group" data-palette-group>{ui.actions}</p>
+          <button type="button" data-palette-terminal data-palette-item>{ui.terminal}<span>mn</span></button>
+          <button type="button" data-palette-theme data-palette-item>{ui.theme}<span aria-hidden="true">◐</span></button>
+          <button type="button" data-palette-motion data-palette-item>{ui.motion}<span aria-hidden="true">❚❚</span></button>
+          <a href={href(otherLocale, alternatePath)} data-palette-item>{ui.language}<span>{localeConfig[otherLocale].short}</span></a>
+          <a href={site.github} target="_blank" rel="noreferrer" data-palette-item>{ui.github}<span aria-hidden="true">↗</span></a>
+          <a href={site.linkedin} target="_blank" rel="noreferrer" data-palette-item>{ui.linkedin}<span aria-hidden="true">↗</span></a>
+          <a href={site.x} target="_blank" rel="noreferrer" data-palette-item>{ui.x}<span aria-hidden="true">↗</span></a>
+          <p class="palette-group" data-palette-group>{ui.pages}</p>
+          <a href={href(locale, '/')} data-palette-item>{ui.home}<span>/</span></a>
+          {nav.map((item) => <a href={href(locale, item.path)} data-palette-item>{item[locale]}<span>{item.path}</span></a>)}
+          <p class="palette-group" data-palette-group>{ui.projects}</p>
+          {projects.map((project) => <a href={href(locale, `/work/${project.slug}/`)} data-palette-item>{project.title}<span>{project.kicker[locale]}</span></a>)}
+          <p class="palette-empty" data-palette-empty hidden>{ui.noResults}</p>
         </div>
-        <div class="palette-hint"><span>↑↓ {locale === 'en' ? 'navigate' : 'navegar'}</span><span>Esc {locale === 'en' ? 'close' : 'fechar'}</span></div>
+        <div class="palette-hint" aria-hidden="true"><span>↑↓ {ui.navigate} · ↵ {ui.open}</span><span>Esc {ui.close}</span></div>
       </div>
     </dialog>
 
@@ -168,22 +197,78 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
       const toggleTheme = () => setTheme(effectiveTheme() === 'light' ? 'dark' : 'light');
       document.querySelector('[data-theme-toggle]')?.addEventListener('click', toggleTheme);
 
+      // --- Motion pause (WCAG 2.2.2): every looping animation is gated on data-motion='on' ---
+      const motionToggles = document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle], [data-palette-motion]');
+      const syncMotionToggle = () => motionToggles.forEach((toggle) => toggle.setAttribute('aria-pressed', String(root.dataset.motion !== 'on')));
+      const toggleMotion = () => {
+        if (reducedMotion) return; // the OS preference wins; the controls are hidden for these users
+        const pause = root.dataset.motion === 'on';
+        if (pause) delete root.dataset.motion;
+        else root.dataset.motion = 'on';
+        try { localStorage.setItem('mn-motion', pause ? 'off' : 'on'); } catch { /* noop */ }
+        syncMotionToggle();
+      };
+      syncMotionToggle();
+      document.querySelector('[data-motion-toggle]')?.addEventListener('click', toggleMotion);
+      const motionOn = () => root.dataset.motion === 'on';
+
       // --- Command palette ---
       const palette = document.querySelector<HTMLDialogElement>('#command-palette');
       const search = document.querySelector<HTMLInputElement>('[data-palette-search]');
-      const openPalette = () => { palette?.showModal(); search?.focus(); };
-      document.querySelector('[data-command-open]')?.addEventListener('click', openPalette);
-      document.querySelector('[data-palette-theme]')?.addEventListener('click', () => { toggleTheme(); palette?.close(); });
-      document.addEventListener('keydown', (event) => {
-        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openPalette(); }
-        if (event.key === 'Escape' && palette?.open) palette.close();
-      });
-      search?.addEventListener('input', () => {
-        const value = search.value.toLowerCase().trim();
-        document.querySelectorAll<HTMLElement>('[data-palette-item]').forEach((item) => {
+      const paletteItems = [...document.querySelectorAll<HTMLElement>('[data-palette-item]')];
+      const visibleItems = () => paletteItems.filter((item) => !item.hidden);
+      const filterPalette = () => {
+        const value = (search?.value ?? '').toLowerCase().trim();
+        paletteItems.forEach((item) => {
           item.hidden = Boolean(value) && !(item.textContent ?? '').toLowerCase().includes(value);
         });
+        // Group labels only make sense while browsing the full list.
+        document.querySelectorAll<HTMLElement>('[data-palette-group]').forEach((group) => { group.hidden = Boolean(value); });
+        const empty = document.querySelector<HTMLElement>('[data-palette-empty]');
+        if (empty) empty.hidden = visibleItems().length > 0;
+      };
+      const openPalette = () => {
+        // One modal at a time: the palette and the terminal never stack.
+        if (!palette || document.querySelector('dialog[open]')) return;
+        if (search) search.value = '';
+        filterPalette();
+        palette.showModal();
+        search?.focus();
+      };
+      document.querySelector('[data-command-open]')?.addEventListener('click', openPalette);
+      document.querySelector('[data-palette-theme]')?.addEventListener('click', () => { toggleTheme(); palette?.close(); });
+      document.querySelector('[data-palette-motion]')?.addEventListener('click', () => { toggleMotion(); palette?.close(); });
+      document.querySelector('[data-palette-terminal]')?.addEventListener('click', () => {
+        palette?.close();
+        document.dispatchEvent(new CustomEvent('mn:terminal-open'));
       });
+      document.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') { event.preventDefault(); openPalette(); }
+      });
+      search?.addEventListener('input', filterPalette);
+      palette?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          // A search field with text would swallow the first Esc to clear itself; close in one press.
+          event.preventDefault();
+          palette.close();
+          return;
+        }
+        const items = visibleItems();
+        if (!items.length) return;
+        const index = items.indexOf(document.activeElement as HTMLElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          const step = event.key === 'ArrowDown' ? 1 : -1;
+          // From the search field, ArrowDown enters the list and ArrowUp wraps to its end.
+          const next = index === -1 ? (step === 1 ? 0 : items.length - 1) : (index + step + items.length) % items.length;
+          items[next]?.focus();
+        } else if (event.key === 'Enter' && document.activeElement === search) {
+          event.preventDefault();
+          items[0]?.click();
+        }
+      });
+      // A click on the dialog element itself is a click on the backdrop.
+      palette?.addEventListener('click', (event) => { if (event.target === palette) palette.close(); });
 
       // --- Header shrink after scroll ---
       const onScroll = () => {
@@ -236,6 +321,7 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
         if (reducedMotion) { el.textContent = words[0] ?? ''; return; }
         let i = 0;
         setInterval(() => {
+          if (!motionOn()) return; // paused: keep the current word still
           i = (i + 1) % words.length;
           scrambleTo(el, words[i] ?? '');
         }, 3200);
@@ -246,7 +332,7 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
           const original = el.textContent ?? '';
           let busy = false;
           el.addEventListener('mouseenter', () => {
-            if (busy) return;
+            if (busy || !motionOn()) return;
             busy = true;
             scrambleTo(el, original, 420);
             setTimeout(() => { busy = false; }, 480);
@@ -263,7 +349,7 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
           const raw = el.dataset.countup ?? '0';
           const target = parseFloat(raw);
           const suffix = el.dataset.suffix ?? '';
-          if (reducedMotion) { el.textContent = raw + suffix; return; }
+          if (!motionOn()) { el.textContent = raw + suffix; return; }
           const start = performance.now();
           const dur = 1400;
           function tick(now: number) {
@@ -281,6 +367,7 @@ const pageKind = currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work
       if (finePointer && !reducedMotion) {
         document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
           el.addEventListener('mousemove', (e) => {
+            if (!motionOn()) return;
             const r = el.getBoundingClientRect();
             const x = ((e.clientX - r.left) / r.width - 0.5) * 10;
             const y = ((e.clientY - r.top) / r.height - 0.5) * 8;

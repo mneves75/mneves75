@@ -2,7 +2,13 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-15)
+## Current state (2026-09-15, later)
+
+- **1.6.0** (committed, not deployed): full-site review. Motion pause control (WCAG 2.2.2), ⌘K palette actually filters and navigates (it never did), terminal as native `<dialog>`, dark-theme AA tokens, pt-BR 404 via an `astro:build:done` hook, CSP `style-src 'self'`, astro 7.3.2 with `bun audit` clean, content fixes from primary sources. `AGENTS.md` now holds gates and invariants.
+- Unlisted App Store apps by the same developer (id 1487532985): IA Palavras Cruzadas (6767752911) and GP Race Stats (6776818539). Not on the site; adding them needs source material first.
+- Lesson: a filter that sets `hidden` is dead code whenever a class sets `display`; the global `[hidden] { display: none !important }` rule exists for that. Behaviour bugs in the palette survived since launch because the route test is static HTML only; verify JS behaviour in a browser under the served CSP.
+
+## Previous state (2026-09-15)
 
 - **1.5.0**: factual corrections found by cross-checking against conhecendotudo.com.br and GitHub: open-source flag only with a detected license (weathersunscreen, polymarket-analyzer, ai-calories-tracker are public but unlicensed), devtrim v0.9.6, cf-toolkit without the ffts-grep image, hay 0.2.0 figures, nine skills, benchmark stack with V/TypeScript. App Store links (`appStore` field) on dnschat and weathersunscreen, verified live in the public lookup. The other iOS apps are not published yet; do not add store links before they appear in `itunes.apple.com/lookup`.
 
@@ -32,7 +38,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Fonts: latin + latin-ext subsets both vendored with `unicode-range`. The latin-ext file alone LACKS `ã ç é ·` — pt-BR silently falls back without the latin file.
 - Scroll reveals are no-JS-safe: CSS hides only `.reveal.reveal-pending` (class added by the runtime). Never hide `.reveal` directly in CSS.
 - Nav: current page = bold + 2px copper underline; hover = 1px neutral, gated `@media (hover: hover)`. They were identical once and looked like two active pages.
-- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×33, "Three decades shipping" on home, 76 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
+- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×34, palette items 7 + 5 + 34, "Three decades shipping" on home, 78 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
 
 ## Open items
 

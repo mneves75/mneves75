@@ -18,7 +18,7 @@ const walk = (dir) => {
 /** @param {string} html */
 const collect = (html) => {
   for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
-    if (/\bsrc=/.test(attrs) || /ld\+json/.test(attrs)) continue; // external, or data blocks the browser never executes
+    if (/(?:^|\s)src=/.test(attrs) || /ld\+json/.test(attrs)) continue; // external, or data blocks the browser never executes
     hashes.add(`'sha256-${createHash('sha256').update(body).digest('base64')}'`);
   }
 };

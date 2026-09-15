@@ -1,5 +1,5 @@
 ---
-import { href, principles, projects, range, recommendations, site, type Locale } from '../data/site';
+import { href, pad, principles, projects, range, recommendations, site, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -70,7 +70,7 @@ const copy = locale === 'en' ? {
     <p class="route-label">{copy.kicker}</p>
     <h1 id="hero-title">
       <span class="statement">{copy.statement}</span>
-      <span class="building">{copy.building} <span class="decoder" data-scramble-cycle={JSON.stringify(decoderWords)}>{decoderWords[0]}</span></span>
+      <span class="building">{copy.building} <span class="decoder" aria-hidden="true" data-scramble-cycle={JSON.stringify(decoderWords)}>{decoderWords[0]}</span><span class="sr-only">{decoderWords[0]}</span></span>
     </h1>
     <p class="hero-lede">{copy.intro}</p>
     <div class="cta-row">
@@ -83,11 +83,11 @@ const copy = locale === 'en' ? {
     <div class="term-bar"><span>mn@dev — session</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
     <div class="term-body">
       <p><span class="t-prompt">$</span> <span class="t-cmd">mn</span> --status</p>
-      <p><span class="t-key t-dim">shipping</span><span>30 {locale === 'en' ? 'years' : 'anos'}</span></p>
-      <p><span class="t-key t-dim">projects</span><span>{projects.length} {locale === 'en' ? 'public' : 'públicos'}</span></p>
-      <p><span class="t-key t-dim">open_src</span><span>{openSourceCount} repos</span></p>
-      <p><span class="t-key t-dim">stack</span><span class="t-str">typescript · swift · rust · astro · cloudflare</span></p>
-      <p><span class="t-key t-dim">focus</span><span>{copy.termFocus}</span></p>
+      <p class="t-kv"><span class="t-dim">shipping</span><span>30 {locale === 'en' ? 'years' : 'anos'}</span></p>
+      <p class="t-kv"><span class="t-dim">projects</span><span>{projects.length} {locale === 'en' ? 'public' : 'públicos'}</span></p>
+      <p class="t-kv"><span class="t-dim">open_src</span><span>{openSourceCount} repos</span></p>
+      <p class="t-kv"><span class="t-dim">stack</span><span class="t-str">typescript · swift · rust · astro · cloudflare</span></p>
+      <p class="t-kv"><span class="t-dim">focus</span><span>{copy.termFocus}</span></p>
       <p class="t-gap"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> work/ --featured</p>
       <p class="t-files">{featured.map((project) => <a href={href(locale, `/work/${project.slug}/`)}>{project.slug}</a>)}</p>
       <p><span class="t-dim">&gt; {featured.length} {copy.termFeatured}</span></p>
@@ -95,7 +95,7 @@ const copy = locale === 'en' ? {
     </div>
   </div>
 
-  <div class="stat-rail" aria-label={locale === 'en' ? 'Track record' : 'Histórico'}>
+  <div class="stat-rail" role="group" aria-label={locale === 'en' ? 'Track record' : 'Histórico'}>
     <div class="stat"><span class="stat-num num-mono" data-countup="30">30</span><span class="label-mono">{copy.statYears}</span></div>
     <div class="stat"><span class="stat-num num-mono" data-countup={String(projects.length)}>{projects.length}</span><span class="label-mono">{copy.statProjects}</span></div>
     <div class="stat"><span class="stat-num num-mono" data-countup={String(openSourceCount)}>{openSourceCount}</span><span class="label-mono">{copy.statOss}</span></div>
@@ -120,7 +120,7 @@ const copy = locale === 'en' ? {
   <div class="index-list">
     {featured.map((project, index) => (
       <a class="index-row featured-row" href={href(locale, `/work/${project.slug}/`)}>
-        <span class="idx">0{index + 1}</span>
+        <span class="idx">{pad(index + 1)}</span>
         <span class="featured-main"><span class="featured-title">{project.title}</span><span class="featured-summary">{project.summary[locale]}</span></span>
         <span class="label-mono featured-kicker">{project.kicker[locale]}</span>
         <span class="row-arrow" aria-hidden="true">↗</span>
@@ -136,7 +136,7 @@ const copy = locale === 'en' ? {
     <p>{copy.thinkNote}</p>
   </div>
   <div class="principles-grid">
-    {principles.map((principle, index) => <div class="principle"><span class="idx">0{index + 1}</span><strong>{principle[locale]}</strong></div>)}
+    {principles.map((principle, index) => <div class="principle"><span class="idx">{pad(index + 1)}</span><strong>{principle[locale]}</strong></div>)}
   </div>
 </section>
 
@@ -146,7 +146,7 @@ const copy = locale === 'en' ? {
     <p>{copy.rangeNote}</p>
   </div>
   <div class="range-list">
-    {range.map((item, index) => <div class="range-item"><span class="idx">0{index + 1}</span><h3>{item[locale]}</h3><p>{item.note[locale]}</p></div>)}
+    {range.map((item, index) => <div class="range-item"><span class="idx">{pad(index + 1)}</span><h3>{item[locale]}</h3><p>{item.note[locale]}</p></div>)}
   </div>
 </section>
 
@@ -158,7 +158,7 @@ const copy = locale === 'en' ? {
   <div class="quote-list">
     {recommendations.slice(0, 2).map((recommendation, index) => (
       <figure class="home-quote">
-        <span class="idx">[0{index + 1}]</span>
+        <span class="idx">[{pad(index + 1)}]</span>
         <blockquote lang={locale === 'pt' ? 'pt-BR' : 'en'}><p>{recommendation.quote[locale]}</p></blockquote>
         <figcaption class="label-mono"><strong>{recommendation.name}</strong> — {recommendation.role[locale]}</figcaption>
       </figure>
@@ -223,7 +223,8 @@ const copy = locale === 'en' ? {
   .cta-row { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem; }
 
   .hero-term { align-self: center; }
-  .t-key { display: inline-block; width: 9ch; }
+  /* Key/value rows keep a hanging value column, so a long value wraps under itself, not under the key. */
+  .t-kv { display: grid; grid-template-columns: 9ch minmax(0, 1fr); }
   .t-gap { margin-top: .8rem !important; }
   .t-files { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; }
   .t-files a { color: var(--term-str); }
@@ -276,7 +277,7 @@ const copy = locale === 'en' ? {
   .home-quote { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; margin: 0; border-bottom: 1px solid var(--line); padding-block: 2rem; }
   .home-quote blockquote { min-width: 0; max-width: 60ch; margin: 0; }
   .home-quote blockquote p { margin: 0; font-family: var(--display); font-size: clamp(1.25rem, 1.9vw, 1.9rem); font-weight: 500; letter-spacing: -.025em; line-height: 1.2; overflow-wrap: break-word; }
-  .home-quote blockquote p::before { content: '“'; color: var(--signal-text); }
+  .home-quote blockquote p::before { content: '“'; content: '“' / ''; color: var(--signal-text); }
   .home-quote figcaption { grid-column: 2; margin-top: 1rem; }
   .home-quote figcaption strong { color: var(--ink); font-weight: 400; }
 

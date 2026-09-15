@@ -1,6 +1,6 @@
 {
   "name": "mvneves-dev",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,10 +9,10 @@
     "check": "astro check",
     "preview": "astro preview",
     "test": "node scripts/test-routes.mjs",
-    "lint:design": "npx impeccable detect src public --json"
+    "lint:design": "npx --yes impeccable@3.6.1 detect src public --json"
   },
   "dependencies": {
-    "astro": "^7.1.5"
+    "astro": "^7.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

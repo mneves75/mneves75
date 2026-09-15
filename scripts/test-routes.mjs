@@ -6,17 +6,26 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 const routes = [
   '/', '/work/', '/about/', '/recommendations/', '/contact/', '/404.html',
-  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/',
+  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/', '/pt-br/404.html',
   '/work/dnschat/', '/work/ai-health-sync/', '/work/ffts-grep/', '/work/hay/', '/work/devtrim/', '/work/open-profile-manager/', '/work/llmdeepdive/', '/work/msx-expert-xp800/', '/work/cf-toolkit/', '/work/megasena-analyzer/', '/work/bolao-2026/', '/work/diario-neutro/', '/work/openclaw-club-brasil/', '/work/conhecendo-ia/', '/work/terroir-atelier/', '/work/whatsimovel/', '/work/ia-travel/', '/work/event-management-system/', '/work/event-services-platform/', '/work/maturity-toolbox/', '/work/babimakeup/', '/work/weathersunscreen/', '/work/cigarinfo-ai/', '/work/ai-pedometer/', '/work/swift-fast-markdown/', '/work/cruzadas-rubro-negras/', '/work/cruzadas-tricolores/', '/work/cruzadas-alvinegras/', '/work/cruzadas-fluminense/', '/work/skills/', '/work/language-benchmarks/', '/work/polymarket-analyzer/', '/work/ai-calories-tracker/',
   '/pt-br/work/dnschat/', '/pt-br/work/ai-health-sync/', '/pt-br/work/ffts-grep/', '/pt-br/work/hay/', '/pt-br/work/devtrim/', '/pt-br/work/open-profile-manager/', '/pt-br/work/llmdeepdive/', '/pt-br/work/msx-expert-xp800/', '/pt-br/work/cf-toolkit/', '/pt-br/work/megasena-analyzer/', '/pt-br/work/bolao-2026/', '/pt-br/work/diario-neutro/', '/pt-br/work/openclaw-club-brasil/', '/pt-br/work/conhecendo-ia/', '/pt-br/work/terroir-atelier/', '/pt-br/work/whatsimovel/', '/pt-br/work/ia-travel/', '/pt-br/work/event-management-system/', '/pt-br/work/event-services-platform/', '/pt-br/work/maturity-toolbox/', '/pt-br/work/babimakeup/', '/pt-br/work/weathersunscreen/', '/pt-br/work/cigarinfo-ai/', '/pt-br/work/ai-pedometer/', '/pt-br/work/swift-fast-markdown/', '/pt-br/work/cruzadas-rubro-negras/', '/pt-br/work/cruzadas-tricolores/', '/pt-br/work/cruzadas-alvinegras/', '/pt-br/work/cruzadas-fluminense/', '/pt-br/work/skills/', '/pt-br/work/language-benchmarks/', '/pt-br/work/polymarket-analyzer/', '/pt-br/work/ai-calories-tracker/',
 ];
+/** @param {string} route */
+const outputFile = (route) => (route.endsWith('.html') ? join(root, route) : join(root, route, 'index.html'));
 for (const route of routes) {
-  const file = route === '/404.html' ? join(root, route) : join(root, route, 'index.html');
+  const file = outputFile(route);
   assert.ok(existsSync(file), `missing output for ${route}`);
   const html = readFileSync(file, 'utf8');
   assert.match(html, /<html lang="(?:en|pt-BR)">/, `missing language on ${route}`);
   assert.match(html, /<title>[^<]+<\/title>/, `missing title on ${route}`);
   assert.doesNotMatch(html, /pt-br\/pt-br/, `duplicated locale prefix on ${route}`);
+  assert.match(html, /<meta property="og:locale" content="(?:en_US|pt_BR)">/, `missing og:locale on ${route}`);
+  if (route.endsWith('404.html')) {
+    // Not-found pages are noindex and must not advertise a canonical or alternates for a URL that does not exist.
+    assert.match(html, /<meta name="robots" content="noindex">/, `404 page is indexable: ${route}`);
+    assert.doesNotMatch(html, /rel="canonical"|hreflang=|application\/ld\+json/, `404 page carries canonical/alternate/JSON-LD: ${route}`);
+    continue;
+  }
   assert.match(html, /hreflang="en"/, `missing English alternate on ${route}`);
   assert.match(html, /hreflang="pt-BR"/, `missing pt-BR alternate on ${route}`);
   for (const [, link] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
@@ -35,14 +44,28 @@ const bolao = readFileSync(join(root, 'work', 'bolao-2026', 'index.html'), 'utf8
 const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const headers = readFileSync(join(root, '_headers'), 'utf8');
 // Security headers are invisible until production serves them; assert them here, not in review.
-for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'"]) {
+for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
   assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
 }
 assert.match(home, /Three decades shipping/);
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");
 assert.match(headers, /script-src 'self' 'sha256-[A-Za-z0-9+/=]+'/, 'script-src has no inline script hash');
-assert.doesNotMatch(home, /style="/, 'inline style attribute would need style-src-attr unsafe-inline');
+// style-src carries no 'unsafe-inline', so no built page may contain an inline <style> block or style attribute.
+assert.doesNotMatch(headers, /style-src [^;]*'unsafe-inline'/, "style-src still allows 'unsafe-inline'");
+for (const route of routes) {
+  assert.doesNotMatch(readFileSync(outputFile(route), 'utf8'), /<style\b|\sstyle="/, `inline style on ${route} would be blocked by style-src`);
+}
+assert.match(readFileSync(join(root, 'pt-br', '404.html'), 'utf8'), /Caminho errado\./, 'pt-BR 404 page is not localized');
+assert.ok(!existsSync(join(root, 'pt-br', '404')), 'pt-BR 404 left behind as a routable /pt-br/404/ directory');
+// Accessibility contracts that axe cannot see in static output.
+assert.match(home, /<span class="decoder"[^>]*aria-hidden="true"/, 'hero decoder must stay out of the heading accessible name');
+assert.match(home, /data-motion-toggle[^>]*aria-pressed=/, 'motion pause control missing (WCAG 2.2.2)');
+assert.match(home, /<svg class="signal-trace"[^>]*aria-hidden="true"/, 'decorative signal trace exposed to assistive tech');
+assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 5 + 34, 'palette must list actions, pages and every project');
+assert.match(ptHome, /Abrir GitHub/, 'pt-BR palette label not localized');
+assert.match(home, /"@type":"ProfilePage"/, 'home JSON-LD should be ProfilePage');
+assert.match(work, /"@type":"WebPage"/, 'work index JSON-LD should be WebPage');
 const hay = readFileSync(join(root, 'pt-br', 'work', 'hay', 'index.html'), 'utf8');
 assert.match(hay, /avaliação pareada/, 'hay pt-BR diagram label missing');
 assert.match(home, /data-theme-toggle/);

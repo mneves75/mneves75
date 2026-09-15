@@ -6,7 +6,7 @@
 
 **REFERENCES:** herdr.dev (paper/ink base, terminal panels as centerpiece, small radii on panels only) and conhecendotudo.com.br (editorial-brutalista devices: kinetic masthead, numbered indices, scramble decoder, hidden terminal). Adapted, not copied — the palette stays graphite/bone/copper so the personal site reads as a sibling of the studio, not a twin.
 
-**STORY:** Visitors read a statement backed by a live-looking session of verifiable facts, inspect constraints behind selected work, browse 31 public projects, then choose public proof or a channel.
+**STORY:** Visitors read a statement backed by a live-looking session of verifiable facts, inspect constraints behind selected work, browse 34 public projects, then choose public proof or a channel.
 
 **FIRST VIEWPORT:** Quiet paper field with a faint 72px engineering grid, oversized statement with a cycling decoder word, a dark `mn@dev` terminal panel rendering only verifiable numbers, and a count-up stat rail on a hairline.
 
@@ -16,12 +16,15 @@
   - Light: `--paper #f0eee9`, `--ink #1a1a18`, `--line #d8d6d0`, `--signal #c8481f` (fills/graphics), `--signal-text #a83a16` (AA small text).
   - Dark: `--paper #0e0e0d`, `--ink #f0ece0`, `--line #262624`, `--signal = --signal-text #ff6b35`.
   - Terminal panels are theme-invariant (`--term-bg #1a1d22` family) — dark in both themes, bordered, radius 6px. Everything else is hard-edged.
+  - Fill-text tokens: `--on-signal` (text on a `--signal` fill: white light, `#0e0e0d` dark) and `--on-ink-accent` (the accent glyph on an `--ink` fill: `#ff6b35` light, `#a83a16` dark). White on `#ff6b35` is 2.8:1, so never hard-code `#ffffff` on the signal.
 - One accent. No purple/blue gradients, glow blobs, glassmorphism (single exception: header backdrop blur), or multi-accent category colors. Focus rings use a functional blue, not the accent.
 - **Type:** Archivo variable (wght 100–900, wdth 62–125 — the width axis powers the kinetic masthead) + Space Mono. Vendored in `public/fonts/` with latin + latin-ext subsets and `unicode-range` (latin carries pt-BR accents). `.label-mono` (mono .72rem uppercase tracked) is the identity-defining utility.
 - **Dosage rule (anti-pastiche):** each signature device appears exactly once, in its strongest position — decoder only in the hero h1, kinetic masthead + marquee only once between hero and work, count-ups only on the stat rail, magnetic only on the primary hero CTA, terminal panels only as hero session + project-detail route slab (+ the ⌘K palette and the hidden MN://TERMINAL, which are chrome). Everywhere else the system stays quiet: hairlines, mono labels, paper.
 - `MN://` is the namespace device (route labels, palette, footer, 404, easter egg). Brand chip: copper square, mono `MN`.
 - Terminal panels are real HTML text — selectable, screen-reader-sane, never images or ASCII-art screenshots.
-- Motion: opt-in behind `html[data-motion='on']` (set only when reduced motion is not preferred). Entries 280–700ms with `--ease-out`, hovers 180ms, lifts ≤2px. Scroll reveals via `.reveal` + IntersectionObserver; masthead stretch via native `animation-timeline: view()` only. Cross-document view transitions (`@view-transition`) guarded by `prefers-reduced-motion`. Reduced-motion users get everything visible and still (marquee becomes a scrollable strip).
-- Hidden terminal (type `mn` or Konami): factual content only, focus-trapped, Esc closes, `aria-modal`.
+- Motion: opt-in behind `html[data-motion='on']` (set only when reduced motion is not preferred). Entries 280–700ms with `--ease-out`, hovers 180ms, lifts ≤2px. Scroll reveals via `.reveal` + IntersectionObserver; masthead stretch via native `animation-timeline: view()` only. Cross-document view transitions (`@view-transition`) guarded by `prefers-reduced-motion`. Reduced-motion users get everything visible and still (marquee becomes a scrollable strip). Every looping or auto-updating device (decoder, marquee, signal trace, cursor blink) also stops through the header pause control (`data-motion-toggle`, persisted as `mn-motion`), required by WCAG 2.2.2; JS devices check `data-motion` on each tick.
+- Hidden terminal (type `mn` or Konami, or "Open terminal" in the ⌘K palette): factual content only, a native modal `<dialog>` (inert page, Esc closes, focus returns). Only one of palette/terminal is open at a time.
+- ⌘K palette lists actions, pages and every project; typing filters, ↑↓ moves focus, Enter opens the first match.
+- Decorative generated glyphs (`↗`, `>`, quotes, `·`) use `content: 'x'; content: 'x' / '';` so they stay out of accessible names.
 - Responsive: 920px / 700px breakpoints; mobile keeps all four nav links, ledgers collapse to stacked rows, tap targets ≥2.6rem.
 - Content truth: no invented metrics, clients, or contact details; the terminal/stat numbers are computed from `src/data/site.ts`; missing case-study material stays an explicit visible TODO.

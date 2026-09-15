@@ -27,8 +27,8 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 ## Capabilities and Constraints
 
 - English at `/`; Brazilian Portuguese at `/pt-br/`.
-- Primary pages: home, work index, project detail, about, recommendations, contact, and a not-found page.
-- Project content is local and canonical; the work index includes all 26 entries from the official public portfolio page plus the existing `cf-toolkit` entry. External project links remain useful but are not required to render the site.
+- Primary pages: home, work index, project detail, about, recommendations, contact, and a not-found page in each locale.
+- Project content is local and canonical; the work index lists 34 projects: the entries from the official public portfolio page plus the developer tools and courses published since (`src/data/site.ts` is the inventory). External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
 - No browser-language auto-redirect.
 - No required analytics, tracker, contact database, or server-side runtime.

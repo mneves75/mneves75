@@ -89,23 +89,36 @@ Expected result: one `301` with the canonical `Location` header. Do not mutate D
 
 Reviewed 2026-08-10 against the deployed site and the repository configuration.
 
+Reviewed again 2026-09-15 for 1.6.0 (independent source-grounded audit: no Critical/High findings; the Medium
+items — vulnerable build toolchain and `style-src 'unsafe-inline'` — are fixed).
+
 Response headers (`public/_headers`, verified served from production before the review): HSTS
 (`max-age=31536000; includeSubDomains`, added in 1.1.0 — production was serving no HSTS header),
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
-`Permissions-Policy` denying camera/microphone/geolocation, `Cross-Origin-Opener-Policy: same-origin`,
-and a same-origin CSP with `frame-ancestors 'none'`, `base-uri 'self'`, and `form-action 'self'`.
+`Permissions-Policy` denying camera/microphone/geolocation/payment/usb/browsing-topics,
+`Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`
+(legacy browsers; `frame-ancestors 'none'` covers the rest), and a same-origin CSP with `frame-ancestors 'none'`,
+`base-uri 'self'`, `form-action 'self'`, and `object-src 'none'`.
 HSTS is deliberately not `preload`: preload is effectively irreversible for the apex domain.
 
-Accepted risk — `script-src`/`style-src` keep `'unsafe-inline'`. The theme-restore script must run
-before first paint to avoid a flash, and the JSON-LD block differs per page, so a hash allowlist
-cannot be expressed in a single static `_headers` file. The site takes no user input, sets no
-cookies, has no auth, loads no third-party script, and renders only compile-time content from
-`src/data/site.ts`, so there is no injection path into those inline blocks. Upgrade path if that
-ever changes: serve HTML through a Worker that injects a per-response nonce.
+CSP has no `'unsafe-inline'`. `script-src` lists sha256 hashes of the inline scripts in the built HTML
+(`scripts/csp-headers.mjs`, since 1.3.0; JSON-LD data blocks are not executed and need none). Since 1.6.0
+`style-src` is `'self'`: `build.inlineStylesheets: 'never'` emits every component stylesheet as a file, and
+runtime style changes go through the CSSOM (`el.style`, `setProperty`), which CSP does not govern. The route
+test fails on any inline `<style>` block, `style=` attribute, or `'unsafe-inline'` in either directive. The
+site takes no user input, sets no cookies, has no auth, and loads no third-party script; the hidden terminal
+escapes the visitor's own typed input before echoing it.
+
+Production serves only the custom domains: `workers_dev` and `preview_urls` are `false` at the top level of
+`wrangler.jsonc` (the workers.dev URL already answered `error code: 1042`; now explicit). Accepted: the staging
+workers.dev URL is indexable (one `_headers` file serves both environments, and staging receives the same
+bytes as production); `www` duplicates the apex with an apex canonical until a 301 Redirect Rule exists.
 
 Supply chain: both workflows pin `actions/checkout` to a commit SHA and declare least-privilege
 `permissions`; CI runs with a read-only token and `persist-credentials: false`; Dependabot watches
-GitHub Actions and the `bun` ecosystem (0 open alerts at review time). A TruffleHog
+GitHub Actions and the `bun` ecosystem. Dependabot alerts do not see bun's transitive tree, so CI runs
+`bun audit --audit-level=high` (1.6.0: astro 7.3.2 and in-range fast-uri/js-yaml/svgo updates took it from
+10 advisories to 0; none of that code reaches `dist/`). `lint:design` pins `impeccable@3.6.1`. A TruffleHog
 `verified,unknown` scan over all 113 tracked and modified files returned no findings. The repository
 holds no secrets, and deployment credentials live only in the operator's local Wrangler session.
 
@@ -120,5 +133,5 @@ No analytics is required for launch. If measurement becomes necessary, prefer Cl
 - [ ] Confirm custom domains and redirect rules return the expected 301/200 behavior.
 - [ ] Check `/robots.txt`, `/sitemap.xml`, canonical, hreflang, and OG metadata on both locales.
 - [ ] Run `bun run check && bun run build` from a clean checkout.
-- [ ] Confirm the generated sitemap includes all 33 project slugs in both locales.
+- [ ] Confirm the generated sitemap includes all 34 project slugs in both locales.
 - [ ] Inspect desktop and mobile screenshots after deployment.

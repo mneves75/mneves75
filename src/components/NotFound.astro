@@ -1,0 +1,30 @@
+---
+import { href, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en'
+  ? { label: '404 / route not found', title: 'Wrong turn.', missing: 'no such route', try: 'try', home: 'home', work: 'work index' }
+  : { label: '404 / rota não encontrada', title: 'Caminho errado.', missing: 'essa rota não existe', try: 'tente', home: 'início', work: 'trabalho' };
+---
+
+<section class="not-found">
+  <p class="label-mono">{copy.label}</p>
+  <h1 class="display">{copy.title}</h1>
+  <div class="term">
+    <div class="term-bar"><span>MN://404</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+    <div class="term-body">
+      <p><span class="t-prompt">mn@dev:~$</span> <span class="t-cmd">cd</span> <span class="t-str">/this-route/</span></p>
+      <p><span class="t-dim">&gt;</span> {copy.missing}</p>
+      <p><span class="t-dim">&gt;</span> {copy.try}: <a href={href(locale, '/')}>{copy.home}</a> <span class="t-dim">·</span> <a href={href(locale, '/work/')}>{copy.work}</a> <span aria-hidden="true">↵</span></p>
+      <p><span class="t-prompt">mn@dev:~$</span><span class="t-cursor" aria-hidden="true"></span></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .not-found { max-width: 38rem; margin-inline: auto; padding-block: clamp(5rem, 14vw, 10rem); }
+  .not-found h1 { margin: .9rem 0 2.6rem; font-size: var(--step-3); }
+  .not-found .term-body a { color: var(--term-str); text-decoration: underline; text-underline-offset: .2em; }
+  .not-found .term-body a:hover, .not-found .term-body a:focus-visible { color: var(--term-accent); }
+</style>

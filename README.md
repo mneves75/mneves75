@@ -21,12 +21,12 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 | [STOA](https://stoa.mvneves.dev/) | A 12-week Stoicism course in Brazilian Portuguese — 36 self-contained lessons, 14 exercises, a reflective journal | No account, no backend, no cookie. Your journal never leaves your device, and the whole course works offline |
 | [AI Pedometer](https://github.com/mneves75/ai-pedometer) | iOS and watchOS step tracker with on-device AI coaching | HealthKit, workouts, widgets, and Apple Foundation Models without sending health context to a cloud AI service |
 | [cf-toolkit](https://github.com/mneves75/cf-toolkit) | Safe multi-account Cloudflare Wrangler | Two locks so you never deploy to the wrong account |
-| [ffts-grep](https://github.com/mneves75/ffts-grep) | Fast full-text search indexer with SQLite FTS5 | Sub-10ms queries. Built for Claude Code. |
+| [ffts-grep](https://github.com/mneves75/ffts-grep) | Fast full-text search indexer with SQLite FTS5 | ~10ms queries on 10K-file codebases. Built for Claude Code. |
 | [iOS Health Sync](https://github.com/mneves75/ai-health-sync-ios) | Sync HealthKit data iPhone ↔ Mac | Your health data. Your devices. No cloud. |
 | [Skills](https://mneves75.github.io/skills/) | Nine skills for AI coding agents: review, verify, orchestrate, audit, score readiness, teach back, explain, stress-test, mobile concepts. `npx skills add mneves75/skills` | Skills that hold the agent to a standard. The agent isn't broken. Your repo is. |
 | [Mega-Sena Analyzer](https://github.com/mneves75/megasena-analyser-webapp) | Lottery statistics and bet generator | Data science for the masses. No predictions, just math. |
-| [Swift Fast Markdown](https://github.com/mneves75/swift-fast-markdown) | High-performance Swift markdown parser | Parsing 100MB/s+ on Apple Silicon |
-| [clawdbot](https://github.com/mneves75/clawdbot) | Personal AI across all messengers | WhatsApp, Telegram, Slack, Discord, Signal, iMessage |
+| [Swift Fast Markdown](https://github.com/mneves75/swift-fast-markdown) | High-performance Swift markdown parser | Parses 10 KB in ~0.22 ms on Apple Silicon |
+| [OpenClaw](https://github.com/mneves75/openclaw) (fork) | My working fork of the open-source personal AI assistant across messengers | WhatsApp, Telegram, Slack, Discord, Signal, iMessage |
 
 ## How I Think
 
@@ -56,4 +56,4 @@ I teach AI and development in Portuguese at [conhecendoia.com.br](https://conhec
 
 ---
 
-*Open source everything. Apache 2.0. Shared knowledge multiplies.*
+*Open source where it can be. Apache-2.0 or MIT. Shared knowledge multiplies.*

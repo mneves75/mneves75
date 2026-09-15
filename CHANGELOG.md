@@ -6,6 +6,56 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-09-15
+
+Full-site review: security, accessibility, SEO and content truth. Not deployed yet.
+
+### Added
+
+- Pause control for animations in the header and the ⌘K palette (WCAG 2.2.2): stops the hero decoder,
+  marquee, signal trace and cursor blink, persists across pages, and is restored before first paint. Hidden
+  for reduced-motion users, who already get a still page.
+- ⌘K palette now lists actions, every page and all 34 projects, with an empty state; "Open terminal" reaches
+  the hidden terminal without the key sequence.
+- Brazilian Portuguese 404 page (`/pt-br/404.html`, served for any missing `/pt-br/` route).
+- `og:locale`, `og:image` dimensions and alt text, `twitter:image:alt`.
+- `AGENTS.md` (gates, invariants, release rules) and a `CLAUDE.md` pointer to it.
+
+### Fixed
+
+- ⌘K palette filtering never hid anything (`display: flex` beat the `hidden` attribute), and the advertised
+  ↑↓ navigation was not implemented. Arrow keys, Enter on the first match, a single Esc and backdrop click
+  now work.
+- Dark theme contrast: the `MN` chip, hovered buttons and text selection (white on `#ff6b35`, 2.8:1), and the
+  active filter count (2.4:1) now pass AA through `--on-signal` / `--on-ink-accent`.
+- Hero heading's accessible name no longer changes with the decoder animation.
+- Hidden terminal is a native modal `<dialog>`: the page behind is inert and focus returns on close.
+- `aria-label` on the stat rail and filter bar had no role (`role="group"` added); filter results are
+  announced; decorative arrows, quotes and the footer trace are out of the accessibility tree.
+- Mobile nav text grew from 9.3px to 10.6px, and the header keeps one row of controls at 320px.
+- Project detail hero media was hidden by the scroll reveal, delaying LCP.
+- Home terminal values wrap under their own column, not under the key.
+- 404 pages no longer advertise a canonical URL, hreflang alternates or JSON-LD for a route that does not
+  exist; JSON-LD is `ProfilePage` only on home and about (`WebPage` elsewhere), with X in `sameAs`.
+- Content checked against primary sources: hay designed seven ranking signals and deleted four (was six and
+  three); Skills ships three scripts and two adapted skills keep MIT; OU Benchmark promises a checksum
+  readback, not identical checksums; pt-BR orthography (multiconta, independentemente, antes de o Wrangler,
+  umidor). Profile README: ffts-grep ~10 ms, Swift Fast Markdown measured figure, OpenClaw listed as a fork,
+  licenses are Apache-2.0 or MIT.
+- Work index count no longer counts up (the dosage rule keeps count-ups on the home stat rail).
+
+### Security
+
+- `Content-Security-Policy` `style-src` no longer allows `'unsafe-inline'`: stylesheets are always external
+  (`build.inlineStylesheets: 'never'`), and the route test fails on any inline style.
+- astro 7.2.0 → 7.3.2 (critical AVIF build-time advisory) plus in-range fast-uri, js-yaml and svgo updates:
+  `bun audit` 10 advisories → 0. CI now runs `bun audit --audit-level=high`.
+- Added `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and payment/usb/browsing-topics to
+  `Permissions-Policy`; fonts get immutable caching.
+- `wrangler.jsonc` sets `workers_dev: false` and `preview_urls: false` for production explicitly.
+- `scripts/csp-headers.mjs` no longer mistakes `data-src=` for an external script; `lint:design` pins
+  `impeccable@3.6.1` instead of running whatever npm serves.
+
 ## [1.5.0] - 2026-09-15
 
 Deployed to staging (`8e737e72`, tag `v1.5.0-beta1`) and production (`2becbaf6`, tag `v1.5.0`) on 2026-09-15.

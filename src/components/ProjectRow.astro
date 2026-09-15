@@ -1,6 +1,6 @@
 ---
 import type { Locale, Project } from '../data/site';
-import { categoryLabels, href } from '../data/site';
+import { categoryLabels, href, pad } from '../data/site';
 
 interface Props { project: Project; locale: Locale; index: number; }
 const { project, locale, index } = Astro.props;
@@ -8,7 +8,7 @@ const url = href(locale, `/work/${project.slug}/`);
 ---
 
 <article class="project-row" data-project-row data-category={project.category}>
-  <span class="idx" aria-hidden="true">{String(index).padStart(2, '0')}</span>
+  <span class="idx" aria-hidden="true">{pad(index)}</span>
   <a class="project-image" href={url} tabindex="-1" aria-hidden="true">
     {project.image
       ? <img src={project.image} alt={project.alt[locale]} width="640" height="360" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
