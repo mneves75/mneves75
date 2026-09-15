@@ -40,12 +40,12 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
-- Worker version: `16677145-6c7e-4756-9a39-7b5413a68a54` (1.4.0, tag `v1.4.0-beta1`; routes override active — the deploy printed only the workers.dev trigger, never the custom domains)
-- Published command observed: `2026-08-24`.
-- Remote smoke verified: `/pt-br/` 200; published `HomePage.BNJUyL6M.css` contains the hero wrap rules. Cache-bust the first probe — a stale edge HIT can lag a minute after deploy.
+- Worker version: `8e737e72-8f8a-4f71-bdb9-3ef8fec1f7a5` (1.5.0, tag `v1.5.0-beta1`, 2026-09-15); the deploy printed only the workers.dev trigger.
+- Remote smoke verified: App Store links by locale on `/work/dnschat/` (us) and `/pt-br/work/weathersunscreen/` (br), no ffts-grep image on `/work/cf-toolkit/`, nine skills, devtrim v0.9.6, hay 0.458, "no license yet" status on unlicensed repos, CSP without `'unsafe-inline'`.
 
 ### Latest production evidence
 
+- 1.5.0 (tag `v1.5.0`, 2026-09-15): Worker version `2becbaf6-b9d3-4c37-84f7-34a5e67d5111`, custom domains `mvneves.dev` and `www.mvneves.dev` still attached. Verified live: store links, cf-toolkit plate, nine skills.
 - Published URLs: `https://mvneves.dev` (custom domain) and `https://mvneves-dev.mvneves.workers.dev`
 - Worker version: `940113fd-34c2-468e-8624-023bd62e517b` (1.4.0, tag `v1.4.0`, 2026-08-27) — STOA added; custom domains `mvneves.dev` and `www.mvneves.dev` still attached. Verified live: `/work/stoa/` and `/pt-br/work/stoa/` 200 on apex and www, 34 project rows in both locales, 78 sitemap URLs, no link to the private source repo. A stale edge-cache HIT can lag a minute after deploy.
 - Both `mvneves.dev` and `www.mvneves.dev` custom domains are attached declaratively via `routes` (`custom_domain: true`) in `wrangler.jsonc` — Wrangler provisions DNS records and certificates on deploy. Neither hostname had a DNS record before 2026-08-10.

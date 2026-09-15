@@ -8,6 +8,8 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.5.0] - 2026-09-15
 
+Deployed to staging (`8e737e72`, tag `v1.5.0-beta1`) and production (`2becbaf6`, tag `v1.5.0`) on 2026-09-15.
+
 ### Added
 
 - App Store links on [DNS Chat](https://mvneves.dev/work/dnschat/) and
