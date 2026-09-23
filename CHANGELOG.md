@@ -6,6 +6,20 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-09-23
+
+### Added
+
+- Cloudflare Web Analytics works: the zone injects its beacon at the edge, and the CSP blocked it on every page.
+  `script-src` now allows `https://static.cloudflareinsights.com/beacon.min.js/`, a trailing-slash path source that
+  matches the versioned beacon URL and nothing else on that host; reports go to same-origin `/cdn-cgi/rum`, so `connect-src` stays `'self'`. Cloudflare's analytics keeps
+  no cookies or localStorage and does not fingerprint visitors. The route test fails on any other script source, and the browser gate proves another file on the same host stays blocked.
+- Browser gate in `bun run test` (`scripts/test-browser.mjs`, `playwright-core` 1.63.0 driving the system Google
+  Chrome, no browser download): serves `dist/` with `_headers` applied and checks CSP violations on 12 pages and
+  both 404s (with a planted-violation control), the beacon allowlist, the localized 404, ⌘K palette keys, the pause
+  control and scrollable marquee, reduced motion, the work filter, terminal timers and 360px overflow. Against the
+  pre-1.6.1 build it fails exactly the five checks for bugs fixed since. CI runs it on every push.
+
 ## [1.6.1] - 2026-09-23
 
 Pre-release review of 1.6.0, which was never deployed on its own: 1.6.1 is the first deploy of both.

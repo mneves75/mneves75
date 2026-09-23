@@ -1,6 +1,6 @@
 {
   "name": "mvneves-dev",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,9 @@
     "build": "astro build && node scripts/csp-headers.mjs",
     "check": "astro check",
     "preview": "astro preview",
-    "test": "node scripts/test-routes.mjs",
+    "test": "node scripts/test-routes.mjs && node scripts/test-browser.mjs",
+    "test:routes": "node scripts/test-routes.mjs",
+    "test:browser": "node scripts/test-browser.mjs",
     "lint:design": "npx --yes impeccable@3.6.1 detect src public --json"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@types/node": "26.2.0",
+    "playwright-core": "1.63.0",
     "typescript": "^5.9.3"
   },
   "engines": {

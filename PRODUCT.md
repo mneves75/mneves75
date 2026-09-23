@@ -31,7 +31,8 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 - Project content is local and canonical; the work index lists 34 projects: the entries from the official public portfolio page plus the developer tools and courses published since (`src/data/site.ts` is the inventory). External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
 - No browser-language auto-redirect.
-- No required analytics, tracker, contact database, or server-side runtime.
+- No tracker, contact database, or server-side runtime. The only measurement is cookieless Cloudflare Web
+  Analytics, injected at the edge (no client-side state, no fingerprinting).
 - Accessibility target: WCAG 2.2 AA; keyboard, reduced motion, contrast, responsive layout.
 - Motion uses native CSS plus one shared `IntersectionObserver` fallback; reduced-motion users receive visible static content.
 - Cloudflare staging deployment is an explicit operator action; production deployment and domain redirects remain separate, explicit operations.

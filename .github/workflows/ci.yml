@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    name: check + build + routes
+    name: check + build + tests (routes, browser)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

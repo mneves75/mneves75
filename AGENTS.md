@@ -13,12 +13,16 @@ bun run check && bun run build && bun run test
 ```
 
 `bun run build` is `astro build` plus `scripts/csp-headers.mjs`; never deploy a `dist/` built any other way.
+`bun run test` is the static route test plus `scripts/test-browser.mjs`, a browser gate that serves `dist/` with
+`_headers` applied and drives the system Google Chrome (`CHROME_PATH` overrides; no browser download). A new
+interactive behaviour gets a check there, proved to fail without the fix.
 CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun (`packageManager`), e.g.
 `bunx bun@1.3.14 install`, so CI's `--frozen-lockfile` accepts it.
 
 ## Invariants
 
-- **CSP is strict.** `script-src` holds only sha256 hashes written post-build, and `style-src` is `'self'`
+- **CSP is strict.** `script-src` holds sha256 hashes written post-build plus one path source, the
+  zone-injected Cloudflare Web Analytics beacon (`https://static.cloudflareinsights.com/beacon.min.js/`); `style-src` is `'self'`
   (`build.inlineStylesheets: 'never'`). A new inline `<script>` is hashed automatically; an inline `<style>`
   or `style=` attribute fails the route test. Verify CSP behaviour served (`wrangler dev --env staging`), not
   from source.

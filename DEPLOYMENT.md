@@ -114,8 +114,16 @@ CSP has no `'unsafe-inline'`. `script-src` lists sha256 hashes of the inline scr
 `style-src` is `'self'`: `build.inlineStylesheets: 'never'` emits every component stylesheet as a file, and
 runtime style changes go through the CSSOM (`el.style`, `setProperty`), which CSP does not govern. The route
 test fails on any inline `<style>` block, `style=` attribute, or `'unsafe-inline'` in either directive. The
-site takes no user input, sets no cookies, has no auth, and loads no third-party script; the hidden terminal
-escapes the visitor's own typed input before echoing it.
+site takes no user input, sets no cookies, and has no auth; the hidden terminal escapes the visitor's own typed
+input before echoing it. Its only third-party script (since 1.7.0) is the Cloudflare Web Analytics beacon the
+zone injects at the edge: `script-src` allows `https://static.cloudflareinsights.com/beacon.min.js/` (a
+trailing-slash path source prefix-matches the versioned beacon URL and nothing else on the host; the file-exact
+source from Cloudflare's FAQ would block it, and `'strict-dynamic'` cannot cover an edge-inserted tag). Cloudflare
+adds a sha512 `integrity` attribute to the tag. It reports to
+same-origin `/cdn-cgi/rum`, so `connect-src` stays `'self'`. The route test fails on any other external script
+host. `bun run test` also runs `scripts/test-browser.mjs`, which serves `dist/` with `_headers` applied and
+drives system Chrome: CSP violations (with a planted-violation control), palette, pause, filter, terminal, 404s
+and 360px overflow.
 
 Production serves only the custom domains: `workers_dev` and `preview_urls` are `false` at the top level of
 `wrangler.jsonc` (the workers.dev URL already answered `error code: 1042`; now explicit). Accepted: the staging
@@ -132,7 +140,16 @@ holds no secrets, and deployment credentials live only in the operator's local W
 
 ## Analytics
 
-No analytics is required for launch. If measurement becomes necessary, prefer Cloudflare Web Analytics configured at the Cloudflare dashboard. Do not add Google Analytics or a third-party script without a separate product decision and consent/privacy review.
+Cloudflare Web Analytics, enabled at the zone (automatic setup: Cloudflare injects the beacon into HTML responses
+of the proxied custom domains, not into staging on workers.dev). Allowed by CSP since 1.7.0; it was blocked
+before, so there is no earlier data. Cloudflare states it keeps no client-side state (no cookies or
+localStorage) and does not fingerprint visitors by IP or User-Agent
+([Cloudflare blog](https://blog.cloudflare.com/free-privacy-first-analytics-for-a-better-web/)). On the Free
+plan the automatic setup excludes EU/EEA visitors' data by default
+([Cloudflare docs](https://developers.cloudflare.com/speed/observatory/rum-beacon/#rum-excluding-eeaeu)); the
+choice lives in the dashboard (Web Analytics → site settings).
+Do not add Google Analytics or any other third-party script without a separate product decision and
+consent/privacy review.
 
 ## Launch checklist
 

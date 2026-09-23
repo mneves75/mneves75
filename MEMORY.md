@@ -2,7 +2,18 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-23)
+## Current state (2026-09-23, later)
+
+- **1.7.0**: Cloudflare Web Analytics enabled — CSP `script-src` allows the path source
+  `https://static.cloudflareinsights.com/beacon.min.js/` (trailing slash = prefix match of the versioned beacon URL;
+  Cloudflare's file-exact FAQ source blocks it; reports go to same-origin
+  `/cdn-cgi/rum`). Browser gate `scripts/test-browser.mjs` runs in `bun run test` and CI with system Chrome via
+  `playwright-core` (no download); it failed the pre-fix 1.6.0 build on exactly the five bugs it guards.
+- Lesson: Playwright request interception (`context.route`) on every context made cross-document view transitions
+  abort with a spurious `InvalidStateError` in 3 of 5 gate runs (0/30 on real staging and a plain server). Scope
+  `route` to the one check that needs it.
+
+## Earlier state (2026-09-23)
 
 - **1.6.1**: pre-release review of 1.6.0, shipped together — LIVE (prod `79dfd2d2`, staging `ddbbb36a`) (1.6.0 was never deployed or tagged on its own). Paused marquee no longer clipped, terminal timers cancelled on close, empty-query Enter in ⌘K no longer opens the terminal, pause glyph keyed on `data-motion`, work filter on `hidden`, Skills = ten skills / three MIT, devalue 5.9.4 (one-entry lockfile edit), CORP detached on OG images + favicon.
 - Lesson: `agent-browser console` does NOT surface CSP violations — a "clean console" is vacuous. Register a `securitypolicyviolation` listener with `--init-script` and prove it with a planted inline `<style>` first.
@@ -52,13 +63,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 1. `www.mvneves.dev` now serves the site as a second custom domain (canonical = apex). Optional: replace with a strict 301 Redirect Rule in the dashboard; `mvneves.app → mvneves.dev` redirect still pending (separate zone).
 2. Every one of the 31 projects now carries a written case study sourced from its repository README or live site (1.2.0). The only remaining visible TODO is recommendation slot 08. `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
-4. Cloudflare Web Analytics beacon is injected by the zone and blocked by CSP (the only production violation, since
-   before 1.6). Decide: allow `static.cloudflareinsights.com` in `script-src` + `cloudflareinsights.com` in
-   `connect-src` (privacy review per `DEPLOYMENT.md`), or turn automatic injection off in the dashboard.
-5. Recommended next: move the manual browser checks into `bun run test` as a small headless gate (palette keys, pause
-   → scrollable marquee, terminal timers, work filter, `securitypolicyviolation` sweep with a planted-violation
-   control). Every JS bug fixed in 1.6.0/1.6.1 slipped past the static-HTML route test.
-6. A Cloudflare API token for the marcusneves2005 account was pasted into an agent chat on 2026-09-23 (not used).
+4. Web Analytics automatic setup excludes EU visitors by default (dashboard toggle); a product decision, not code.
+5. A Cloudflare API token for the marcusneves2005 account was pasted into an agent chat on 2026-09-23 (not used).
    Revoke/roll it in the dashboard; tokens go through 1Password, never chat.
 
 ## Tooling lessons

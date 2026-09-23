@@ -55,6 +55,13 @@ assert.match(home, /Three decades shipping/);
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");
 assert.match(headers, /script-src 'self' 'sha256-[A-Za-z0-9+/=]+'/, 'script-src has no inline script hash');
+// The only third-party script is the Cloudflare Web Analytics beacon the zone injects (it reports to same-origin
+// /cdn-cgi/rum, so connect-src stays 'self'). Any other external host is a policy change, not a drive-by edit.
+// Every source that is not a quoted keyword or hash (hosts, schemes, wildcards) must be exactly that beacon path;
+// its trailing slash prefix-matches the versioned beacon URL (…/beacon.min.js/v31…) and nothing else on the host.
+const scriptSources = (headers.match(/script-src ([^;]*)/)?.[1] ?? '').split(/\s+/).filter((source) => source && !source.startsWith("'"));
+assert.deepEqual(scriptSources, ['https://static.cloudflareinsights.com/beacon.min.js/'], `unexpected script-src sources: ${scriptSources.join(' ')}`);
+assert.match(headers, /connect-src 'self';/, 'connect-src must stay same-origin');
 // style-src carries no 'unsafe-inline', so no built page may contain an inline <style> block or style attribute.
 assert.doesNotMatch(headers, /style-src [^;]*'unsafe-inline'/, "style-src still allows 'unsafe-inline'");
 for (const route of routes) {
