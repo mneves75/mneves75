@@ -29,7 +29,7 @@ All notable changes to this repository are documented here. The format follows
   "constraint" no longer repeats across the home page; generic "Engineering note" and "Next route" removed from
   project pages; alt texts no longer mention a "supplied portfolio asset".
 - Design: project images in full colour at 16:10 (were grayscale, cropped to 16:9), flat terminal panels with one
-  status square, `text-wrap: balance/pretty`. Removed the hero cursor spotlight and the nav hover scramble.
+  status square, container queries on project rows. Removed the hero cursor spotlight and the nav hover scramble.
 - Stat rail numbers are server-rendered and hidden from assistive tech while they count up; the label carries the value.
 - Route test takes project routes from the sitemap (STOA's pages were never checked before); a new browser check
   proves the in-motion filter and the archive group (fails against the previous filter code).

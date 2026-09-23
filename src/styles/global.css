@@ -166,7 +166,7 @@ button, input { font: inherit; }
 button { color: inherit; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
-p { text-wrap: pretty; }
+p, li, blockquote { text-wrap: pretty; }
 
 .skip-link {
   position: fixed;
@@ -198,8 +198,6 @@ p { text-wrap: pretty; }
 .num-mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 /* Release stage for anything not live: a text label, never colour alone. */
 .stage-badge { display: inline-block; border: 1px solid currentColor; padding: .05rem .4rem; color: var(--ink-soft); font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; line-height: 1.5; text-transform: uppercase; white-space: nowrap; }
-h1, h2, h3 { text-wrap: balance; }
-p, li, blockquote { text-wrap: pretty; }
 .idx { color: var(--signal-text); font-family: var(--mono); font-size: .72rem; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .display { font-family: var(--display); font-weight: 700; letter-spacing: -.045em; line-height: .96; }
 .muted { color: var(--muted); }
@@ -336,10 +334,9 @@ a.index-row:hover .row-arrow, .index-row:hover .row-arrow { color: var(--signal-
   box-shadow: none;
 }
 .term-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--term-border); background: var(--term-bg-deep); padding: .5rem .85rem; color: var(--term-muted); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; }
-.term-bar .dots { display: inline-flex; }
 /* One copper status square (the brand chip), not faux window controls. */
-.term-bar .dots i { display: none; }
-.term-bar .dots i:first-child { display: block; width: .5rem; height: .5rem; background: var(--term-accent); }
+.term-bar .dots { display: inline-flex; }
+.term-bar .dots i { display: block; width: .5rem; height: .5rem; background: var(--term-accent); }
 .term-body { overflow-x: auto; padding: 1rem 1.1rem 1.15rem; }
 .term-body p, .term-body pre { margin: 0; font-family: inherit; white-space: pre-wrap; }
 .t-prompt { color: var(--term-accent); }

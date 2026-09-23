@@ -146,7 +146,7 @@ const ui = locale === 'en'
 
     <dialog class="command-palette" id="command-palette" aria-labelledby="palette-title">
       <div class="palette-inner">
-        <div class="term-bar"><span id="palette-title">MN://{locale === 'en' ? 'palette' : 'paleta'}</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="term-bar"><span id="palette-title">MN://{locale === 'en' ? 'palette' : 'paleta'}</span><span class="dots" aria-hidden="true"><i></i></span></div>
         <input class="palette-search" data-palette-search type="search" aria-label={ui.search} aria-controls="palette-list" placeholder={ui.search} autocomplete="off" enterkeyhint="go" />
         <div class="palette-list" id="palette-list" data-palette-list>
           <p class="palette-group" data-palette-group>{ui.actions}</p>

@@ -2,8 +2,9 @@
 import type { Locale, Project } from '../data/site';
 import { categoryLabels, href, pad, stageLabels, stageOf } from '../data/site';
 
-interface Props { project: Project; locale: Locale; index: number; }
-const { project, locale, index } = Astro.props;
+interface Props { project: Project; locale: Locale; index: number; headingLevel?: 3 | 4; }
+const { project, locale, index, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 4 ? 'h4' : 'h3';
 const url = href(locale, `/work/${project.slug}/`);
 const stage = stageOf(project);
 ---
@@ -16,8 +17,8 @@ const stage = stageOf(project);
       : <span class="image-plate"><span class="plate-prompt">$</span> {project.slug}</span>}
   </a>
   <div class="project-copy">
-    <p class="row-kicker label-mono">{project.kicker[locale]}{stage !== 'live' && <span class="stage-badge">{stageLabels[stage][locale]}</span>}</p>
-    <h3><a href={url}>{project.title}</a></h3>
+    <p class="row-kicker label-mono">{project.kicker[locale]}{stage !== 'live' && <><span class="sr-only"> · </span><span class="stage-badge">{stageLabels[stage][locale]}</span></>}</p>
+    <Heading class="row-title"><a href={url}>{project.title}</a></Heading>
     <p>{project.summary[locale]}</p>
   </div>
   <div class="project-taxonomy">
@@ -43,8 +44,7 @@ const stage = stageOf(project);
   .idx { padding-top: .3rem; }
 
   .project-image { display: block; overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); }
-  .project-image img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; transition: transform var(--t-med); }
-  html[data-motion='on'] .project-row:has(a:hover) .project-image img { transform: scale(1.03); }
+  .project-image img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
   .image-plate {
     display: flex; align-items: center; gap: .35em;
     aspect-ratio: 16 / 10; padding-inline: .6rem;
@@ -56,9 +56,9 @@ const stage = stageOf(project);
 
   .project-copy { display: grid; gap: .4rem; min-width: 0; }
   .row-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; margin: 0; color: var(--signal-text); font-size: .66rem; }
-  .project-copy h3 { margin: 0; font-size: var(--step-1); letter-spacing: -.03em; }
-  .project-copy h3 a { display: inline-block; overflow-wrap: anywhere; }
-  .project-row:has(h3 a:hover) h3 a, .project-copy h3 a:focus-visible { color: var(--signal-text); }
+  .row-title { margin: 0; font-size: var(--step-1); letter-spacing: -.03em; }
+  .row-title a { display: inline-block; overflow-wrap: anywhere; }
+  .project-row:has(.row-title a:hover) .row-title a, .row-title a:focus-visible { color: var(--signal-text); }
   .project-copy p { margin: 0; max-width: 46ch; color: var(--muted); font-size: var(--step--1); }
 
   .project-taxonomy { display: grid; gap: .35rem; min-width: 0; }
@@ -69,12 +69,13 @@ const stage = stageOf(project);
   .row-arrow { color: var(--muted); font-family: var(--mono); transition: color var(--t-fast), transform var(--t-fast); }
   .project-row:has(a:hover) .row-arrow { color: var(--signal-text); transform: translate(3px, -3px); }
 
-  @media (max-width: 920px) {
+  /* Rows respond to the list's width (container-type is set on .project-list), not the viewport. */
+  @container (max-width: 860px) {
     .project-row { grid-template-columns: 2.2rem 6rem minmax(0, 1fr); gap: 1rem; }
     .project-taxonomy, .project-status { grid-column: 3; }
     .project-status { flex-direction: row; align-items: baseline; justify-content: flex-start; gap: .7rem; text-align: left; }
   }
-  @media (max-width: 700px) {
+  @container (max-width: 640px) {
     .project-row { grid-template-columns: 2.2rem minmax(0, 1fr); }
     .project-image { grid-column: 2; max-width: 12rem; }
     .project-copy, .project-taxonomy, .project-status { grid-column: 2; }

@@ -1,12 +1,12 @@
 ---
-import { href, isPublic, pad, principles, projects, range, recommendations, site, stageOf, type Locale } from '../data/site';
+import { href, isInMotion, isPublic, pad, principles, projects, range, recommendations, site, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const featured = projects.filter((project) => project.featured);
 const openSourceCount = projects.filter((project) => project.openSource).length;
 const publicCount = projects.filter(isPublic).length;
-const inMotion = projects.filter((project) => stageOf(project) !== 'live');
+const inMotion = projects.filter(isInMotion);
 const decoderWords = locale === 'en'
   ? ['native iOS apps', 'tools for coding agents', 'public-data systems', 'local-first software']
   : ['apps iOS nativos', 'ferramentas para agentes', 'sistemas de dados públicos', 'software local-first'];
@@ -84,7 +84,7 @@ const copy = locale === 'en' ? {
   </div>
 
   <div class="hero-term term">
-    <div class="term-bar"><span>mn@dev — session</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+    <div class="term-bar"><span>mn@dev — session</span><span class="dots" aria-hidden="true"><i></i></span></div>
     <div class="term-body">
       <p><span class="t-prompt">$</span> <span class="t-cmd">mn</span> --status</p>
       <p class="t-kv"><span class="t-dim">shipping</span><span>30 {locale === 'en' ? 'years' : 'anos'}</span></p>

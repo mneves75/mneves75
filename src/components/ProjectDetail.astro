@@ -4,7 +4,7 @@ import { categoryLabels, href, stageLabels, stageOf, type Locale, type Project }
 
 interface Props { locale: Locale; project: Project; }
 const { locale, project } = Astro.props;
-const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', appStore: 'App Store', open: 'Open another project' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', appStore: 'App Store', open: 'Abrir outro projeto' };
+const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', productPage: 'Product page', appStore: 'App Store', open: 'Open another project', more: 'More work' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', productPage: 'Página do produto', appStore: 'App Store', open: 'Abrir outro projeto', more: 'Mais trabalho' };
 const diagramLabels: Record<string, string> = locale === 'pt' ? {
   prompt: 'prompt', 'DNS TXT': 'DNS TXT', resolver: 'resolver', 'LLM reply': 'resposta do LLM',
   iPhone: 'iPhone', HealthKit: 'HealthKit', 'local network': 'rede local', Mac: 'Mac',
@@ -122,7 +122,7 @@ const diagramLabels: Record<string, string> = locale === 'pt' ? {
   'photo references': 'fotos de referência',
   'allow-listed model': 'modelo em allowlist',
   'provider with your key': 'provedor com sua chave',
-  'add-only save': 'salvar só adicionando',
+  'add-only save': 'salva sem ler a fototeca',
   'stroke': 'traço',
   'Yjs document': 'documento Yjs',
   'Durable Object': 'Durable Object',
@@ -144,7 +144,7 @@ const diagramLabels: Record<string, string> = locale === 'pt' ? {
   'AI labels': 'rótulos de IA',
   'expiring share': 'compartilhamento com prazo',
   'your key': 'sua chave',
-  'on-device redaction': 'redução de dados no aparelho',
+  'on-device PII reduction': 'redução de PII no aparelho',
   'moderation': 'moderação',
   'coached reply': 'resposta orientada',
   'notice upload': 'envio da notificação',
@@ -199,19 +199,19 @@ const blocks = project.caseStudyPending ? [] : [
     ))}
   </div>
   <aside class="detail-aside">
-    <p class="label-mono">{locale === 'en' ? 'Stage' : 'Estágio'}</p>
+    <p class="label-mono">{locale === 'en' ? 'Stage' : 'Fase'}</p>
     <p class="detail-stage">{stageLabels[stageOf(project)][locale]}</p>
     {!(project.source || project.live || project.appStore) && <p class="muted">{locale === 'en' ? 'No public link yet: this page is the public record until it ships.' : 'Ainda sem link público: esta página é o registro público até o lançamento.'}</p>}
     {(project.source || project.live || project.appStore) && <div class="external-links">
       {project.source && <a class="text-link" href={project.source} target="_blank" rel="noreferrer">{copy.source}</a>}
-      {project.live && <a class="text-link" href={project.live} target="_blank" rel="noreferrer">{copy.live}</a>}
+      {project.live && <a class="text-link" href={project.live} target="_blank" rel="noreferrer">{stageOf(project) === 'live' ? copy.live : copy.productPage}</a>}
       {project.appStore && <a class="text-link" href={project.appStore[locale]} target="_blank" rel="noreferrer">{copy.appStore}</a>}
     </div>}
   </aside>
 </section>
 
 <section class="section">
-  <div class="section-heading"><div><p class="eyebrow">MN://WORK</p><h2>{copy.open}</h2></div></div>
+  <div class="section-heading"><div><p class="eyebrow">MN://WORK</p><h2>{copy.more}</h2></div></div>
   <div class="page-actions"><a class="button" href={href(locale, '/work/')}>{copy.open}</a></div>
 </section>
 
@@ -251,7 +251,7 @@ const blocks = project.caseStudyPending ? [] : [
 
   .detail-aside { position: sticky; top: 5.5rem; display: grid; gap: .8rem; border-top: 1px solid var(--line); padding-top: 1rem; }
   .detail-aside p { max-width: 34ch; margin: 0; font-size: var(--step--1); }
-  .detail-stage { color: var(--ink); font-family: var(--display); font-size: var(--step-1) !important; font-weight: 700; letter-spacing: -.02em; }
+  .detail-aside .detail-stage { color: var(--ink); font-family: var(--display); font-size: var(--step-1); font-weight: 700; letter-spacing: -.02em; }
   .external-links { display: grid; margin-top: .6rem; }
 
   @media (max-width: 920px) {

@@ -4,7 +4,7 @@ const { steps, label, slug } = Astro.props;
 ---
 
 <figure class="diagram term reveal">
-  <figcaption class="term-bar"><span>{`MN://${slug} — ${label}`}</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></figcaption>
+  <figcaption class="term-bar"><span>{`MN://${slug} — ${label}`}</span><span class="dots" aria-hidden="true"><i></i></span></figcaption>
   <div class="term-body">
     <p class="diagram-prompt"><span class="t-prompt">$</span> <span class="t-cmd">trace</span> <span class="t-str">{`"${slug}"`}</span></p>
     <ol class="route-diagram">

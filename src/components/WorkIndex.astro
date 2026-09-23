@@ -1,6 +1,6 @@
 ---
 import ProjectRow from './ProjectRow.astro';
-import { projects, stageOf, type Locale } from '../data/site';
+import { isInMotion, projects, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -43,10 +43,10 @@ const copy = locale === 'en' ? {
 };
 const categories = Object.keys(copy.filters) as Array<keyof typeof copy.filters>;
 // Flagships first, then the rest of what is live, then work still in motion; the sort is stable within each group.
-const rank = (project: (typeof projects)[number]) => (project.featured ? 0 : stageOf(project) === 'live' ? 1 : 2);
+const rank = (project: (typeof projects)[number]) => (project.featured ? 0 : isInMotion(project) ? 2 : 1);
 const current = projects.filter((project) => !project.archived).sort((a, b) => rank(a) - rank(b));
 const archive = projects.filter((project) => project.archived);
-const motionCount = projects.filter((project) => stageOf(project) !== 'live').length;
+const motionCount = projects.filter(isInMotion).length;
 const counts = projects.reduce<Record<string, number>>((totals, project) => {
   totals[project.category] = (totals[project.category] ?? 0) + 1;
   return totals;
@@ -75,9 +75,9 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
     {current.map((project, index) => <ProjectRow project={project} locale={locale} index={index + 1} />)}
   </div>
   <div class="archive-group" data-archive-group>
-    <h3 class="archive-heading label-mono">{copy.archive} <span class="num-mono">[{archive.length}]</span></h3>
+    <h3 class="archive-heading label-mono">{copy.archive} <span class="num-mono">{archive.length}</span></h3>
     <div class="project-list">
-      {archive.map((project, index) => <ProjectRow project={project} locale={locale} index={current.length + index + 1} />)}
+      {archive.map((project, index) => <ProjectRow project={project} locale={locale} index={current.length + index + 1} headingLevel={4} />)}
     </div>
   </div>
 </section>
@@ -147,10 +147,12 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   .filter-button:hover, .filter-button:focus-visible, .filter-button[aria-pressed='true'] { position: relative; z-index: 1; }
   .filter-button[aria-pressed='true'] .filter-count { color: var(--on-ink-accent); }
 
-  .project-list { border-top: 1px solid var(--line); }
+  .project-list { container-type: inline-size; border-top: 1px solid var(--line); }
   .archive-group { margin-top: clamp(2.5rem, 6vw, 4.5rem); }
   .archive-heading { margin: 0 0 1rem; }
   .archive-heading span { color: var(--signal-text); }
+  .archive-heading span::before { content: '['; content: '[' / ''; }
+  .archive-heading span::after { content: ']'; content: ']' / ''; }
 
   .repo-note { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 3rem); }
   .repo-note h2 { margin: 0; font-size: var(--step-2); }
