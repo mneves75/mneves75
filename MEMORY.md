@@ -2,9 +2,16 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-15, later)
+## Current state (2026-09-23)
 
-- **1.6.0** (committed, not deployed): full-site review. Motion pause control (WCAG 2.2.2), ⌘K palette actually filters and navigates (it never did), terminal as native `<dialog>`, dark-theme AA tokens, pt-BR 404 via an `astro:build:done` hook, CSP `style-src 'self'`, astro 7.3.2 with `bun audit` clean, content fixes from primary sources. `AGENTS.md` now holds gates and invariants.
+- **1.6.1**: pre-release review of 1.6.0, shipped together (1.6.0 was never deployed or tagged on its own). Paused marquee no longer clipped, terminal timers cancelled on close, empty-query Enter in ⌘K no longer opens the terminal, pause glyph keyed on `data-motion`, work filter on `hidden`, Skills = ten skills / three MIT, devalue 5.9.4 (one-entry lockfile edit), CORP detached on OG images + favicon.
+- Lesson: `agent-browser console` does NOT surface CSP violations — a "clean console" is vacuous. Register a `securitypolicyviolation` listener with `--init-script` and prove it with a planted inline `<style>` first.
+- Lesson: deleting one `bun.lock` entry makes bun re-resolve ~40 in-range packages; for a single-package security fix, edit that entry's version + integrity in place and confirm with `--frozen-lockfile`.
+- Lesson: `wrangler dev` dies if `bun run build` recreates `dist/` under it; restart after rebuilding. Port 8799 is often held by another project's dev server — check `lsof` before trusting a response.
+
+## Previous state (2026-09-15, later)
+
+- **1.6.0** (shipped in 1.6.1): full-site review. Motion pause control (WCAG 2.2.2), ⌘K palette actually filters and navigates (it never did), terminal as native `<dialog>`, dark-theme AA tokens, pt-BR 404 via an `astro:build:done` hook, CSP `style-src 'self'`, astro 7.3.2 with `bun audit` clean, content fixes from primary sources. `AGENTS.md` now holds gates and invariants.
 - Unlisted App Store apps by the same developer (id 1487532985): IA Palavras Cruzadas (6767752911) and GP Race Stats (6776818539). Not on the site; adding them needs source material first.
 - Lesson: a filter that sets `hidden` is dead code whenever a class sets `display`; the global `[hidden] { display: none !important }` rule exists for that. Behaviour bugs in the palette survived since launch because the route test is static HTML only; verify JS behaviour in a browser under the served CSP.
 

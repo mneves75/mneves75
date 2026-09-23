@@ -319,7 +319,6 @@ const copy = locale === 'en' ? {
   html[data-motion='on'] .page-home .marquee-track { animation: mn-marquee 34s linear infinite; }
   .page-home .marquee:hover .marquee-track { animation-play-state: paused; }
   @keyframes mn-marquee { to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) {
-    .page-home .marquee { overflow-x: auto; }
-  }
+  /* Without the animation (paused, reduced motion or no JS) the strip must scroll, or items past the fold are unreachable. */
+  html:not([data-motion='on']) .page-home .marquee { overflow-x: auto; }
 </style>

@@ -23,7 +23,7 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 | [cf-toolkit](https://github.com/mneves75/cf-toolkit) | Safe multi-account Cloudflare Wrangler | Two locks so you never deploy to the wrong account |
 | [ffts-grep](https://github.com/mneves75/ffts-grep) | Fast full-text search indexer with SQLite FTS5 | ~10ms queries on 10K-file codebases. Built for Claude Code. |
 | [iOS Health Sync](https://github.com/mneves75/ai-health-sync-ios) | Sync HealthKit data iPhone ↔ Mac | Your health data. Your devices. No cloud. |
-| [Skills](https://mneves75.github.io/skills/) | Nine skills for AI coding agents: review, verify, orchestrate, audit, score readiness, teach back, explain, stress-test, mobile concepts. `npx skills add mneves75/skills` | Skills that hold the agent to a standard. The agent isn't broken. Your repo is. |
+| [Skills](https://mneves75.github.io/skills/) | Ten skills for AI coding agents: review, verify, orchestrate, audit, score readiness, teach back, explain, stress-test, hand off, mobile concepts. `npx skills add mneves75/skills` | Skills that hold the agent to a standard. The agent isn't broken. Your repo is. |
 | [Mega-Sena Analyzer](https://github.com/mneves75/megasena-analyser-webapp) | Lottery statistics and bet generator | Data science for the masses. No predictions, just math. |
 | [Swift Fast Markdown](https://github.com/mneves75/swift-fast-markdown) | High-performance Swift markdown parser | Parses 10 KB in ~0.22 ms on Apple Silicon |
 | [OpenClaw](https://github.com/mneves75/openclaw) (fork) | My working fork of the open-source personal AI assistant across messengers | WhatsApp, Telegram, Slack, Discord, Signal, iMessage |

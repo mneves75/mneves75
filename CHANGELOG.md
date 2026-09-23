@@ -6,9 +6,35 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-09-23
+
+Pre-release review of 1.6.0, which was never deployed on its own: 1.6.1 is the first deploy of both.
+
+### Fixed
+
+- Pausing motion from the header left the home marquee clipped (`overflow: hidden`): its scrollable fallback
+  applied only to reduced-motion users. It now applies whenever the marquee is not animating, no-JS included.
+- Closing the hidden terminal during `matrix` kept writing lines into it, and closing right after `cd` still
+  navigated. Every pending timer is cancelled on close.
+- Enter in an empty ⌘K palette ran the first item, which is "Open terminal". Enter now runs the first match
+  only for a typed query.
+- A page loaded while motion was paused briefly showed the pause glyph (❚❚) before switching to play (▶); the
+  glyph now follows `data-motion`, which is set before first paint.
+- Work filter hides rows with the `hidden` attribute, as `AGENTS.md` requires, instead of a `data-hidden` rule.
+- Skills now ships ten skills (adds a handoff prompt for a second agent's independent review), and three
+  adapted skills keep MIT, not two (checked against `mneves75/skills`). Profile README row updated.
+
+### Security
+
+- devalue 5.9.0 → 5.9.4 (GHSA-9rgm-9g3h-6x36, DoS on malformed input; build-time only): a one-entry
+  lockfile change, `bun audit` clean at every level. Built HTML is byte-identical apart from the fixes above.
+- `Cross-Origin-Resource-Policy: same-origin` (new in 1.6.0) is detached on `/og-image.png`,
+  `/og-image-pt.png` and `/favicon.svg`: web-view link previews (Apple Mail, Fediverse web clients) load them
+  cross-site and would show a blank image. The route test asserts the exception.
+
 ## [1.6.0] - 2026-09-15
 
-Full-site review: security, accessibility, SEO and content truth. Not deployed yet.
+Full-site review: security, accessibility, SEO and content truth. Shipped in 1.6.1.
 
 ### Added
 

@@ -267,7 +267,8 @@ html[data-scrolled] .header-row { height: 3.4rem; }
 .header-control { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; min-height: 2rem; border: 1px solid transparent; background: transparent; padding: .25rem .45rem; color: var(--muted); cursor: pointer; font-family: var(--mono); font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; transition: color var(--t-fast), border-color var(--t-fast); }
 .header-control:hover, .header-control:focus-visible { border-color: var(--line-strong); color: var(--ink); }
 .motion-glyph::before { content: '❚❚'; letter-spacing: -.12em; }
-.motion-control[aria-pressed='true'] .motion-glyph::before { content: '▶'; letter-spacing: 0; }
+/* Keyed on data-motion (set before first paint), not aria-pressed (synced later), so a paused page never flashes ❚❚. */
+html:not([data-motion='on']) .motion-glyph::before { content: '▶'; letter-spacing: 0; }
 /* Reduced-motion users already get no animation; the pause control would do nothing for them. */
 @media (prefers-reduced-motion: reduce) {
   /* !important: palette rows set display: flex with higher specificity. */

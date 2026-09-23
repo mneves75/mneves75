@@ -80,7 +80,8 @@ const homeHref = href(locale, '/');
   ];
 
   let unknownIdx = 0;
-  let bootTimers: number[] = [];
+  // Every pending boot line, matrix frame and navigation; closing the terminal cancels them all.
+  let timers: number[] = [];
 
   function line(html: string, cls = '') {
     const div = document.createElement('div');
@@ -96,7 +97,7 @@ const homeHref = href(locale, '/');
     screen.innerHTML = '';
     overlay.showModal();
     document.documentElement.classList.add('mn-terminal-open');
-    bootTimers = BOOT.map((l, i) => window.setTimeout(() => line(l, i < 2 ? 'sys' : ''), 110 * i));
+    timers = BOOT.map((l, i) => window.setTimeout(() => line(l, i < 2 ? 'sys' : ''), 110 * i));
   }
 
   function closeTerminal() {
@@ -104,14 +105,16 @@ const homeHref = href(locale, '/');
   }
 
   overlay.addEventListener('close', () => {
-    bootTimers.forEach(clearTimeout);
+    // clearTimeout also clears intervals: both share one list of active timers (HTML spec).
+    timers.forEach(clearTimeout);
+    timers = [];
     document.documentElement.classList.remove('mn-terminal-open');
   });
 
   function matrixRain() {
     const glyphs = '01█▓▒░<>/*+#@$%&';
     let n = 0;
-    const iv = setInterval(() => {
+    const iv = window.setInterval(() => {
       let out = '';
       for (let i = 0; i < 46; i++) out += Math.random() > 0.5 ? glyphs[Math.floor(Math.random() * glyphs.length)] : ' ';
       line(out, 'sys');
@@ -120,11 +123,12 @@ const homeHref = href(locale, '/');
         line(pt ? '> acorda. os projetos são a evidência.' : '> wake up. the projects are the evidence.', 'acc');
       }
     }, 90);
+    timers.push(iv);
   }
 
   function navigate(path: string) {
     line(`> cd ${path}`, 'sys');
-    setTimeout(() => { window.location.href = path; }, 350);
+    timers.push(window.setTimeout(() => { window.location.href = path; }, 350));
   }
 
   function run(raw: string) {

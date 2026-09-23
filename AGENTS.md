@@ -31,6 +31,9 @@ CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun
 - **Motion** runs only under `html[data-motion='on']`; the header pause control (WCAG 2.2.2) and
   reduced-motion users both turn it off. Scroll reveals hide only `.reveal.reveal-pending`.
 - **`[hidden]` wins** via a global `!important` rule; any new filterable list relies on it.
+- **CORP is `same-origin` except on link-preview assets**: `public/_headers` detaches it
+  (`! Cross-Origin-Resource-Policy`) on the OG images and favicon. Overlapping rules comma-join values, so
+  never set a second CORP value there.
 - **Staging never claims prod domains**: `env.staging` keeps `"routes": []` (named envs inherit top-level
   `routes`). Production has `workers_dev`/`preview_urls` off.
 - pt-BR copy is correct Brazilian Portuguese with accents; English and pt-BR ship together.

@@ -96,7 +96,8 @@ Response headers (`public/_headers`, verified served from production before the 
 (`max-age=31536000; includeSubDomains`, added in 1.1.0 — production was serving no HSTS header),
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
 `Permissions-Policy` denying camera/microphone/geolocation/payment/usb/browsing-topics,
-`Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`
+`Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin` (detached since 1.6.1 on `/og-image.png`,
+`/og-image-pt.png` and `/favicon.svg`, which web-view link previews such as Apple Mail load cross-site), `X-Frame-Options: DENY`
 (legacy browsers; `frame-ancestors 'none'` covers the rest), and a same-origin CSP with `frame-ancestors 'none'`,
 `base-uri 'self'`, `form-action 'self'`, and `object-src 'none'`.
 HSTS is deliberately not `preload`: preload is effectively irreversible for the apex domain.

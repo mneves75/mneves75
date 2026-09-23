@@ -47,6 +47,10 @@ const headers = readFileSync(join(root, '_headers'), 'utf8');
 for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
   assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
 }
+// Link-preview images and the favicon must stay embeddable cross-site; only these paths detach CORP.
+for (const asset of ['/og-image.png', '/og-image-pt.png', '/favicon.svg']) {
+  assert.ok(headers.includes(`${asset}\n! Cross-Origin-Resource-Policy`), `${asset} does not detach Cross-Origin-Resource-Policy`);
+}
 assert.match(home, /Three decades shipping/);
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");

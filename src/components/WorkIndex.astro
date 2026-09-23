@@ -81,8 +81,8 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   buttons.forEach((button) => button.addEventListener('click', () => {
     const filter = button.dataset.filter;
     buttons.forEach((item) => item.setAttribute('aria-pressed', item === button ? 'true' : 'false'));
-    rows.forEach((row) => { row.dataset.hidden = filter !== 'all' && row.dataset.category !== filter ? 'true' : 'false'; });
-    const shown = rows.filter((row) => row.dataset.hidden !== 'true').length;
+    rows.forEach((row) => { row.hidden = filter !== 'all' && row.dataset.category !== filter; });
+    const shown = rows.filter((row) => !row.hidden).length;
     if (status) status.textContent = shown === 1 ? (status.dataset.one ?? '') : (status.dataset.many ?? '').replace('{n}', String(shown));
   }));
 </script>

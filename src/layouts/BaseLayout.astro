@@ -198,11 +198,12 @@ const ui = locale === 'en'
       document.querySelector('[data-theme-toggle]')?.addEventListener('click', toggleTheme);
 
       // --- Motion pause (WCAG 2.2.2): every looping animation is gated on data-motion='on' ---
+      const motionOn = () => root.dataset.motion === 'on';
       const motionToggles = document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle], [data-palette-motion]');
-      const syncMotionToggle = () => motionToggles.forEach((toggle) => toggle.setAttribute('aria-pressed', String(root.dataset.motion !== 'on')));
+      const syncMotionToggle = () => motionToggles.forEach((toggle) => toggle.setAttribute('aria-pressed', String(!motionOn())));
       const toggleMotion = () => {
         if (reducedMotion) return; // the OS preference wins; the controls are hidden for these users
-        const pause = root.dataset.motion === 'on';
+        const pause = motionOn();
         if (pause) delete root.dataset.motion;
         else root.dataset.motion = 'on';
         try { localStorage.setItem('mn-motion', pause ? 'off' : 'on'); } catch { /* noop */ }
@@ -210,7 +211,6 @@ const ui = locale === 'en'
       };
       syncMotionToggle();
       document.querySelector('[data-motion-toggle]')?.addEventListener('click', toggleMotion);
-      const motionOn = () => root.dataset.motion === 'on';
 
       // --- Command palette ---
       const palette = document.querySelector<HTMLDialogElement>('#command-palette');
@@ -264,7 +264,8 @@ const ui = locale === 'en'
           // From the search field, ArrowDown enters the list and ArrowUp wraps to its end.
           const next = index === -1 ? (step === 1 ? 0 : items.length - 1) : (index + step + items.length) % items.length;
           items[next]?.focus();
-        } else if (event.key === 'Enter' && document.activeElement === search) {
+        } else if (event.key === 'Enter' && search && document.activeElement === search && search.value.trim()) {
+          // Enter runs the first match only for a real query: on an empty list the first item is the hidden terminal.
           event.preventDefault();
           items[0]?.click();
         }
@@ -281,7 +282,7 @@ const ui = locale === 'en'
       window.addEventListener('scroll', onScroll, { passive: true });
 
       // --- Scroll reveals (.reveal → .is-in, once) ---
-      if (root.dataset.motion === 'on' && 'IntersectionObserver' in window) {
+      if (motionOn() && 'IntersectionObserver' in window) {
         const revealObserver = new IntersectionObserver((entries) => {
           for (const entry of entries) {
             if (entry.isIntersecting) {
