@@ -221,8 +221,9 @@ const copy = locale === 'en' ? {
   /* Key/value rows keep a hanging value column, so a long value wraps under itself, not under the key. */
   .t-kv { display: grid; grid-template-columns: 10.5ch minmax(0, 1fr); }
   .t-gap { margin-top: .8rem !important; }
-  .t-files { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; }
-  .t-files a { color: var(--term-str); }
+  .t-files { display: flex; flex-wrap: wrap; gap: .2rem 1.1rem; }
+  /* WCAG 2.5.8: each slug link is at least 24px tall. */
+  .t-files a { display: inline-flex; align-items: center; min-height: 24px; color: var(--term-str); }
   .t-files a:hover, .t-files a:focus-visible { color: var(--term-accent); text-decoration: underline; }
   .t-link { color: inherit; text-decoration: underline; text-underline-offset: .2em; }
   .t-link:hover, .t-link:focus-visible { color: var(--term-accent); }
