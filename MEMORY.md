@@ -2,7 +2,17 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-23, later)
+## Current state (2026-09-23, 1.8.0 on staging)
+
+- **1.8.0 on staging** (`07e1cfca`, commit `d0367bd8`), production still 1.7.0. 48 projects with a `stage` field
+  (live / appReview / beta / building); public count = live with a link (37). Evidence per stage:
+  `agent_planning/2026-09-projects.md`. Not pushed or tagged: the Mac has no GitHub credentials (`gh auth login`).
+- Rule: promote an app to `live` and add `appStore` only after it appears in the br + us lookup; unreleased projects
+  link a product or support page labelled "Product page", never staging.
+- Lesson: Lighthouse `label-content-name-mismatch` has weight 0, so accessibility can read 100 while WCAG 2.5.3
+  fails; read that audit directly.
+
+## Earlier state (2026-09-23, later)
 
 - **1.7.0 LIVE** (prod `96a586e2`, staging `b9851ddf`): Cloudflare Web Analytics enabled (beacon 200, `/cdn-cgi/rum` 204 verified live) — CSP `script-src` allows the path source
   `https://static.cloudflareinsights.com/beacon.min.js/` (trailing slash = prefix match of the versioned beacon URL;

@@ -38,6 +38,14 @@ All notable changes to this repository are documented here. The format follows
 
 - The public "Slot 08" recommendation TODO; the seven sourced quotes remain.
 
+### Fixed
+
+- WCAG 2.5.3 (label in name): header controls and the brand link now expose their visible text; this predates 1.8.0.
+- WCAG 2.5.8: terminal slug links are at least 24px tall.
+
+Deployed 2026-09-23: staging `07e1cfca` (tag `v1.8.0-beta1` pending the push). Smoke 11/11; Lighthouse mobile
+performance 97–100, accessibility 100, best practices 100, SEO 100, LCP 1.6 s, CLS 0.
+
 ## [1.7.0] - 2026-09-23
 
 ### Added

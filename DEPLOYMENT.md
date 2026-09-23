@@ -40,6 +40,11 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
+- Worker version: `07e1cfca-6bab-459f-97e0-b8fbaacfd9f8` (1.8.0 at `d0367bd8`, 2026-09-23); only the workers.dev trigger.
+  `BASE_URL=… bun run smoke`: 11/11 (new in-motion filter check included). Lighthouse mobile on `/`, two runs:
+  performance 97–100, accessibility 100, best practices 100, SEO 100, LCP 1.6 s, CLS 0 (production 1.7.0 baseline the
+  same hour: performance 97–100, LCP 1.6–2.2 s). Not tagged yet: this Mac has no GitHub credentials, so the commits are
+  not on `origin/main`; tag `v1.8.0-beta1` after the push.
 - Worker version: `b9851ddf-a240-4352-8f7e-16085f07be58` (1.7.0, tag `v1.7.0-beta1`, 2026-09-23); only the workers.dev
   trigger. `BASE_URL=https://mvneves-dev-staging.mvneves.workers.dev bun run smoke`: 10/10 (staging gets no beacon:
   Cloudflare injects it only on the proxied custom domains).
