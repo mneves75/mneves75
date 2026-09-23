@@ -4,7 +4,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-09-23)
 
-- **1.6.1**: pre-release review of 1.6.0, shipped together (1.6.0 was never deployed or tagged on its own). Paused marquee no longer clipped, terminal timers cancelled on close, empty-query Enter in ⌘K no longer opens the terminal, pause glyph keyed on `data-motion`, work filter on `hidden`, Skills = ten skills / three MIT, devalue 5.9.4 (one-entry lockfile edit), CORP detached on OG images + favicon.
+- **1.6.1**: pre-release review of 1.6.0, shipped together — LIVE (prod `79dfd2d2`, staging `ddbbb36a`) (1.6.0 was never deployed or tagged on its own). Paused marquee no longer clipped, terminal timers cancelled on close, empty-query Enter in ⌘K no longer opens the terminal, pause glyph keyed on `data-motion`, work filter on `hidden`, Skills = ten skills / three MIT, devalue 5.9.4 (one-entry lockfile edit), CORP detached on OG images + favicon.
 - Lesson: `agent-browser console` does NOT surface CSP violations — a "clean console" is vacuous. Register a `securitypolicyviolation` listener with `--init-script` and prove it with a planted inline `<style>` first.
 - Lesson: deleting one `bun.lock` entry makes bun re-resolve ~40 in-range packages; for a single-package security fix, edit that entry's version + integrity in place and confirm with `--frozen-lockfile`.
 - Lesson: `wrangler dev` dies if `bun run build` recreates `dist/` under it; restart after rebuilding. Port 8799 is often held by another project's dev server — check `lsof` before trusting a response.
@@ -52,6 +52,9 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 1. `www.mvneves.dev` now serves the site as a second custom domain (canonical = apex). Optional: replace with a strict 301 Redirect Rule in the dashboard; `mvneves.app → mvneves.dev` redirect still pending (separate zone).
 2. Every one of the 31 projects now carries a written case study sourced from its repository README or live site (1.2.0). The only remaining visible TODO is recommendation slot 08. `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
+4. Cloudflare Web Analytics beacon is injected by the zone and blocked by CSP (the only production violation, since
+   before 1.6). Decide: allow `static.cloudflareinsights.com` in `script-src` + `cloudflareinsights.com` in
+   `connect-src` (privacy review per `DEPLOYMENT.md`), or turn automatic injection off in the dashboard.
 
 ## Tooling lessons
 

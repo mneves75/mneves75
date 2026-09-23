@@ -40,11 +40,18 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
+- Worker version: `ddbbb36a-7be6-432a-98f6-e7184037de59` (1.6.1, tag `v1.6.1-beta1`, 2026-09-23); only the workers.dev trigger. Remote smoke:
+  headers and CORP exception on OG images/favicon, hashed CSP, ten skills in both locales, 13 pages with zero CSP
+  violations or JS errors (detector proven by a planted inline style), palette/pause/terminal/filter behaviour.
 - Worker version: `8e737e72-8f8a-4f71-bdb9-3ef8fec1f7a5` (1.5.0, tag `v1.5.0-beta1`, 2026-09-15); the deploy printed only the workers.dev trigger.
 - Remote smoke verified: App Store links by locale on `/work/dnschat/` (us) and `/pt-br/work/weathersunscreen/` (br), no ffts-grep image on `/work/cf-toolkit/`, nine skills, devtrim v0.9.6, hay 0.458, "no license yet" status on unlicensed repos, CSP without `'unsafe-inline'`.
 
 ### Latest production evidence
 
+- 1.6.1 (tag `v1.6.1`, 2026-09-23): Worker version `79dfd2d2-723b-4928-bfd3-75e8d1d684d5`, triggers only `mvneves.dev` and
+  `www.mvneves.dev`. Verified live on both hostnames: 200/404, `style-src 'self'`, new script hash, CORP detached only on
+  OG images/favicon, ten skills. Only CSP violation: the zone-injected Cloudflare Web Analytics beacon
+  (`static.cloudflareinsights.com`), blocked since before 1.6 — analytics collects nothing until that is decided.
 - 1.5.0 (tag `v1.5.0`, 2026-09-15): Worker version `2becbaf6-b9d3-4c37-84f7-34a5e67d5111`, custom domains `mvneves.dev` and `www.mvneves.dev` still attached. Verified live: store links, cf-toolkit plate, nine skills.
 - Published URLs: `https://mvneves.dev` (custom domain) and `https://mvneves-dev.mvneves.workers.dev`
 - Worker version: `940113fd-34c2-468e-8624-023bd62e517b` (1.4.0, tag `v1.4.0`, 2026-08-27) — STOA added; custom domains `mvneves.dev` and `www.mvneves.dev` still attached. Verified live: `/work/stoa/` and `/pt-br/work/stoa/` 200 on apex and www, 34 project rows in both locales, 78 sitemap URLs, no link to the private source repo. A stale edge-cache HIT can lag a minute after deploy.

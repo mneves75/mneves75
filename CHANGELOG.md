@@ -9,6 +9,7 @@ All notable changes to this repository are documented here. The format follows
 ## [1.6.1] - 2026-09-23
 
 Pre-release review of 1.6.0, which was never deployed on its own: 1.6.1 is the first deploy of both.
+Deployed 2026-09-23: staging `ddbbb36a` (`v1.6.1-beta1`), production `79dfd2d2` (`v1.6.1`); evidence in `DEPLOYMENT.md`.
 
 ### Fixed
 
