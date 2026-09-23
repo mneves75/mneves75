@@ -65,8 +65,28 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 2. Every one of the 31 projects now carries a written case study sourced from its repository README or live site (1.2.0). The only remaining visible TODO is recommendation slot 08. `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
 4. Web Analytics automatic setup excludes EU visitors by default (dashboard toggle); a product decision, not code.
-5. A Cloudflare API token for the marcusneves2005 account was pasted into an agent chat on 2026-09-23 (not used).
-   Revoke/roll it in the dashboard; tokens go through 1Password, never chat.
+5. Revoke Cloudflare API tokens pasted into agent chats: marcusneves2005 account (2026-09-23, unused) and the
+   conhecendo.contato account "FULL" token (2026-09-23, used for purges + one cache rule; it lacks RUM write), plus
+   the two from 2026-09-15 listed in conhecendoia `plans/README.md`. Tokens go through 1Password, never chat.
+
+## Sibling sites (MEUS_SITES) — cross-site follow-ups after the 2026-09-23 sweep
+
+Live 2026-09-23 (each repo records its own evidence): stoa 0.5.1, conhecendoia 5.1.1, conhecendotudo 0.8.1,
+wine-school 0.7.1, llmdeepdive 0.6.8, babimakeup 1.7.3. Analytics is on only where the site allows it
+(mvneves.dev, babimakeup, conhecendotudo with GA behind consent); stoa, conhecendoia, llmdeepdive and wine-school
+promise no tracking and stay off.
+
+1. conhecendoia: turn off Web Analytics in the dashboard (Web Analytics → conhecendoia.com.br → Disable). The beacon
+   is injected and CSP-blocked: no data, one console error per visit. API update needs RUM write the token lacks.
+2. stoa: same console error, but the beacon is injected zone-wide for mvneves.dev; a RUM rule's host filter only
+   changes measurement, not injection (tested and reverted). Removing it for stoa means disabling mvneves.dev analytics.
+3. GitHub billing blocks Actions for private repos (stoa, wine-school): no CI confirmation there.
+4. vitarum_seguros: dropped by the owner (not to be published); local fixes are pushed.
+5. Not touched (dirty trees owned by others): fatima_aniversario_docker, landing_page_fatima_hostinger,
+   landing-page-projetos-portfolio, conhecendotudo-app-convites(-basehub), next-auth-roles; no-git folders too.
+6. Done for reference: conhecendoia HTML cache rule now respects origin (`REVALIDATED`, deploys visible without a
+   purge; previous ruleset saved before the change); babimakeup build tools 301 via `site/_redirects` because the
+   Pages asset cache on the apex survived purges and Pages rejects 404 in `_redirects`.
 
 ## Tooling lessons
 
