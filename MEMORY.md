@@ -55,6 +55,11 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 4. Cloudflare Web Analytics beacon is injected by the zone and blocked by CSP (the only production violation, since
    before 1.6). Decide: allow `static.cloudflareinsights.com` in `script-src` + `cloudflareinsights.com` in
    `connect-src` (privacy review per `DEPLOYMENT.md`), or turn automatic injection off in the dashboard.
+5. Recommended next: move the manual browser checks into `bun run test` as a small headless gate (palette keys, pause
+   → scrollable marquee, terminal timers, work filter, `securitypolicyviolation` sweep with a planted-violation
+   control). Every JS bug fixed in 1.6.0/1.6.1 slipped past the static-HTML route test.
+6. A Cloudflare API token for the marcusneves2005 account was pasted into an agent chat on 2026-09-23 (not used).
+   Revoke/roll it in the dashboard; tokens go through 1Password, never chat.
 
 ## Tooling lessons
 
