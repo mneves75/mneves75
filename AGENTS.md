@@ -15,7 +15,8 @@ bun run check && bun run build && bun run test
 `bun run build` is `astro build` plus `scripts/csp-headers.mjs`; never deploy a `dist/` built any other way.
 `bun run test` is the static route test plus `scripts/test-browser.mjs`, a browser gate that serves `dist/` with
 `_headers` applied and drives the system Google Chrome (`CHROME_PATH` overrides; no browser download). A new
-interactive behaviour gets a check there, proved to fail without the fix.
+interactive behaviour gets a check there, proved to fail without the fix. After every deploy run the same checks
+against the live site: `BASE_URL=<url> bun run smoke`.
 CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun (`packageManager`), e.g.
 `bunx bun@1.3.14 install`, so CI's `--frozen-lockfile` accepts it.
 

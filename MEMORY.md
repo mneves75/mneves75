@@ -4,11 +4,12 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-09-23, later)
 
-- **1.7.0**: Cloudflare Web Analytics enabled — CSP `script-src` allows the path source
+- **1.7.0 LIVE** (prod `96a586e2`, staging `b9851ddf`): Cloudflare Web Analytics enabled (beacon 200, `/cdn-cgi/rum` 204 verified live) — CSP `script-src` allows the path source
   `https://static.cloudflareinsights.com/beacon.min.js/` (trailing slash = prefix match of the versioned beacon URL;
   Cloudflare's file-exact FAQ source blocks it; reports go to same-origin
   `/cdn-cgi/rum`). Browser gate `scripts/test-browser.mjs` runs in `bun run test` and CI with system Chrome via
-  `playwright-core` (no download); it failed the pre-fix 1.6.0 build on exactly the five bugs it guards.
+  `playwright-core` (no download); it failed the pre-fix 1.6.0 build on exactly the five bugs it guards. After a deploy:
+  `BASE_URL=<url> bun run smoke`.
 - Lesson: Playwright request interception (`context.route`) on every context made cross-document view transitions
   abort with a spurious `InvalidStateError` in 3 of 5 gate runs (0/30 on real staging and a plain server). Scope
   `route` to the one check that needs it.

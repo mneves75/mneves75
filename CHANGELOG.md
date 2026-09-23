@@ -6,6 +6,10 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `BASE_URL=<url> bun run smoke` runs the browser gate against a deployed site; used as the post-deploy smoke.
+
 ## [1.7.0] - 2026-09-23
 
 ### Added
@@ -19,6 +23,10 @@ All notable changes to this repository are documented here. The format follows
   both 404s (with a planted-violation control), the beacon allowlist, the localized 404, ⌘K palette keys, the pause
   control and scrollable marquee, reduced motion, the work filter, terminal timers and 360px overflow. Against the
   pre-1.6.1 build it fails exactly the five checks for bugs fixed since. CI runs it on every push.
+
+Deployed 2026-09-23: staging `b9851ddf` (`v1.7.0-beta1`), production `96a586e2` (`v1.7.0`). Live: the edge-injected
+beacon loads (200) and reports to same-origin `/cdn-cgi/rum` (204) on apex and www with zero CSP violations; the
+browser gate passes 10/10 against staging and production; CI ran it on the runner's Chrome 152.
 
 ## [1.6.1] - 2026-09-23
 

@@ -56,7 +56,8 @@ const server = createServer((req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(undefined)));
 const address = server.address();
 if (!address || typeof address === 'string') throw new Error('test server has no TCP address');
-const base = `http://127.0.0.1:${address.port}`;
+// BASE_URL points the same checks at a deployed site (post-deploy smoke); by default they run on the local dist/.
+const base = process.env.BASE_URL?.replace(/\/$/, '') ?? `http://127.0.0.1:${address.port}`;
 
 /** @typedef {Window & { __csp: string[], __errors: string[] }} ProbedWindow */
 // Records CSP violations and script errors from document start, before any page script runs.

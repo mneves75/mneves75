@@ -40,6 +40,9 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 ### Latest staging evidence
 
 - Published URL: `https://mvneves-dev-staging.mvneves.workers.dev`
+- Worker version: `b9851ddf-a240-4352-8f7e-16085f07be58` (1.7.0, tag `v1.7.0-beta1`, 2026-09-23); only the workers.dev
+  trigger. `BASE_URL=https://mvneves-dev-staging.mvneves.workers.dev bun run smoke`: 10/10 (staging gets no beacon:
+  Cloudflare injects it only on the proxied custom domains).
 - Worker version: `ddbbb36a-7be6-432a-98f6-e7184037de59` (1.6.1, tag `v1.6.1-beta1`, 2026-09-23); only the workers.dev trigger. Remote smoke:
   headers and CORP exception on OG images/favicon, hashed CSP, ten skills in both locales, 13 pages with zero CSP
   violations or JS errors (detector proven by a planted inline style), palette/pause/terminal/filter behaviour.
@@ -48,6 +51,10 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.7.0 (tag `v1.7.0`, 2026-09-23): Worker version `96a586e2-a9e8-4bae-958e-dccdd19d706c`, triggers only `mvneves.dev`
+  and `www.mvneves.dev`. Web Analytics live: on `/`, `/pt-br/work/` and `www…/about/` Chrome loads
+  `static.cloudflareinsights.com/beacon.min.js/v31…` (200) and posts to same-origin `/cdn-cgi/rum` (204), zero CSP
+  violations. `BASE_URL=https://mvneves.dev bun run smoke`: 10/10.
 - 1.6.1 (tag `v1.6.1`, 2026-09-23): Worker version `79dfd2d2-723b-4928-bfd3-75e8d1d684d5`, triggers only `mvneves.dev` and
   `www.mvneves.dev`. Verified live on both hostnames: 200/404, `style-src 'self'`, new script hash, CORP detached only on
   OG images/favicon, ten skills. Only CSP violation: the zone-injected Cloudflare Web Analytics beacon
