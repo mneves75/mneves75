@@ -116,7 +116,7 @@ const ui = locale === 'en'
           {nav.map((item, index) => {
             const itemHref = href(locale, item.path);
             const active = currentPath === item.path || currentPath.startsWith(`${item.path}`);
-            return <a href={itemHref} aria-current={active ? 'page' : undefined}><span class="idx" aria-hidden="true">{pad(index + 1)}</span><span data-scramble-hover>{item[locale]}</span></a>;
+            return <a href={itemHref} aria-current={active ? 'page' : undefined}><span class="idx" aria-hidden="true">{pad(index + 1)}</span><span>{item[locale]}</span></a>;
           })}
         </nav>
         <div class="header-tools">
@@ -172,7 +172,7 @@ const ui = locale === 'en'
 
     <script>
       // MN://runtime — theme, palette, header state, reveals, scramble,
-      // count-up, magnetic, spotlight. All motion respects reduced-motion.
+      // count-up, magnetic. All motion respects reduced-motion.
       const root = document.documentElement;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const finePointer = window.matchMedia('(pointer: fine)').matches;
@@ -330,19 +330,6 @@ const ui = locale === 'en'
         }, 3200);
       });
 
-      if (finePointer && !reducedMotion) {
-        document.querySelectorAll<HTMLElement>('[data-scramble-hover]').forEach((el) => {
-          const original = el.textContent ?? '';
-          let busy = false;
-          el.addEventListener('mouseenter', () => {
-            if (busy || !motionOn()) return;
-            busy = true;
-            scrambleTo(el, original, 420);
-            setTimeout(() => { busy = false; }, 480);
-          });
-        });
-      }
-
       // --- Count-up [data-countup] ---
       const countObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -378,18 +365,6 @@ const ui = locale === 'en'
           });
           el.addEventListener('mouseleave', () => { el.style.transform = ''; });
         });
-      }
-
-      // --- Cursor spotlight (.spot-zone sets --sx/--sy) ---
-      if (finePointer) {
-        document.addEventListener('pointermove', (e) => {
-          const zone = (e.target as Element).closest?.('.spot-zone') as HTMLElement | null;
-          if (zone) {
-            const r = zone.getBoundingClientRect();
-            zone.style.setProperty('--sx', `${e.clientX - r.left}px`);
-            zone.style.setProperty('--sy', `${e.clientY - r.top}px`);
-          }
-        }, { passive: true });
       }
 
       // --- Console hint ---

@@ -1,6 +1,6 @@
 ---
 import ProjectRow from './ProjectRow.astro';
-import { projects, type Locale } from '../data/site';
+import { projects, stageOf, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -18,8 +18,10 @@ const copy = locale === 'en' ? {
     'Mobile apps': 'Mobile apps',
     Promotional: 'Promotional',
   },
-  note: 'Filter the index, then open the source or the constraint.',
+  note: 'Current work first; older and promotional work sits in the archive below.',
   entries: 'entries indexed',
+  motion: 'In motion',
+  archive: 'Archive',
 } : {
   title: 'Trabalho',
   intro: 'Um índice com fontes verificadas: software, dados, IA e experimentos construídos sob restrições reais.',
@@ -34,10 +36,17 @@ const copy = locale === 'en' ? {
     'Mobile apps': 'Apps mobile',
     Promotional: 'Promocional',
   },
-  note: 'Filtre o índice e abra a fonte ou a restrição.',
+  note: 'O trabalho atual vem primeiro; o antigo e o promocional ficam no arquivo abaixo.',
   entries: 'entradas indexadas',
+  motion: 'Em andamento',
+  archive: 'Arquivo',
 };
 const categories = Object.keys(copy.filters) as Array<keyof typeof copy.filters>;
+// Flagships first, then the rest of what is live, then work still in motion; the sort is stable within each group.
+const rank = (project: (typeof projects)[number]) => (project.featured ? 0 : stageOf(project) === 'live' ? 1 : 2);
+const current = projects.filter((project) => !project.archived).sort((a, b) => rank(a) - rank(b));
+const archive = projects.filter((project) => project.archived);
+const motionCount = projects.filter((project) => stageOf(project) !== 'live').length;
 const counts = projects.reduce<Record<string, number>>((totals, project) => {
   totals[project.category] = (totals[project.category] ?? 0) + 1;
   return totals;
@@ -58,11 +67,18 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   </div>
   <div class="filter-bar" role="group" aria-label={locale === 'en' ? 'Filter projects' : 'Filtrar projetos'}>
     <button class="filter-button" type="button" data-filter="all" aria-pressed="true">{copy.all}<span class="filter-count num-mono">{projects.length}</span></button>
+    <button class="filter-button" type="button" data-filter="in-motion" aria-pressed="false">{copy.motion}<span class="filter-count num-mono">{motionCount}</span></button>
     {categories.map((category) => <button class="filter-button" type="button" data-filter={category} aria-pressed="false">{copy.filters[category]}<span class="filter-count num-mono">{counts[category] ?? 0}</span></button>)}
   </div>
   <p class="sr-only" aria-live="polite" data-filter-status data-one={locale === 'en' ? '1 project shown' : '1 projeto exibido'} data-many={locale === 'en' ? '{n} projects shown' : '{n} projetos exibidos'}></p>
   <div class="project-list">
-    {projects.map((project, index) => <ProjectRow project={project} locale={locale} index={index + 1} />)}
+    {current.map((project, index) => <ProjectRow project={project} locale={locale} index={index + 1} />)}
+  </div>
+  <div class="archive-group" data-archive-group>
+    <h3 class="archive-heading label-mono">{copy.archive} <span class="num-mono">[{archive.length}]</span></h3>
+    <div class="project-list">
+      {archive.map((project, index) => <ProjectRow project={project} locale={locale} index={current.length + index + 1} />)}
+    </div>
   </div>
 </section>
 
@@ -81,7 +97,11 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   buttons.forEach((button) => button.addEventListener('click', () => {
     const filter = button.dataset.filter;
     buttons.forEach((item) => item.setAttribute('aria-pressed', item === button ? 'true' : 'false'));
-    rows.forEach((row) => { row.hidden = filter !== 'all' && row.dataset.category !== filter; });
+    rows.forEach((row) => {
+      row.hidden = filter === 'in-motion' ? row.dataset.stage === 'live' : filter !== 'all' && row.dataset.category !== filter;
+    });
+    const archiveGroup = /** @type {HTMLElement | null} */ (document.querySelector('[data-archive-group]'));
+    if (archiveGroup) archiveGroup.hidden = !archiveGroup.querySelector('[data-project-row]:not([hidden])');
     const shown = rows.filter((row) => !row.hidden).length;
     if (status) status.textContent = shown === 1 ? (status.dataset.one ?? '') : (status.dataset.many ?? '').replace('{n}', String(shown));
   }));
@@ -128,6 +148,9 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   .filter-button[aria-pressed='true'] .filter-count { color: var(--on-ink-accent); }
 
   .project-list { border-top: 1px solid var(--line); }
+  .archive-group { margin-top: clamp(2.5rem, 6vw, 4.5rem); }
+  .archive-heading { margin: 0 0 1rem; }
+  .archive-heading span { color: var(--signal-text); }
 
   .repo-note { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 3rem); }
   .repo-note h2 { margin: 0; font-size: var(--step-2); }

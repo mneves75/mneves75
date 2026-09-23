@@ -209,6 +209,20 @@ await check('work filter hides rows with [hidden] and announces the count', asyn
   assert.equal(await page.locator('[data-project-row]:visible').count(), total);
 });
 
+await check('in-motion filter shows only unreleased work, each with a stage badge, and hides an empty archive', async (page) => {
+  await page.goto(`${base}/work/`);
+  const unreleased = await page.locator('[data-project-row]:not([data-stage="live"])').count();
+  assert.ok(unreleased > 0, 'no unreleased project rendered; the check would pass vacuously');
+  await page.click('[data-filter="in-motion"]');
+  const visible = page.locator('[data-project-row]:visible');
+  assert.equal(await visible.count(), unreleased, 'in-motion filter shows the wrong rows');
+  assert.equal(await page.locator('[data-project-row]:visible[data-stage="live"]').count(), 0, 'a live project leaked into in-motion');
+  assert.equal(await page.locator('[data-project-row]:visible .stage-badge').count(), unreleased, 'an unreleased row lacks its text badge');
+  assert.equal(await page.locator('[data-archive-group]:visible').count(), 0, 'archive heading shown over an empty archive');
+  await page.click('[data-filter="Promotional"]');
+  assert.equal(await page.locator('[data-archive-group]:visible').count(), 1, 'archive group stayed hidden while it has matches');
+});
+
 await check('terminal stops writing once closed', async (page) => {
   await page.goto(`${base}/`);
   await page.keyboard.press('Control+k');

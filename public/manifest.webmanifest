@@ -5,7 +5,7 @@
   "display": "minimal-ui",
   "background_color": "#f0eee9",
   "theme_color": "#f0eee9",
-  "description": "Three decades shipping production systems. Now building AI-native software.",
+  "description": "Three decades shipping production systems. Now building native apps, public-data systems and tools for coding agents.",
   "icons": [
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]

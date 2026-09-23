@@ -3,7 +3,7 @@ import { pad, recommendations, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
-const copy = locale === 'en' ? { title: 'Recommendations', intro: 'External evidence from people who worked with Marcus.', count: 'quoted sources', note: 'The wording stays close to the supplied source. No carousel, no polishing.', original: 'Quoted source', heading: 'Trust, without the slogan.', todo: 'Slot 08 — source text not supplied yet. Content TODO, not a placeholder quote.' } : { title: 'Recomendações', intro: 'Evidência externa de pessoas que trabalharam com Marcus.', count: 'fontes citadas', note: 'A redação permanece próxima da fonte fornecida. Sem carrossel, sem polimento.', original: 'Fonte citada', heading: 'Confiança, sem o slogan.', todo: 'Slot 08 — texto-fonte ainda não fornecido. TODO de conteúdo, não um depoimento inventado.' };
+const copy = locale === 'en' ? { title: 'Recommendations', intro: 'External evidence from people who worked with Marcus.', count: 'quoted sources', note: 'The wording stays close to the supplied source. No carousel, no polishing.', original: 'Quoted source', heading: 'Trust, without the slogan.' } : { title: 'Recomendações', intro: 'Evidência externa de pessoas que trabalharam com Marcus.', count: 'fontes citadas', note: 'A redação permanece próxima da fonte fornecida. Sem carrossel, sem polimento.', original: 'Fonte citada', heading: 'Confiança, sem o slogan.' };
 ---
 
 <section class="page-intro">
@@ -29,7 +29,6 @@ const copy = locale === 'en' ? { title: 'Recommendations', intro: 'External evid
         <blockquote lang={locale === 'pt' ? 'pt-BR' : 'en'}>{recommendation.quote[locale]}</blockquote>
       </article>
     ))}
-    <p class="todo label-mono">{copy.todo}</p>
   </div>
 </section>
 
@@ -45,7 +44,6 @@ const copy = locale === 'en' ? { title: 'Recommendations', intro: 'External evid
   .recommendation blockquote { position: relative; margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(1.3rem, .9rem + 1.1vw, 2rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.16; text-wrap: pretty; }
   .recommendation blockquote::before { position: absolute; top: -.1em; left: -.62em; color: var(--signal); content: '\201C'; content: '\201C' / ''; font-size: 1.4em; line-height: 1; }
 
-  .todo { display: block; border-bottom: 1px solid var(--line); padding-block: 1.4rem; color: var(--signal-text); text-transform: none; }
 
   @media (max-width: 920px) {
     .recommendation { grid-template-columns: minmax(0, 1fr); gap: 1rem; }

@@ -28,7 +28,7 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 
 - English at `/`; Brazilian Portuguese at `/pt-br/`.
 - Primary pages: home, work index, project detail, about, recommendations, contact, and a not-found page in each locale.
-- Project content is local and canonical; the work index lists 34 projects: the entries from the official public portfolio page plus the developer tools and courses published since (`src/data/site.ts` is the inventory). External project links remain useful but are not required to render the site.
+- Project content is local and canonical; the work index lists 48 projects (`src/data/site.ts` is the inventory): current work first, older and promotional work in an Archive group. Each project has a release stage (live, in App Store review, beta, in construction); only live projects with a public destination count as public, and unreleased ones carry a visible text badge and never a staging or pre-lookup store link. External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
 - No browser-language auto-redirect.
 - No tracker, contact database, or server-side runtime. The only measurement is cookieless Cloudflare Web

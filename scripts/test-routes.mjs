@@ -4,11 +4,16 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
+// Project routes come from the sitemap, so a new project can never be left out of these checks (STOA once was).
+// The count below stays hand-written on purpose: changing the inventory is a deliberate edit.
+const PROJECTS = 48;
+const sitemapXml = readFileSync(join(root, 'sitemap.xml'), 'utf8');
+const projectRoutes = [...sitemapXml.matchAll(/<loc>https:\/\/mvneves\.dev(\/(?:pt-br\/)?work\/[^<]+\/)<\/loc>/g)].map((match) => match[1]);
+assert.equal(projectRoutes.length, 2 * PROJECTS, 'sitemap project routes do not match the inventory count');
 const routes = [
   '/', '/work/', '/about/', '/recommendations/', '/contact/', '/404.html',
   '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/', '/pt-br/404.html',
-  '/work/dnschat/', '/work/ai-health-sync/', '/work/ffts-grep/', '/work/hay/', '/work/devtrim/', '/work/open-profile-manager/', '/work/llmdeepdive/', '/work/msx-expert-xp800/', '/work/cf-toolkit/', '/work/megasena-analyzer/', '/work/bolao-2026/', '/work/diario-neutro/', '/work/openclaw-club-brasil/', '/work/conhecendo-ia/', '/work/terroir-atelier/', '/work/whatsimovel/', '/work/ia-travel/', '/work/event-management-system/', '/work/event-services-platform/', '/work/maturity-toolbox/', '/work/babimakeup/', '/work/weathersunscreen/', '/work/cigarinfo-ai/', '/work/ai-pedometer/', '/work/swift-fast-markdown/', '/work/cruzadas-rubro-negras/', '/work/cruzadas-tricolores/', '/work/cruzadas-alvinegras/', '/work/cruzadas-fluminense/', '/work/skills/', '/work/language-benchmarks/', '/work/polymarket-analyzer/', '/work/ai-calories-tracker/',
-  '/pt-br/work/dnschat/', '/pt-br/work/ai-health-sync/', '/pt-br/work/ffts-grep/', '/pt-br/work/hay/', '/pt-br/work/devtrim/', '/pt-br/work/open-profile-manager/', '/pt-br/work/llmdeepdive/', '/pt-br/work/msx-expert-xp800/', '/pt-br/work/cf-toolkit/', '/pt-br/work/megasena-analyzer/', '/pt-br/work/bolao-2026/', '/pt-br/work/diario-neutro/', '/pt-br/work/openclaw-club-brasil/', '/pt-br/work/conhecendo-ia/', '/pt-br/work/terroir-atelier/', '/pt-br/work/whatsimovel/', '/pt-br/work/ia-travel/', '/pt-br/work/event-management-system/', '/pt-br/work/event-services-platform/', '/pt-br/work/maturity-toolbox/', '/pt-br/work/babimakeup/', '/pt-br/work/weathersunscreen/', '/pt-br/work/cigarinfo-ai/', '/pt-br/work/ai-pedometer/', '/pt-br/work/swift-fast-markdown/', '/pt-br/work/cruzadas-rubro-negras/', '/pt-br/work/cruzadas-tricolores/', '/pt-br/work/cruzadas-alvinegras/', '/pt-br/work/cruzadas-fluminense/', '/pt-br/work/skills/', '/pt-br/work/language-benchmarks/', '/pt-br/work/polymarket-analyzer/', '/pt-br/work/ai-calories-tracker/',
+  ...projectRoutes,
 ];
 /** @param {string} route */
 const outputFile = (route) => (route.endsWith('.html') ? join(root, route) : join(root, route, 'index.html'));
@@ -41,7 +46,7 @@ const ptRecommendations = readFileSync(join(root, 'pt-br', 'recommendations', 'i
 const work = readFileSync(join(root, 'work', 'index.html'), 'utf8');
 const ptWork = readFileSync(join(root, 'pt-br', 'work', 'index.html'), 'utf8');
 const bolao = readFileSync(join(root, 'work', 'bolao-2026', 'index.html'), 'utf8');
-const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
+const sitemap = sitemapXml;
 const headers = readFileSync(join(root, '_headers'), 'utf8');
 // Security headers are invisible until production serves them; assert them here, not in review.
 for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
@@ -73,7 +78,7 @@ assert.ok(!existsSync(join(root, 'pt-br', '404')), 'pt-BR 404 left behind as a r
 assert.match(home, /<span class="decoder"[^>]*aria-hidden="true"/, 'hero decoder must stay out of the heading accessible name');
 assert.match(home, /data-motion-toggle[^>]*aria-pressed=/, 'motion pause control missing (WCAG 2.2.2)');
 assert.match(home, /<svg class="signal-trace"[^>]*aria-hidden="true"/, 'decorative signal trace exposed to assistive tech');
-assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 5 + 34, 'palette must list actions, pages and every project');
+assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 5 + PROJECTS, 'palette must list actions, pages and every project');
 assert.match(ptHome, /Abrir GitHub/, 'pt-BR palette label not localized');
 assert.match(home, /"@type":"ProfilePage"/, 'home JSON-LD should be ProfilePage');
 assert.match(work, /"@type":"WebPage"/, 'work index JSON-LD should be WebPage');
@@ -82,16 +87,23 @@ assert.match(hay, /avaliação pareada/, 'hay pt-BR diagram label missing');
 assert.match(home, /data-theme-toggle/);
 assert.match(home, /command-palette/);
 assert.equal((recommendations.match(/class="recommendation"/g) ?? []).length, 7, 'recommendation count changed; verify source quotes before editing');
-assert.equal((work.match(/data-project-row data-category/g) ?? []).length, 34, 'portfolio project count changed; verify source inventory before editing');
-assert.equal((ptWork.match(/data-project-row data-category/g) ?? []).length, 34, 'Portuguese portfolio project count changed; verify source inventory before editing');
+assert.equal((work.match(/data-project-row data-category/g) ?? []).length, PROJECTS, 'portfolio project count changed; verify source inventory before editing');
+assert.equal((ptWork.match(/data-project-row data-category/g) ?? []).length, PROJECTS, 'Portuguese portfolio project count changed; verify source inventory before editing');
 assert.match(work, /Bolão 2026/);
 assert.match(bolao, /Free web app for 2026 World Cup predictions/);
 assert.doesNotMatch(bolao, /class="detail-pending"/, 'a case-study TODO block reappeared on a project page');
-assert.equal((sitemap.match(/<loc>/g) ?? []).length, 78, 'sitemap URL count changed; verify all locale routes');
+assert.equal((sitemap.match(/<loc>/g) ?? []).length, 2 * (5 + PROJECTS), 'sitemap URL count changed; verify all locale routes');
 assert.match(sitemap, /https:\/\/mvneves\.dev\/work\/bolao-2026\//);
 assert.match(sitemap, /https:\/\/mvneves\.dev\/pt-br\/work\/cruzadas-fluminense\//);
 assert.match(ptRecommendations, /lang="pt-BR"/);
 assert.match(ptRecommendations, /Para quem já viu Pulp Fiction/);
 assert.doesNotMatch(ptRecommendations, /For everyone who’s seen Pulp Fiction/);
 assert.doesNotMatch(ptHome, />(?:AI systems|Developer tools|Data \/ analytics|Creative engineering|LLM reply|incremental index|read-only status)</, 'English project labels leaked into pt-BR output');
+// Honest status: anything not live carries a visible text badge, and the public count excludes it.
+assert.match(work, /data-stage="building"[\s\S]*?class="stage-badge"[^>]*>In construction</, 'stage badge missing on an unreleased project');
+assert.match(ptWork, /class="stage-badge"[^>]*>Em revisão na App Store</, 'pt-BR stage badge missing');
+assert.match(work, /data-filter="in-motion"/, 'in-motion filter missing');
+assert.match(work, /data-archive-group/, 'archive group missing');
+assert.doesNotMatch(recommendations, /Slot 08/, 'recommendation TODO slot is public again');
+assert.match(home, /data-countup="(\d+)"[^>]*>\1<[\s\S]*?public projects/, 'stat rail lost its server-rendered final value');
 console.log(`route smoke: ${routes.length} outputs verified; pt-BR metadata/content assertions passed`);

@@ -1,21 +1,23 @@
 ---
-import { href, pad, principles, projects, range, recommendations, site, type Locale } from '../data/site';
+import { href, isPublic, pad, principles, projects, range, recommendations, site, stageOf, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const featured = projects.filter((project) => project.featured);
 const openSourceCount = projects.filter((project) => project.openSource).length;
+const publicCount = projects.filter(isPublic).length;
+const inMotion = projects.filter((project) => stageOf(project) !== 'live');
 const decoderWords = locale === 'en'
-  ? ['AI-native software', 'developer tools', 'data systems', 'local-first apps']
-  : ['software AI-native', 'ferramentas dev', 'sistemas de dados', 'apps local-first'];
+  ? ['native iOS apps', 'tools for coding agents', 'public-data systems', 'local-first software']
+  : ['apps iOS nativos', 'ferramentas para agentes', 'sistemas de dados públicos', 'software local-first'];
 const marqueeItems = [...range.map((item) => item[locale]), locale === 'en' ? 'open source' : 'open source', locale === 'en' ? 'teaching in pt-BR' : 'ensino em pt-BR'];
 const copy = locale === 'en' ? {
   kicker: 'Marcus Neves / software · data · AI',
   statement: 'Three decades shipping production systems.',
   building: 'Now building',
-  intro: 'I build software, data systems, developer tools, and AI products for real-world constraints.',
+  intro: 'I build apps, data systems, developer tools and AI products, and I put them in production.',
   selected: 'Selected work',
-  selectedNote: 'Projects are the evidence. Start with the constraint.',
+  selectedNote: 'Each one opens: a live product, an App Store listing or the source.',
   allWork: 'See all work',
   think: 'How I think',
   thinkNote: 'Principles are useful when they change what gets built.',
@@ -28,44 +30,46 @@ const copy = locale === 'en' ? {
   teachingBody: 'I teach AI and development in Portuguese at Conhecendo IA — because knowledge should not require a language tax.',
   visit: 'Visit Conhecendo IA',
   contact: 'Have a real constraint?',
-  contactBody: 'GitHub is the best place to see what is in motion. For everything else, start there.',
+  contactBody: 'Send the problem, the deadline and what already exists. The contact page lists every channel.',
   reach: 'Open a channel',
   statYears: 'years in production',
   statProjects: 'public projects',
   statOss: 'open source',
-  termFocus: 'AI-native software',
-  termFeatured: 'featured → all work',
+  statMotion: 'in motion',
+  termFocus: 'apps · agent tooling · public data',
+  termMotion: 'shipping next → all work',
 } : {
   kicker: 'Marcus Neves / software · dados · IA',
   statement: 'Três décadas entregando sistemas de produção.',
   building: 'Agora construindo',
-  intro: 'Construo software, sistemas de dados, ferramentas para desenvolvedores e produtos de IA para restrições do mundo real.',
+  intro: 'Construo apps, sistemas de dados, ferramentas para desenvolvedores e produtos de IA, e coloco tudo em produção.',
   selected: 'Trabalho selecionado',
-  selectedNote: 'Os projetos são a evidência. Comece pela restrição.',
+  selectedNote: 'Todos abrem: um produto no ar, uma página na App Store ou o código.',
   allWork: 'Ver todo o trabalho',
   think: 'Como penso',
   thinkNote: 'Princípios são úteis quando mudam o que é construído.',
   range: 'Amplitude de engenharia',
   rangeNote: 'Amplitude é útil quando muda a decisão.',
-  trust: 'Confiam em mim para liderar. Ainda hands-on.',
+  trust: 'Confiança para liderar. Mão na massa.',
   trustNote: 'Recomendações de pessoas que trabalharam com Marcus.',
   allRec: 'Ler todas as recomendações',
   teaching: 'Conhecimento aberto faz parte do trabalho.',
   teachingBody: 'Ensino IA e desenvolvimento em português no Conhecendo IA — porque conhecimento não deveria pagar pedágio de idioma.',
   visit: 'Visitar Conhecendo IA',
   contact: 'Você tem uma restrição real?',
-  contactBody: 'O GitHub é o melhor lugar para ver o que está em movimento. Para o resto, comece por lá.',
+  contactBody: 'Mande o problema, o prazo e o que já existe. A página de contato lista todos os canais.',
   reach: 'Abrir um canal',
   statYears: 'anos em produção',
   statProjects: 'projetos públicos',
   statOss: 'open source',
-  termFocus: 'software AI-native',
-  termFeatured: 'em destaque → todo o trabalho',
+  statMotion: 'em andamento',
+  termFocus: 'apps · ferramentas para agentes · dados públicos',
+  termMotion: 'saindo em breve → todo o trabalho',
 };
 // The English "Three decades shipping" phrase is a public claim asserted by the route tests.
 ---
 
-<section class="hero section spot-zone" aria-labelledby="hero-title">
+<section class="hero section" aria-labelledby="hero-title">
   <div class="hero-copy">
     <p class="route-label">{copy.kicker}</p>
     <h1 id="hero-title">
@@ -84,21 +88,22 @@ const copy = locale === 'en' ? {
     <div class="term-body">
       <p><span class="t-prompt">$</span> <span class="t-cmd">mn</span> --status</p>
       <p class="t-kv"><span class="t-dim">shipping</span><span>30 {locale === 'en' ? 'years' : 'anos'}</span></p>
-      <p class="t-kv"><span class="t-dim">projects</span><span>{projects.length} {locale === 'en' ? 'public' : 'públicos'}</span></p>
+      <p class="t-kv"><span class="t-dim">projects</span><span>{publicCount} {locale === 'en' ? 'public' : 'públicos'}</span></p>
+      <p class="t-kv"><span class="t-dim">in_motion</span><span>{inMotion.length}</span></p>
       <p class="t-kv"><span class="t-dim">open_src</span><span>{openSourceCount} repos</span></p>
       <p class="t-kv"><span class="t-dim">stack</span><span class="t-str">typescript · swift · rust · astro · cloudflare</span></p>
       <p class="t-kv"><span class="t-dim">focus</span><span>{copy.termFocus}</span></p>
-      <p class="t-gap"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> work/ --featured</p>
-      <p class="t-files">{featured.map((project) => <a href={href(locale, `/work/${project.slug}/`)}>{project.slug}</a>)}</p>
-      <p><span class="t-dim">&gt; {featured.length} {copy.termFeatured}</span></p>
+      <p class="t-gap"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> work/ --in-motion</p>
+      <p class="t-files">{inMotion.map((project) => <a href={href(locale, `/work/${project.slug}/`)}>{project.slug}</a>)}</p>
+      <p><span class="t-dim">&gt; <a class="t-link" href={href(locale, '/work/')}>{copy.termMotion}</a></span></p>
       <p><span class="t-prompt">$</span> <span class="t-cursor" aria-hidden="true"></span></p>
     </div>
   </div>
 
   <div class="stat-rail" role="group" aria-label={locale === 'en' ? 'Track record' : 'Histórico'}>
-    <div class="stat"><span class="stat-num num-mono" data-countup="30">30</span><span class="label-mono">{copy.statYears}</span></div>
-    <div class="stat"><span class="stat-num num-mono" data-countup={String(projects.length)}>{projects.length}</span><span class="label-mono">{copy.statProjects}</span></div>
-    <div class="stat"><span class="stat-num num-mono" data-countup={String(openSourceCount)}>{openSourceCount}</span><span class="label-mono">{copy.statOss}</span></div>
+    {[[30, copy.statYears], [publicCount, copy.statProjects], [openSourceCount, copy.statOss], [inMotion.length, copy.statMotion]].map(([value, label]) => (
+      <div class="stat"><span class="stat-num num-mono" data-countup={String(value)} aria-hidden="true">{value}</span><span class="label-mono"><span class="sr-only">{value} </span>{label}</span></div>
+    ))}
   </div>
 </section>
 
@@ -132,7 +137,7 @@ const copy = locale === 'en' ? {
 
 <section class="section reveal" aria-labelledby="principles-title">
   <div class="section-heading">
-    <div><p class="eyebrow">02 / {locale === 'en' ? 'operating system' : 'sistema operacional'}</p><h2 id="principles-title">{copy.think}</h2></div>
+    <div><p class="eyebrow">02 / {locale === 'en' ? 'operating principles' : 'princípios'}</p><h2 id="principles-title">{copy.think}</h2></div>
     <p>{copy.thinkNote}</p>
   </div>
   <div class="principles-grid">
@@ -203,16 +208,6 @@ const copy = locale === 'en' ? {
     mask-image: radial-gradient(ellipse 75% 65% at 35% 25%, black, transparent 72%);
     opacity: .5;
   }
-  .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    background: radial-gradient(14rem circle at var(--sx, 50%) var(--sy, 50%), color-mix(in srgb, var(--signal) 7%, transparent), transparent 70%);
-    transition: opacity 320ms var(--ease-out);
-  }
-  .hero:hover::after { opacity: 1; }
   .hero-copy, .hero-term, .stat-rail { position: relative; }
   .hero-copy { min-width: 0; }
   .hero h1 { margin: 1.1rem 0 0; font-size: var(--step-3); font-weight: 800; letter-spacing: -.045em; line-height: .98; }
@@ -224,11 +219,13 @@ const copy = locale === 'en' ? {
 
   .hero-term { align-self: center; }
   /* Key/value rows keep a hanging value column, so a long value wraps under itself, not under the key. */
-  .t-kv { display: grid; grid-template-columns: 9ch minmax(0, 1fr); }
+  .t-kv { display: grid; grid-template-columns: 10.5ch minmax(0, 1fr); }
   .t-gap { margin-top: .8rem !important; }
   .t-files { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; }
   .t-files a { color: var(--term-str); }
   .t-files a:hover, .t-files a:focus-visible { color: var(--term-accent); text-decoration: underline; }
+  .t-link { color: inherit; text-decoration: underline; text-underline-offset: .2em; }
+  .t-link:hover, .t-link:focus-visible { color: var(--term-accent); }
 
   .stat-rail { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 6vw, 5rem); margin-top: clamp(2.5rem, 5vw, 4rem); border-top: 1px solid var(--line); padding-block: 1.4rem; }
   .stat { display: grid; gap: .3rem; }

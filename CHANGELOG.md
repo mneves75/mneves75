@@ -6,9 +6,37 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-23
+
 ### Added
 
+- 14 projects (48 total), each checked on 2026-09-23 against its README, its live URL (anonymous request) and the public
+  iTunes lookup (br + us): ArremataRadar, SINAL, CaptureVault, LUME, Lente IA, Drawing with Love, Live Run,
+  MinutaDraft, Levante a Taça, Vestou, Paquera AI, Recursos de Multas, GP Race Stats and IA Palavras Cruzadas.
+- Release stage per project (`stage`: live, App Store review, beta, in construction). The stat rail and hero terminal
+  count only live projects with a public destination (37); unreleased work shows a text badge, an "In motion" filter
+  and the terminal's `ls work/ --in-motion`. No staging URL and no store link before the public lookup.
+- Archive group on `/work/` for promotional and early work (URLs unchanged); current work is ordered flagships first.
+- Real 1600×1000 covers for the new projects and for devtrim, hay and STOA (live pages or committed app screens).
 - `BASE_URL=<url> bun run smoke` runs the browser gate against a deployed site; used as the post-deploy smoke.
+
+### Changed
+
+- Terroir Atelier (the wine school) links production instead of staging; DNSChat and devtrim statuses no longer pin
+  a version; AIPedometer is marked as awaiting its App Store release.
+- Featured set: ArremataRadar, DNSChat, hay, devtrim, llmdeepdive and Terroir Atelier.
+- Copy: hero intro, decoder words, selected-work note, contact body, About paragraph and pt-BR calques rewritten;
+  "constraint" no longer repeats across the home page; generic "Engineering note" and "Next route" removed from
+  project pages; alt texts no longer mention a "supplied portfolio asset".
+- Design: project images in full colour at 16:10 (were grayscale, cropped to 16:9), flat terminal panels with one
+  status square, `text-wrap: balance/pretty`. Removed the hero cursor spotlight and the nav hover scramble.
+- Stat rail numbers are server-rendered and hidden from assistive tech while they count up; the label carries the value.
+- Route test takes project routes from the sitemap (STOA's pages were never checked before); a new browser check
+  proves the in-motion filter and the archive group (fails against the previous filter code).
+
+### Removed
+
+- The public "Slot 08" recommendation TODO; the seven sourced quotes remain.
 
 ## [1.7.0] - 2026-09-23
 

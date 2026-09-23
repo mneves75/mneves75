@@ -1,21 +1,22 @@
 ---
 import type { Locale, Project } from '../data/site';
-import { categoryLabels, href, pad } from '../data/site';
+import { categoryLabels, href, pad, stageLabels, stageOf } from '../data/site';
 
 interface Props { project: Project; locale: Locale; index: number; }
 const { project, locale, index } = Astro.props;
 const url = href(locale, `/work/${project.slug}/`);
+const stage = stageOf(project);
 ---
 
-<article class="project-row" data-project-row data-category={project.category}>
+<article class="project-row" data-project-row data-category={project.category} data-stage={stage}>
   <span class="idx" aria-hidden="true">{pad(index)}</span>
   <a class="project-image" href={url} tabindex="-1" aria-hidden="true">
     {project.image
-      ? <img src={project.image} alt={project.alt[locale]} width="640" height="360" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
+      ? <img src={project.image} alt={project.alt[locale]} width="1600" height="1000" loading={index > 3 ? 'lazy' : 'eager'} decoding="async" />
       : <span class="image-plate"><span class="plate-prompt">$</span> {project.slug}</span>}
   </a>
   <div class="project-copy">
-    <p class="row-kicker label-mono">{project.kicker[locale]}</p>
+    <p class="row-kicker label-mono">{project.kicker[locale]}{stage !== 'live' && <span class="stage-badge">{stageLabels[stage][locale]}</span>}</p>
     <h3><a href={url}>{project.title}</a></h3>
     <p>{project.summary[locale]}</p>
   </div>
@@ -42,11 +43,11 @@ const url = href(locale, `/work/${project.slug}/`);
   .idx { padding-top: .3rem; }
 
   .project-image { display: block; overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); }
-  .project-image img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; filter: grayscale(1) contrast(1.04); transition: filter var(--t-med); }
-  .project-row:has(a:hover) .project-image img, .project-row:has(a:focus-visible) .project-image img { filter: none; }
+  .project-image img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; transition: transform var(--t-med); }
+  html[data-motion='on'] .project-row:has(a:hover) .project-image img { transform: scale(1.03); }
   .image-plate {
     display: flex; align-items: center; gap: .35em;
-    aspect-ratio: 16 / 9; padding-inline: .6rem;
+    aspect-ratio: 16 / 10; padding-inline: .6rem;
     background: var(--term-bg); color: var(--term-text);
     font-family: var(--mono); font-size: .6rem; letter-spacing: .02em;
     overflow-wrap: anywhere;
@@ -54,7 +55,7 @@ const url = href(locale, `/work/${project.slug}/`);
   .plate-prompt { color: var(--term-cmd); }
 
   .project-copy { display: grid; gap: .4rem; min-width: 0; }
-  .row-kicker { margin: 0; color: var(--signal-text); font-size: .66rem; }
+  .row-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; margin: 0; color: var(--signal-text); font-size: .66rem; }
   .project-copy h3 { margin: 0; font-size: var(--step-1); letter-spacing: -.03em; }
   .project-copy h3 a { display: inline-block; overflow-wrap: anywhere; }
   .project-row:has(h3 a:hover) h3 a, .project-copy h3 a:focus-visible { color: var(--signal-text); }
