@@ -56,6 +56,10 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.8.0 (tag `v1.8.0` @`52fbcaf4`, 2026-09-24): Worker version `70ea7855-c753-4b35-8009-7ad607fa46b6`, triggers only
+  `mvneves.dev` and `www.mvneves.dev`. `BASE_URL=https://mvneves.dev bun run smoke`: 11/11. Staging before it:
+  `948acfc8-643d-45ce-8a3c-64c2a3ca8f00` (`v1.8.0-beta2`).
+
 - 1.7.0 (tag `v1.7.0`, 2026-09-23): Worker version `96a586e2-a9e8-4bae-958e-dccdd19d706c`, triggers only `mvneves.dev`
   and `www.mvneves.dev`. Web Analytics live: on `/`, `/pt-br/work/` and `www…/about/` Chrome loads
   `static.cloudflareinsights.com/beacon.min.js/v31…` (200) and posts to same-origin `/cdn-cgi/rum` (204), zero CSP

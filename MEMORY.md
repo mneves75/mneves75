@@ -4,7 +4,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 ## Current state (2026-09-23, 1.8.0 on staging)
 
-- **1.8.0 on staging** (`07e1cfca`, commit `d0367bd8`), production still 1.7.0. 48 projects with a `stage` field
+- **1.8.0 LIVE** (prod `70ea7855`, tag `v1.8.0` @`52fbcaf4`; staging `948acfc8`, `v1.8.0-beta2`). 48 projects with a `stage` field
   (live / appReview / beta / building); public count = live with a link (37). Evidence per stage:
   `agent_planning/2026-09-projects.md`. Tag `v1.8.0-beta1`. HTTPS git has no credentials here; push over SSH
   (`git push git@github.com:mneves75/mneves75.git HEAD:main`).

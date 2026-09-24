@@ -45,7 +45,11 @@ All notable changes to this repository are documented here. The format follows
 - CigarInfo AI was marked "Live", but neither of its App Store ids is in the public lookup and its own status page calls
   1.9.1 a release candidate; it is now "In construction · release candidate" (found by the independent GPT-6 verify).
 
-Deployed 2026-09-23: staging `07e1cfca` (tag `v1.8.0-beta1`). Smoke 11/11; Lighthouse mobile
+Deployed 2026-09-24: production `70ea7855` (tag `v1.8.0` @`52fbcaf4`), staging `948acfc8` (tag `v1.8.0-beta2`);
+earlier staging `07e1cfca` (`v1.8.0-beta1`). Before production: autoreview (P2, clean), a security review of both
+sites (no critical or high findings) and an independent GPT-6 verify that failed once (CigarInfo stage) and then
+passed all 7 criteria. Production smoke 11/11; Lighthouse mobile performance 99–100, accessibility 100, best
+practices 100, SEO 100, LCP 1.4–2.0 s, CLS 0. Smoke 11/11; Lighthouse mobile
 performance 97–100, accessibility 100, best practices 100, SEO 100, LCP 1.6 s, CLS 0.
 
 ## [1.7.0] - 2026-09-23
