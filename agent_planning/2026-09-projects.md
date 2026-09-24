@@ -23,6 +23,7 @@ lookup (`itunes.apple.com/lookup?id=<id>&country=br|us`). Re-check before changi
 | GP Race Stats | live | App Store 6776818539 | lookup br + us = 1 (v1.0) |
 | IA Palavras Cruzadas | live | App Store 6767752911 + site | lookup br + us = 1 (v1.1.4) |
 | DNSChat | live | App Store 6749697205 | lookup br + us = 1 (v4.0.23); repo 4.4.8 |
+| CigarInfo AI | building | product page on conhecendotudo (200; its App Store link 404s) | PROJECT_STATUS: 1.9.1 "production candidate, not a claimed public release"; lookup 6753729568 / 6753732736 = 0 (found by independent verify 2026-09-24) |
 | Terroir Atelier | live | terroir-atelier.mvneves.workers.dev (200) | production URL; was linked to staging |
 
 Covers: 1600×1000 WebP from the live public page (Chrome, 1600×1000 viewport) or a plate of committed app screens
