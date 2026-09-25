@@ -12,11 +12,17 @@ export function projectTitle(project: Project, locale: Locale) {
   return [...described].length <= TITLE_MAX ? described : `${project.title} — ${site.name}`;
 }
 
-/** Every project cover is 1600×1000; the route test compares this with the real file behind each og:image. */
-export const projectCoverSize = { width: 1600, height: 1000 } as const;
+/**
+ * Link previews use a 1200×750 JPEG share copy of the cover (scripts/og-covers.sh): the WebP cover stays in the page,
+ * but LinkedIn documents no WebP support. The route test compares this size with the real file behind each og:image.
+ */
+export const projectShareSize = { width: 1200, height: 750 } as const;
 
 export function projectPreview(project: Project, locale: Locale) {
-  return project.image ? { path: project.image, alt: project.alt[locale], ...projectCoverSize } : undefined;
+  if (!project.image) return undefined;
+  const path = project.image.replace(/^\/images\/projects\/([^/]+)\.webp$/, '/images/projects/og/$1.jpg');
+  if (path === project.image) throw new Error(`cover ${project.image} is not /images/projects/<slug>.webp; add its share copy`);
+  return { path, alt: project.alt[locale], ...projectShareSize };
 }
 
 // Stack chips that are programming languages; everything else there is a framework, service or topic.

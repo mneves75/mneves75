@@ -38,8 +38,9 @@ CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun
   reduced-motion users both turn it off. Scroll reveals hide only `.reveal.reveal-pending`.
 - **`[hidden]` wins** via a global `!important` rule; any new filterable list relies on it.
 - **CORP is `same-origin` except on link-preview assets**: `public/_headers` detaches it
-  (`! Cross-Origin-Resource-Policy`) on the OG images, the project covers (`/images/projects/*`, each project
-  page's `og:image`) and the favicon. Overlapping rules comma-join values, so never set a second CORP value there.
+  (`! Cross-Origin-Resource-Policy`) on the OG images, the project covers (`/images/projects/*`, whose
+  `og/<slug>.jpg` share copies are each project page's `og:image`) and the favicon. `og:image` is PNG or JPEG only
+  (LinkedIn documents no WebP): after adding or replacing a cover, run `bash scripts/og-covers.sh` and commit the copy. Overlapping rules comma-join values, so never set a second CORP value there.
 - **Sitemap `<lastmod>` is the last significant change**, never a build date. `scripts/sitemap-lastmod.mjs`
   hashes each page's title, description, canonical, `<main>` text and internal links, and JSON-LD into the
   committed `src/data/sitemap-lastmod.json`: an unchanged hash keeps its date, a new URL or changed hash gets

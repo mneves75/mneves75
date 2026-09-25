@@ -216,16 +216,28 @@ const visibleMarkup = (html) => {
 };
 /** Text a visitor can read (see visibleMarkup). @param {string} html */
 const visibleText = (html) => decodeEntities(visibleMarkup(html).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
-/** Pixel size from a PNG or WebP header, the only preview formats this site ships. @param {Buffer} bytes */
+/** Format and pixel size from a PNG, JPEG or WebP header. @param {Buffer} bytes */
 const imageSize = (bytes) => {
-  if (bytes.readUInt32BE(0) === 0x89504e47) return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  if (bytes.readUInt32BE(0) === 0x89504e47) return { format: 'png', width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+    // Walk the JPEG segments to the first start-of-frame marker (SOF0–SOF15, except DHT/JPG/DAC).
+    for (let at = 2; at + 9 < bytes.length;) {
+      if (bytes[at] !== 0xff) break;
+      const marker = bytes[at + 1];
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+        return { format: 'jpeg', width: bytes.readUInt16BE(at + 7), height: bytes.readUInt16BE(at + 5) };
+      }
+      at += 2 + bytes.readUInt16BE(at + 2);
+    }
+    throw new Error('JPEG without a start-of-frame marker');
+  }
   if (bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') {
     const chunk = bytes.toString('ascii', 12, 16);
-    if (chunk === 'VP8 ') return { width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
-    if (chunk === 'VP8L') { const bits = bytes.readUInt32LE(21); return { width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 }; }
-    if (chunk === 'VP8X') return { width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
+    if (chunk === 'VP8 ') return { format: 'webp', width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
+    if (chunk === 'VP8L') { const bits = bytes.readUInt32LE(21); return { format: 'webp', width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 }; }
+    if (chunk === 'VP8X') return { format: 'webp', width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
   }
-  throw new Error('not a PNG or WebP file');
+  throw new Error('not a PNG, JPEG or WebP file');
 };
 // Cloudflare _headers semantics (as in the browser gate): every matching rule applies in order and `! Name` detaches.
 /** @type {{ pattern: RegExp, lines: string[] }[]} */
@@ -382,13 +394,17 @@ await searchCheck('og:image is a built file with its real size, fetchable cross-
     const { pathname } = new URL(image);
     const file = join(root, pathname);
     assert.ok(existsSync(file), `${route}: og:image ${pathname} is not in dist`);
-    assert.deepEqual({ width: Number(metaContent(html, 'og:image:width')), height: Number(metaContent(html, 'og:image:height')) }, imageSize(readFileSync(file)), `${route}: declared og:image size differs from ${pathname}`);
+    const { format, ...size } = imageSize(readFileSync(file));
+    // LinkedIn documents no WebP/AVIF support and several 2026 reports show it dropping them: previews stay PNG/JPEG.
+    assert.ok(format === 'png' || format === 'jpeg', `${route}: og:image ${pathname} is ${format}; link previews need PNG or JPEG`);
+    assert.deepEqual({ width: Number(metaContent(html, 'og:image:width')), height: Number(metaContent(html, 'og:image:height')) }, size, `${route}: declared og:image size differs from ${pathname}`);
     assert.equal(metaContent(html, 'twitter:image'), image, `${route}: twitter:image differs from og:image`);
     assert.ok(!servesCorp(pathname), `${route}: ${pathname} is served with CORP same-origin, so web-view link previews blank it`);
     const cover = html.match(/<figure class="detail-media"[^>]*><img src="([^"]+)" alt="([^"]*)"/);
     if (cover) {
       covers += 1;
-      assert.equal(image, `${SITE}${cover[1]}`, `${route}: og:image is not the project cover`);
+      // The share copy of the cover: /images/projects/<slug>.webp → /images/projects/og/<slug>.jpg (scripts/og-covers.sh).
+      assert.equal(image, `${SITE}${cover[1].replace(/^\/images\/projects\/([^/]+)\.webp$/, '/images/projects/og/$1.jpg')}`, `${route}: og:image is not the JPEG share copy of the project cover`);
       assert.equal(metaContent(html, 'og:image:alt'), cover[2], `${route}: og:image:alt is not the cover alt text`);
     } else {
       assert.ok(metaContent(html, 'og:image:alt'), `${route}: og:image:alt missing`);

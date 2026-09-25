@@ -36,8 +36,10 @@ Search pass: honest sitemap dates and structured data that states only what each
 
 ### Changed
 
-- Project pages preview their own 1600×1000 cover (`og:image`, `twitter:image`, alt text from the cover) instead of
-  the site card; the five projects without a cover keep the card.
+- Project pages preview their own cover (`og:image`, `twitter:image`, alt text from the cover) instead of the site
+  card, as a 1200×750 JPEG share copy in `public/images/projects/og/` (`scripts/og-covers.sh`, macOS `sips`): the page
+  keeps the WebP cover, but LinkedIn documents no WebP support. The route test rejects a WebP/AVIF `og:image`. The
+  five projects without a cover keep the card.
 - Project titles name the category the page shows ("hay · Developer tools — Marcus Neves"), so English and
   Portuguese titles no longer collide. Three that would pass 60 characters keep "Project — Marcus Neves": Gradiente
   Expert XP-800 (en), Open Profile Manager and swift-fast-markdown (pt).
