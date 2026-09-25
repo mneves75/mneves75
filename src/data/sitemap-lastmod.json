@@ -1,0 +1,426 @@
+{
+  "https://mvneves.dev/": {
+    "hash": "7a4fad95912ce29b8dca90b365d70e87733a84e9819a61302b72a1e5f4d38762",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/about/": {
+    "hash": "22a7d1a7c8fd7a25fa3efe57301bd95676c898826bd534b01173af584ac351f8",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/contact/": {
+    "hash": "0b0e5be27b839cfdad3ecbd6ab44b049ec89a0349d4540d878f1199a958001d4",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/": {
+    "hash": "ad88126f5ca2c60b25484c92f6c1d47e73157405ac6e494ea4ef44351a30ad32",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/about/": {
+    "hash": "a87fdf37f5d4d0c83936498bd4febe3ee4b2b3ebdf6afa34f831906d25af6413",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/contact/": {
+    "hash": "64449f9d14869ddf8ab8d8669d572b89994525d06c01fc94840af62a6614e828",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/recommendations/": {
+    "hash": "c92968ba4b9b9cee3f4c404a93897b1a89dcde97f0783a5e6e6dc7e949bfdd56",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/": {
+    "hash": "bd048947564f88556964fd0f2c54bf853622f61957ed521ef287cac565e1c508",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/ai-calories-tracker/": {
+    "hash": "e1c072c886fdfb9caaa651788b53b298d71a89cece00507c303bc244e37813ac",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/ai-health-sync/": {
+    "hash": "def59d5ecc508e22e3b8271441238cc7be02f851300c078d7c3364aa17e054d1",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/ai-pedometer/": {
+    "hash": "6feb5f4d010f5e4a7cd99b6904598d9f0bd08981822aa25d5faa30641c49b431",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/arremataradar/": {
+    "hash": "003cf6d7fcaa219e612bdb8b6cfcaaf4c318a2551f0fbd2f63dac733f135ab94",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/babimakeup/": {
+    "hash": "359c2689d85e1e6f86687ad53dd42d2dcda13f1505dfebd8fd58eff37750ba4c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/bolao-2026/": {
+    "hash": "3f5653401406508185ccd90adbee3192a0c9425daf3ae948edb0bc73231fef08",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/capturevault/": {
+    "hash": "24cf0aa83ed77d20bc48f1d1a50b5ba2af4e113273f1b3f1e8e383a9c5a9030a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cf-toolkit/": {
+    "hash": "066d820150c67356c964936936985a1918939f5e453b922b2a29d5eb60125ea4",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cigarinfo-ai/": {
+    "hash": "41efe1a8a3f2858144b9ffb1b68537f89324111c8a46c9a52f9a4fd7e8a2cc5b",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/conhecendo-ia/": {
+    "hash": "56f7dc9b76cbd1854fb34c107af16b1d323c63c176106052ba7ffff7675be81a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cruzadas-alvinegras/": {
+    "hash": "d8aaca5fe0263f3a4b889d22ac38d9272eda651469b33c93a6f9609e4b230dbf",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cruzadas-fluminense/": {
+    "hash": "7667bbabdd14f291199e8836616779f5d583611e4a0dc3f4af048e56617c404a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cruzadas-rubro-negras/": {
+    "hash": "db2321e58036e6d85105c4f5c0f16b2e1cb606b8ee82d2b319813a385ca1e358",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/cruzadas-tricolores/": {
+    "hash": "238b7c8f5f914b0a168d98a45246d329829f5b485853e69fa6db6a5ceb5e4b7c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/devtrim/": {
+    "hash": "ecfe574c837a4be074acc6634bbf734baca69de4051d8b7958eda5c2933192e9",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/diario-neutro/": {
+    "hash": "adf0be1ba1285d596c616c5ed38f028a98c7e173f05e17d4a69814dd174c5d98",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/dnschat/": {
+    "hash": "8dce882f951512d16bfd8fe4d32523ab5430a011d9ac046772f1215e0c318117",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/drawing-with-love/": {
+    "hash": "64c802fcb36abfd8a76703a98592c3caee82608145c065fa6fa497cfd10339e4",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/event-management-system/": {
+    "hash": "af7765afff1e21c98da47fe6e97da3128e2c28f7f44c94f123a419bc0293e7b9",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/event-services-platform/": {
+    "hash": "cf7d4c94efd18c464bd5a9e0f3a0ea329a6e392205e57e0bc31369554eefe6b0",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/ffts-grep/": {
+    "hash": "8cb5095ceeece7a97e3c0f2b3963cc66398844c428ed84e34b0b488253a9cc32",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/gp-race-stats/": {
+    "hash": "195880a95158dd5ad19dbf125aa1cedfef44f7d8506dcd8c0de80fc5d65b1dd2",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/hay/": {
+    "hash": "e68865ed9257d5f538d1cd8e3616fd67d750250e94d6697998ef66251108f55e",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/ia-travel/": {
+    "hash": "58bde31c1cfa5dbc58d5eca82d846ec037923fefb956c733dfe834f897f603b8",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/language-benchmarks/": {
+    "hash": "d9f1fc6d205c6b7eea194b65948c13365aa262ae12cf1803899f08a847000d03",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/lente-ia/": {
+    "hash": "50f97e019ebcfae052c1d33bcfa2826f19773eca4498646f8966ec61d492915b",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/levante-a-taca/": {
+    "hash": "68577d4f28a9d6a85bcfaed06fe49f77840824a3f9859f5bb139bb962e2fcfc2",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/live-run/": {
+    "hash": "4ad60b9ab49ed9eab1f82b3c4318dad4f8e06d9f5f16ec9dc50627ba8b865d6d",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/llmdeepdive/": {
+    "hash": "641805bedf5107087ef1d7de22657455ae90775387e99b1b71326b202c1ba266",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/lume/": {
+    "hash": "b9d65bf82658a7d5db852785e96b75f5752afa20aa76f9e0fa2d2d9c232932b3",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/maturity-toolbox/": {
+    "hash": "1a7e874850f5d36d4189b9251692a184d969fb8d17e2c449948c2b7d4314181c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/megasena-analyzer/": {
+    "hash": "d8ac5e1f115315d40847eee569d9657dc0058706765477a7ba40fb5d130fff79",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/minutadraft/": {
+    "hash": "69646d3297810c8e9fec688b81fd82ffb4e15ab5dbfa4292a3b3d46bfd39d125",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/msx-expert-xp800/": {
+    "hash": "0f765f7761e0f4aa8b0828b9d235f17cd9d92de2c49e25c78a8b20b718f766f3",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/open-profile-manager/": {
+    "hash": "b8fabefa1c741757f4790a861cd5956e205da69b1e052e98bb75378ab3b6bc54",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/openclaw-club-brasil/": {
+    "hash": "e26de485ee4f96116d43889b9c289002d0d786412809e19b46b795a687704b0a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/palavras-cruzadas/": {
+    "hash": "1abcc664654f19a2df84bd53feaf376c7124e5a89b7f84e76a6d0bf8da45e94c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/paquera-ai/": {
+    "hash": "afa0c125e949ab754f8b618994e15a886409dc055686e1a078a198df10617f33",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/polymarket-analyzer/": {
+    "hash": "af4067698c95ddb71be1ed1d08bf00d058d9f06d0e2e8a81a9b6d7fe4e48f324",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/recursos-de-multas/": {
+    "hash": "af7fcc1e21abbf49e934eee92c6cfb8572d62765c7ac2f5cf32af78ae66974c2",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/sinal/": {
+    "hash": "8e38df922661368907cf5fa912628fd617eec111ab61773e1bc92a3c206e1770",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/skills/": {
+    "hash": "1f411fcf8abb0d47faf851ec45e479b167cf65bab9f0029bdeb1546326a693ca",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/stoa/": {
+    "hash": "29ecd1289f44dca02feb65ad7bd607898b24f5f1d2c029f32f7498b96747455a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/swift-fast-markdown/": {
+    "hash": "c925b7142acbdb2a6622a1d44dcbdb4f59ed09ab0fbe718e4091f9e5582bde11",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/terroir-atelier/": {
+    "hash": "bf4f70f9ed1976560e59ad94a11db4a94c76a8795f7b68b0bceeb57700d03269",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/vestou/": {
+    "hash": "4801467c1a9231a770d32a30fa6697037aa00d3ae41df113790a8b69ca81b8ba",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/weathersunscreen/": {
+    "hash": "0613ae946f01337ef2189d3c048856423e72ace2330e47b53c17ecc9849338d6",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/pt-br/work/whatsimovel/": {
+    "hash": "97a2f8deec8dc0fc4498a23827a46d72494ddf9b5e71f8de6cfd1a1240804ccc",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/recommendations/": {
+    "hash": "424c21f26577aefac2bd09a7a8a7f7f0c7b7fa81833f98b9d8ffec76daeb0c04",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/": {
+    "hash": "dac8834c1bb604d5993c269ff4749b9fa61cba77985dd469f5e0eca4d1351b62",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/ai-calories-tracker/": {
+    "hash": "fa16eccf5d6420f2455d5d48d64c722fe4e370b1c87d9296260c7e7a294c398b",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/ai-health-sync/": {
+    "hash": "bbe9630a7d9da6b67054d8254a8a877343d65b46743b3ee63d8270be938b57a3",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/ai-pedometer/": {
+    "hash": "dbce3ee40755ce95850da9cb9e7c8eaf25ea51cd661b793cb496a873662c5e03",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/arremataradar/": {
+    "hash": "51a7be2a3fd2620579a94663c9513e6649f001fc42e7ec6a014007a3aa7a0049",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/babimakeup/": {
+    "hash": "7c9d754e98053208dbf323d424398020d2070b277e5bd03805236c596b67ed19",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/bolao-2026/": {
+    "hash": "7f384b71a7b9f2c08e8c659462b08b69da1e3c67ee2c4f6b5031dc2e526e6409",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/capturevault/": {
+    "hash": "657c848c92b0416c78082b0cc48fd983a7bb9547fea8b84c7fe14064b254e4cb",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cf-toolkit/": {
+    "hash": "9494943320d3a44dcb4185a9426033213d4072318cead7086ab949b35fd516ca",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cigarinfo-ai/": {
+    "hash": "0a22c8bf0586a497ff1309e807ee9ba064b5b60fa085f49d885c143e087090cc",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/conhecendo-ia/": {
+    "hash": "418402e32721bf0e0933f664dff5eeb49204ced5e1a57e9200e6dd02f5b86cc5",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cruzadas-alvinegras/": {
+    "hash": "d45abb427ae72f0db00dcc5174cf5141e7a779a57d34407b828bf4bfd720d3ec",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cruzadas-fluminense/": {
+    "hash": "b53ca00ab034c534f5ced4ea447afeed8c8cb884dc7e61db7c7bf1a53c0efe8f",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cruzadas-rubro-negras/": {
+    "hash": "3df23c6c126374dc2c2b3a56302f0999a9ef5ad142022bf67dc2e1d525ba4b74",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/cruzadas-tricolores/": {
+    "hash": "edcd77707b847d93d9b456667e64ab5e0a1014bec6cf9a080a95a901017688eb",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/devtrim/": {
+    "hash": "c32ffd27d4355e55d89ba35ac5fc0eea65c58ac393f11efff4a2d7179b882d52",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/diario-neutro/": {
+    "hash": "0b1281911c7f0b7d4dfb32aeeff62090b44f782eae6f3e0b9a685674c8009d26",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/dnschat/": {
+    "hash": "28423136602299ce16053ee1f50bf60c279958af0c8e98a42a957f8ecd1413cd",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/drawing-with-love/": {
+    "hash": "f2f0786f85d5d0d749b167d6cfe580065fbf26f16d911a062341b2052a4ace3d",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/event-management-system/": {
+    "hash": "d4a0e3efe77eca08a9291daa3fca158d15252d1d8d8e4e7feee320d1aa656a74",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/event-services-platform/": {
+    "hash": "12117ecb06e0e2ff3afcfe0fdca5cc7d8b71683fcf1ae73d1e1058a866e782da",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/ffts-grep/": {
+    "hash": "18d01060a2c95123b4aa099737863d28c638e30f11317d1d875ef7776ccea97a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/gp-race-stats/": {
+    "hash": "63a2b0d433514d94f412f8961705fc66b9609b17b81785adddc12e809b794fa9",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/hay/": {
+    "hash": "af6d1a0cd4701a8a5077595ad8da2d7f4b201d2b7d52a89e1a5d63abf9f8062f",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/ia-travel/": {
+    "hash": "f031e056d9dbde125798d3e2f85fe2b5c162e5057c2baf657916307779838d7f",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/language-benchmarks/": {
+    "hash": "fd0bb2828ffed67fb4b8f30a6985ad471a789238d01f1fe2036a6cded72a8237",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/lente-ia/": {
+    "hash": "9062d614f9e6b07584edbd743a863c6659a05ca12fce85f541b6a9ea0dce6317",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/levante-a-taca/": {
+    "hash": "8e362d5dcb8257fc19799028cdcf55d546d5d05b01518360eed14cb00d0a8d11",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/live-run/": {
+    "hash": "431ffe73b423e18cc0ed2708f99a38fff540bf418bd2bdcb3676115c4c04c58c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/llmdeepdive/": {
+    "hash": "2d39c2d6d5e34d62fc0f19fb66904135c3fb88c50f02b4e90707f9f27d4bb58f",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/lume/": {
+    "hash": "eb731d23609f2b1273d0548f868e2088aa6b7b34b12f19aa3e334a3244b8d84d",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/maturity-toolbox/": {
+    "hash": "ae91923e3b5029d2ec9947ac46c3b024eeb70d70036a054d39d2224cc6662dfa",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/megasena-analyzer/": {
+    "hash": "453942ba848c325168ce3e2a820f10ea8b9d3f8e5486665b4b57626942d3fa8e",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/minutadraft/": {
+    "hash": "5f6c3aef6192da7ca31d62fb44232f52657726bf5dcb2d5d0a1b4b0769cbc835",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/msx-expert-xp800/": {
+    "hash": "773459348ece5f3337696f3da8e95bc69f0d312035c3fff4ed392e55194214f9",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/open-profile-manager/": {
+    "hash": "70617f7ae046e61256e22ea7c870ea34ea6366344428b626c147e42a1198d16c",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/openclaw-club-brasil/": {
+    "hash": "ad1bc5b67e1fb0d091050037064048a04a840c6193411d4b4c90a1dcdbb9ad38",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/palavras-cruzadas/": {
+    "hash": "dba19ba3c061dc15a54c449ddd43bedaee7ac242eba7d8b028a043e8108efab4",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/paquera-ai/": {
+    "hash": "428efc38915fe0c81efe5f64731275ac3fc2ebbfd4cdcbaf5831c1b4dcbe87c5",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/polymarket-analyzer/": {
+    "hash": "b4701f7112aa3a3147cb75b3448c62010fbddfc4a20307aaeba56e538454e1aa",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/recursos-de-multas/": {
+    "hash": "75c9fba46bcd46ad18b6ea3563e314b858594664fc3f0219795916d659e357e2",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/sinal/": {
+    "hash": "b588a9228652b6d74c77d8150e5a17b716dfaf6225445c2b2bd61d86fff17d33",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/skills/": {
+    "hash": "08ff746e497f1e50112b545535efdb6e4f9c3b5876a28007e55e2ebb64e9a93e",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/stoa/": {
+    "hash": "94078176739ea068a4ea64534245a625436798d387b2bc5076de2be7dd6948ba",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/swift-fast-markdown/": {
+    "hash": "02b23891c1c89ea4fd049e50ec1c9d85daf5a5100b5dfc01ddf52f4d15f8536a",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/terroir-atelier/": {
+    "hash": "a4641fb11ac7c4a5c490c17080f5aa352492c14c0f8c32220ad058697155ad82",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/vestou/": {
+    "hash": "166c5ab49f158e679a5cbbbe736e8476c8eca3ce0c28a95c249a013d2ef24745",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/weathersunscreen/": {
+    "hash": "ec50fc4c5803726e72755beba3dc05bc77280f622f5d7618663626c532a2f984",
+    "lastmod": "2026-09-25"
+  },
+  "https://mvneves.dev/work/whatsimovel/": {
+    "hash": "6de19083a8a341aa4b6aaa51729bae7ca28cf8951278b9b3d717e558c2935e7e",
+    "lastmod": "2026-09-25"
+  }
+}

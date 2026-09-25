@@ -6,6 +6,46 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-09-25
+
+Search pass: honest sitemap dates and structured data that states only what each page shows. **Not deployed yet.**
+
+### Added
+
+- `<lastmod>` on all 106 sitemap URLs from a committed content-hash manifest (`src/data/sitemap-lastmod.json`, written
+  by `scripts/sitemap-lastmod.mjs` inside `bun run build`). A date moves only when a page's title, description,
+  canonical, `<main>` text and links, or JSON-LD change; asset names and scripts do not count. Seeded 2026-09-25,
+  because this release changes the structured data of every page. A rebuild without content changes leaves the
+  manifest byte-identical. CI builds with `LASTMOD_CHECK=1`, which fails on a stale or missing manifest instead of
+  rewriting it, so a content change cannot land without its manifest. `LASTMOD_DATE` must be a real calendar day
+  (`2026-02-30` is refused rather than rolled over to March 2).
+- BreadcrumbList JSON-LD on every page below the home page (Home › Work › Project on project pages).
+- Project pages describe the project as their `mainEntity`, from data the page shows: `SoftwareSourceCode` for an
+  open-source repository linked from the page, otherwise `CreativeWork` — apps included. Never offers, prices or ratings.
+  Apps are not `SoftwareApplication` on purpose: Google's Software app rich result requires `offers.price` plus
+  `aggregateRating` or `review`, which the site cannot state truthfully, so those nodes would only show up as invalid
+  items in Search Console.
+- Home: a `WebSite` node (`Marcus Neves`, alternate name `mvneves.dev`) for Google's site name.
+- `max-image-preview:large` robots meta on indexable pages; both 404 pages keep `noindex` alone.
+- Search contract in the route test (9 checks; 7 failed on the 1.8.0 build, the other 2 and the sub-checks were proven
+  with planted violations): sitemap = indexable self-canonical pages, lastmod = manifest and manifest hash = built
+  page (the hash ignores asset names, scoped-style ids and query strings inside `<main>` and sees text and link edits),
+  JSON-LD parses with no raw `<`, breadcrumbs (names and links checked against what is visible, not the closed command
+  palette), project `mainEntity`, WebSite and Person facts, `og:image` is a built file at its declared size and
+  fetchable cross-site, unique titles and descriptions with titles of at most 60 characters, robots meta.
+
+### Changed
+
+- Project pages preview their own 1600×1000 cover (`og:image`, `twitter:image`, alt text from the cover) instead of
+  the site card; the five projects without a cover keep the card.
+- Project titles name the category the page shows ("hay · Developer tools — Marcus Neves"), so English and
+  Portuguese titles no longer collide. Three that would pass 60 characters keep "Project — Marcus Neves": Gradiente
+  Expert XP-800 (en), Open Profile Manager and swift-fast-markdown (pt).
+- JSON-LD is one `@graph` per page. The Person drops `jobTitle`, which no page states; `sameAs` keeps GitHub,
+  LinkedIn and X, all linked on every page.
+- `Cross-Origin-Resource-Policy` is detached on `/images/projects/*`, now link-preview images (the same exception the
+  OG images have had since 1.6.1).
+
 ## [1.8.0] - 2026-09-23
 
 ### Added

@@ -31,5 +31,9 @@ jobs:
       # Build-time dependencies only ship HTML, but a vulnerable toolchain still runs on this machine.
       - run: bun audit --audit-level=high
       - run: bun run check
+      # A content change must ship with its lastmod manifest: in check mode a stale or missing
+      # src/data/sitemap-lastmod.json fails the build instead of being rewritten (and re-dated) here.
       - run: bun run build
+        env:
+          LASTMOD_CHECK: '1'
       - run: bun run test

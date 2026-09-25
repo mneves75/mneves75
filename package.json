@@ -1,11 +1,11 @@
 {
   "name": "mvneves-dev",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/csp-headers.mjs",
+    "build": "astro build && node scripts/csp-headers.mjs && node scripts/sitemap-lastmod.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "test": "node scripts/test-routes.mjs && node scripts/test-browser.mjs",

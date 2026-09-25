@@ -11,9 +11,15 @@ interface Props {
   currentPath: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  /** Link-preview image; width/height must be the file's real size (the route test reads it). Defaults to the site card. */
+  image?: { path: string; alt: string; width: number; height: number };
+  /** Visible name of a page below a nav section (a project title): the last breadcrumb. */
+  crumb?: string;
+  /** JSON-LD entity the page is about (WebPage mainEntity). */
+  mainEntity?: Record<string, unknown>;
 }
 
-const { locale, title, description, currentPath, type = 'website', noindex = false } = Astro.props;
+const { locale, title, description, currentPath, type = 'website', noindex = false, image, crumb, mainEntity } = Astro.props;
 const withTrailingSlash = (path: string) => {
   const normalized = `/${path}`.replace(/\/{2,}/g, '/').replace(/\/$/, '');
   return normalized ? `${normalized}/` : '/';
@@ -28,30 +34,51 @@ const alternatePath = locale === 'pt'
 const alternateUrl = `${site.domain}${withTrailingSlash(href(otherLocale, alternatePath))}`;
 const defaultPath = locale === 'pt' ? alternatePath : currentPath;
 const defaultUrl = `${site.domain}${withTrailingSlash(defaultPath)}`;
+const home = `${site.domain}/`;
+// Only facts the site shows: there is no portrait, and no page states a job title, so neither is marked up.
 const person = {
   '@type': 'Person',
+  '@id': `${home}#person`,
   name: site.name,
-  url: site.domain,
-  jobTitle: locale === 'en' ? 'Software Developer · Data Analyst · AI Builder' : 'Desenvolvedor de software · Analista de dados · Builder de IA',
+  url: home,
   sameAs: [site.github, site.linkedin, site.x],
 };
 // ProfilePage is for pages whose main subject is the person; every other page is a WebPage by him.
 const profilePage = !noindex && (currentPath === '/' || currentPath === '/about/');
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': profilePage ? 'ProfilePage' : 'WebPage',
-  name: title,
-  url: canonical,
-  inLanguage: localeConfig[locale].html,
-  ...(profilePage ? { mainEntity: person } : { author: person }),
-};
 const lang = localeConfig[locale];
 const pageKind = noindex ? 'other' : currentPath === '/' ? 'home' : currentPath === '/work/' ? 'work' : currentPath.startsWith('/work/') ? 'project' : currentPath === '/about/' ? 'about' : currentPath === '/recommendations/' ? 'recommendations' : currentPath === '/contact/' ? 'contact' : 'other';
-const ogImage = `${site.domain}${locale === 'pt' ? '/og-image-pt.png' : '/og-image.png'}`;
-const ogImageAlt = locale === 'en' ? 'Marcus Neves — software, data and AI' : 'Marcus Neves — software, dados e IA';
+const ogImage = `${site.domain}${image?.path ?? (locale === 'pt' ? '/og-image-pt.png' : '/og-image.png')}`;
+const ogImageAlt = image?.alt ?? (locale === 'en' ? 'Marcus Neves — software, data and AI' : 'Marcus Neves — software, dados e IA');
+const ogImageSize = image ?? { width: 1200, height: 630 };
 const ui = locale === 'en'
   ? { pages: 'Pages', projects: 'Projects', actions: 'Actions', home: 'Home', github: 'Open GitHub', linkedin: 'Open LinkedIn', x: 'Open X', language: 'Switch language', theme: 'Switch theme', motion: 'Pause animations', terminal: 'Open terminal', palette: 'Open command palette', search: 'Search pages, projects, actions…', noResults: 'No match', navigate: 'navigate', open: 'open', close: 'close' }
   : { pages: 'Páginas', projects: 'Projetos', actions: 'Ações', home: 'Início', github: 'Abrir GitHub', linkedin: 'Abrir LinkedIn', x: 'Abrir X', language: 'Mudar idioma', theme: 'Alternar tema', motion: 'Pausar animações', terminal: 'Abrir terminal', palette: 'Abrir paleta de comandos', search: 'Buscar páginas, projetos, ações…', noResults: 'Nada encontrado', navigate: 'navegar', open: 'abrir', close: 'fechar' };
+// Breadcrumbs follow the visible hierarchy: the brand link home, the nav section, then the page itself (a project).
+const section = nav.find((item) => currentPath.startsWith(item.path));
+const trail = noindex || currentPath === '/' ? [] : [
+  { name: ui.home, path: '/' },
+  ...(section ? [{ name: section[locale], path: section.path }] : []),
+  ...(section && currentPath !== section.path && crumb ? [{ name: crumb, path: currentPath }] : []),
+];
+if (trail.length && trail.at(-1)?.path !== currentPath) throw new Error(`breadcrumb for ${currentPath} stops before the page: pass crumb`);
+// One @graph: the page, the WebSite on the home page (Google's site name), and the breadcrumb trail.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': profilePage ? 'ProfilePage' : 'WebPage',
+      name: title,
+      url: canonical,
+      inLanguage: lang.html,
+      ...(profilePage ? { mainEntity: person } : { author: person, ...(mainEntity ? { mainEntity } : {}) }),
+    },
+    ...(currentPath === '/' ? [{ '@type': 'WebSite', '@id': `${home}#website`, name: site.name, alternateName: 'mvneves.dev', url: home, inLanguage: [localeConfig.en.html, localeConfig.pt.html] }] : []),
+    ...(trail.length ? [{
+      '@type': 'BreadcrumbList',
+      itemListElement: trail.map((step, index) => ({ '@type': 'ListItem', position: index + 1, name: step.name, item: `${site.domain}${withTrailingSlash(href(locale, step.path))}` })),
+    }] : []),
+  ],
+};
 ---
 
 <!doctype html>
@@ -63,6 +90,7 @@ const ui = locale === 'en'
     <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <>
+      <meta name="robots" content="max-image-preview:large" />
       <link rel="canonical" href={canonical} />
       <link rel="alternate" hreflang="en" href={locale === 'en' ? canonical : alternateUrl} />
       <link rel="alternate" hreflang="pt-BR" href={locale === 'pt' ? canonical : alternateUrl} />
@@ -80,8 +108,8 @@ const ui = locale === 'en'
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content={String(ogImageSize.width)} />
+    <meta property="og:image:height" content={String(ogImageSize.height)} />
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

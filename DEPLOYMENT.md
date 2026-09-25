@@ -16,7 +16,7 @@ The production artifact is `dist/`. No API key, database, server runtime, or bui
 1. Authenticate Wrangler in the intended Cloudflare account: `wrangler login`.
 2. Confirm the target account and project name before deploying: `wrangler whoami`.
 3. Build: `bun run build`.
-4. `bun run build` also runs `scripts/csp-headers.mjs`, which replaces `script-src 'unsafe-inline'` in `dist/_headers` with sha256 hashes of the inline scripts in the built HTML. Never deploy a `dist/` built any other way; `bun run test` asserts the hashed policy.
+4. `bun run build` also runs `scripts/csp-headers.mjs`, which replaces `script-src 'unsafe-inline'` in `dist/_headers` with sha256 hashes of the inline scripts in the built HTML, and `scripts/sitemap-lastmod.mjs`, which stamps `dist/sitemap.xml` with each page's last significant change from `src/data/sitemap-lastmod.json` (and updates that manifest when content changed; commit it: CI builds with `LASTMOD_CHECK=1`, which fails on a stale manifest instead of rewriting it). Never deploy a `dist/` built any other way; `bun run test` asserts the hashed policy and the lastmod manifest.
 5. Deploy the production static asset Worker explicitly: `wrangler deploy --env="" --config wrangler.jsonc`.
 6. In Cloudflare dashboard, add `mvneves.dev` under **Workers & Pages → mvneves-dev → Settings → Domains & Routes → Custom Domains**.
 7. Confirm the domain serves `/`, `/work/`, `/pt-br/`, and a newly added portfolio detail route such as `/work/bolao-2026/` before changing redirects.
@@ -120,7 +120,9 @@ Response headers (`public/_headers`, verified served from production before the 
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
 `Permissions-Policy` denying camera/microphone/geolocation/payment/usb/browsing-topics,
 `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin` (detached since 1.6.1 on `/og-image.png`,
-`/og-image-pt.png` and `/favicon.svg`, which web-view link previews such as Apple Mail load cross-site), `X-Frame-Options: DENY`
+`/og-image-pt.png` and `/favicon.svg`, which web-view link previews such as Apple Mail load cross-site; 1.9.0 adds
+`/images/projects/*`, the project pages' `og:image`, which is not yet verified served because 1.9.0 is not deployed),
+`X-Frame-Options: DENY`
 (legacy browsers; `frame-ancestors 'none'` covers the rest), and a same-origin CSP with `frame-ancestors 'none'`,
 `base-uri 'self'`, `form-action 'self'`, and `object-src 'none'`.
 HSTS is deliberately not `preload`: preload is effectively irreversible for the apex domain.
