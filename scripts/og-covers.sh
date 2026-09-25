@@ -15,4 +15,16 @@ for copy in og/*.jpg; do
   slug="$(basename "$copy" .jpg)"
   [ -e "$slug.webp" ] || rm -- "$copy"
 done
-echo "og-covers: $(ls og/*.jpg | wc -l | tr -d ' ') share copies"
+# Record which cover each copy was made from (sorted, stable): the route test fails when a cover changes but its copy
+# does not. Kept outside public/ so it is not deployed.
+{
+  printf '{\n'
+  first=1
+  for cover in *.webp; do
+    [ $first -eq 1 ] || printf ',\n'
+    first=0
+    printf '  "%s": "%s"' "${cover%.webp}" "$(shasum -a 256 "$cover" | cut -d' ' -f1)"
+  done
+  printf '\n}\n'
+} > ../../../src/data/og-covers.json
+echo "og-covers: $(ls og/*.jpg | wc -l | tr -d ' ') share copies, sources in src/data/og-covers.json"

@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
+const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+/** sha256 of the cover each og/<slug>.jpg share copy was made from, written by scripts/og-covers.sh. @type {Record<string, string>} */
+const ogCoverSources = existsSync(join(projectRoot, 'src/data/og-covers.json')) ? JSON.parse(readFileSync(join(projectRoot, 'src/data/og-covers.json'), 'utf8')) : {};
 // Project routes come from the sitemap, so a new project can never be left out of these checks (STOA once was).
 // The count below stays hand-written on purpose: changing the inventory is a deliberate edit.
 const PROJECTS = 48;
@@ -405,6 +409,10 @@ await searchCheck('og:image is a built file with its real size, fetchable cross-
       covers += 1;
       // The share copy of the cover: /images/projects/<slug>.webp → /images/projects/og/<slug>.jpg (scripts/og-covers.sh).
       assert.equal(image, `${SITE}${cover[1].replace(/^\/images\/projects\/([^/]+)\.webp$/, '/images/projects/og/$1.jpg')}`, `${route}: og:image is not the JPEG share copy of the project cover`);
+      // og-covers.sh records the sha256 of the cover each copy was made from, so a replaced cover with a stale copy fails.
+      const slug = cover[1].replace(/^\/images\/projects\/([^/]+)\.webp$/, '$1');
+      const sourceHash = createHash('sha256').update(readFileSync(join(projectRoot, 'public', cover[1]))).digest('hex');
+      assert.equal(ogCoverSources[slug], sourceHash, `${route}: share copy og/${slug}.jpg was not made from the current cover; run bash scripts/og-covers.sh`);
       assert.equal(metaContent(html, 'og:image:alt'), cover[2], `${route}: og:image:alt is not the cover alt text`);
     } else {
       assert.ok(metaContent(html, 'og:image:alt'), `${route}: og:image:alt missing`);
