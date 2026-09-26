@@ -29,7 +29,9 @@ only for the root and the language-choice endpoint; every other path is served s
 arrival at `/` whose browser's top language is Portuguese to `/pt-br/` (302, `Cache-Control: no-store`) and otherwise
 returns the English page from the `ASSETS` binding, where `_headers` still apply. Both carry
 `Vary: Accept-Language, Cookie`. `POST /lang?set=en|pt`, sent by the language control, answers 204 with the `mn-lang`
-cookie (403 unless the request comes from the site itself, 400 for another value, 405 for another method). `bun run test` imports
+cookie (403 unless the request comes from the site itself, 400 for another value, 405 for another method).
+`_headers` applies only to asset responses, so the Worker copies the root page's `/*` headers (CSP, HSTS, framing,
+CORP and the rest) onto the responses it builds itself; the browser gate compares them. `bun run test` imports
 the module into its Node server, which cannot see workerd-only rules (the main module may export only its handler:
 a named string export made workerd refuse to start) or prove that `_headers` reach the root. Whenever `worker/`
 changes, and before a deploy, run the gate against real workerd:

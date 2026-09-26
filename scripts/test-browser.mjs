@@ -382,6 +382,24 @@ await httpCheck('POST /lang: only the site itself sets the choice, as an HTTP co
     assert.equal(response.headers.get('set-cookie'), null, `${method} ${path} set a cookie`);
   }
 });
+await httpCheck("the Worker's own responses carry the site's security headers (_headers /*)", async () => {
+  // _headers applies only to asset responses, so the redirect and /lang would otherwise go out bare.
+  const names = Object.keys(headersFor('/'));
+  assert.ok(names.includes('content-security-policy') && names.includes('strict-transport-security'), `no /* security rule: ${names}`);
+  const origin = new URL(base).origin;
+  const english = await rootFetch('/', { 'accept-language': 'en-US' });
+  /** @type {Record<string, Response>} */
+  const generated = {
+    'GET / 302': await rootFetch('/', { 'accept-language': 'pt-BR' }),
+    'HEAD / 302': await rootFetch('/', { 'accept-language': 'pt-BR' }, 'HEAD'),
+    'POST /lang 204': await rootFetch('/lang?set=en', { origin, 'sec-fetch-site': 'same-origin' }, 'POST'),
+    'POST /lang 403': await rootFetch('/lang?set=en', {}, 'POST'),
+    'GET /lang 405': await rootFetch('/lang', {}),
+  };
+  for (const [label, response] of Object.entries(generated)) {
+    for (const name of names) assert.equal(response.headers.get(name), english.headers.get(name), `${label}: ${name}`);
+  }
+});
 await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {
   await page.goto(`${base}/`);
   assert.equal(new URL(page.url()).pathname, '/pt-br/', 'pt-BR browser not sent to /pt-br/');

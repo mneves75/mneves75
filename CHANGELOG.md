@@ -25,7 +25,8 @@ All notable changes to this repository are documented here. The format follows
   - The top language follows RFC 9110 q-values: `en;q=0.5,pt;q=0.6` → Portuguese; `es,pt;q=0.8`, `de,pt;q=0.1`,
     `*` and `pt;q=0` → English; a range with an invalid q (`1e0`, `0x1`, `.9`, four decimals) is ignored.
   - Crawlers send no `Accept-Language` and keep the English x-default; hreflang is unchanged.
-  - Both responses carry `Vary: Accept-Language, Cookie`.
+  - Both responses carry `Vary: Accept-Language, Cookie`, and the Worker's own responses (the redirect, `/lang`)
+    carry the site's `_headers` `/*` security headers, copied from the root page rather than kept twice.
 - Browser gate: the local server routes the `run_worker_first` paths, read from `wrangler.jsonc`, through the Worker
   module. 29 HTTP cases cover negotiation, cookie and navigation; one check covers the re-issued cookie and one
   `POST /lang` (accepted same-origin, 6 refusals); 2 real-Chrome flows (pt-BR and en-US browsers switching and coming
@@ -35,7 +36,10 @@ All notable changes to this repository are documented here. The format follows
 - Review: code review in two axes (standards: no hard violation; spec: Portuguese only as the top language, the
   Safari cookie cap and two stale "no server" lines, all fixed), security review (no finding), and autoreview P3 on
   GPT-6 Astra in two rounds (q-value grammar; then the choice made away from `/` never reached the server, fixed
-  with `POST /lang`), each fixed with red cases first.
+  with `POST /lang`), each fixed with red cases first. Independent verification (GPT-6 Astra, fresh context,
+  7 frozen criteria) round 1: FAIL because the 302 went out without the security headers and `MEMORY.md` kept stale
+  route counts; both fixed (the headers check was red first). Browser clicks and Safari retention stay outside what
+  the sandboxed verifier can run.
 
 ### Changed
 

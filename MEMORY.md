@@ -86,7 +86,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Fonts: latin + latin-ext subsets both vendored with `unicode-range`. The latin-ext file alone LACKS `ã ç é ·` — pt-BR silently falls back without the latin file.
 - Scroll reveals are no-JS-safe: CSS hides only `.reveal.reveal-pending` (class added by the runtime). Never hide `.reveal` directly in CSS.
 - Nav: current page = bold + 2px copper underline; hover = 1px neutral, gated `@media (hover: hover)`. They were identical once and looked like two active pages.
-- Route tests are count-coupled: `class="recommendation"` ×7 (exact attribute), `data-project-row data-category` ×34, palette items 7 + 5 + 34, "Three decades shipping" on home, 78 sitemap locs. Update `scripts/test-routes.mjs` in lockstep with content changes.
+- Route tests are count-coupled (recommendations, project rows, palette items, sitemap locs, "Three decades shipping" on home). `scripts/test-routes.mjs` owns the numbers, derived from the inventory in `src/data/site.ts` where it can; update it in lockstep with content changes instead of restating counts here, which go stale.
 
 ## Open items
 
