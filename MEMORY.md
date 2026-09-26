@@ -5,14 +5,16 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 ## Current state (2026-09-25, 1.10.0 committed; 1.9.1 live)
 
 - 1.10.0: `/` sends arrivals whose browser's top language is Portuguese to `/pt-br/` through `worker/index.js` (run
-  only for `/`); the language control's `mn-lang` cookie wins and is re-issued over HTTP; internal navigation never
-  redirects.
+  only for `/` and `/lang`); the language control's `mn-lang` cookie wins, stored over HTTP by `POST /lang`; internal
+  navigation never redirects.
 - Lesson: workerd refuses a main module that has a non-handler named export (a string constant); the Node harness in
   `bun run test` cannot see that. Run the gate against `wrangler dev` whenever `worker/` changes.
 - Lesson: Playwright contexts default to the machine's locale; the gate now pins `en-US` so a pt-BR Mac does not
   send `/` to `/pt-br/` under every check.
 - Lesson: Safari keeps a `document.cookie` cookie only 7 days; a preference meant to last must also be set by the
-  server.
+  server, and at the moment it is chosen (here `POST /lang`), not on some later visit.
+- Lesson: Playwright reports a `keepalive` request that outlives its page as `requestfailed` even after a 204; wait on
+  its `response` event instead of `requestfinished`.
 
 ## Earlier state (2026-09-23, 1.8.0 on staging)
 

@@ -241,11 +241,15 @@ const jsonLd = {
       document.querySelector('[data-motion-toggle]')?.addEventListener('click', toggleMotion);
 
       // --- Language: following the language control is an explicit choice, which worker/language.js reads at /.
+      // The cookie is written here for the very next request, and stored by the server (POST /lang) for its full year:
+      // Safari keeps a document.cookie one only 7 days. keepalive lets the POST finish after the page navigates.
       const rememberLanguage = (event: MouseEvent) => {
         if (event.type === 'auxclick' && event.button !== 1) return; // middle click opens the link; right click does not
         const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[data-lang-switch]') : null;
         const choice = link?.dataset.langSwitch;
-        if (choice === 'en' || choice === 'pt') document.cookie = `mn-lang=${choice}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+        if (choice !== 'en' && choice !== 'pt') return;
+        document.cookie = `mn-lang=${choice}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+        fetch(`/lang?set=${choice}`, { method: 'POST', keepalive: true }).catch(() => { /* the script cookie still applies */ });
       };
       document.addEventListener('click', rememberLanguage);
       document.addEventListener('auxclick', rememberLanguage);

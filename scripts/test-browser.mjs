@@ -52,8 +52,11 @@ const asset = (path) => {
   if (!found) file = notFoundFile(path);
   return { status: found ? 200 : 404, headers: { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' }, body: readFileSync(file) };
 };
-// `run_worker_first: ["/"]` in wrangler.jsonc: only the root goes through worker/index.js, whose ASSETS binding is the
-// static server above.
+// The paths in wrangler.jsonc's `run_worker_first` go through worker/index.js, whose ASSETS binding is the static
+// server above; read from the config so the emulation cannot drift from production routing.
+const wrangler = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8').replace(/^\s*\/\/.*$/gm, ''));
+/** @type {Set<string>} */
+const workerFirst = new Set(wrangler.assets.run_worker_first);
 const ASSETS = {
   /** @param {Request} request */
   fetch: async (request) => {
@@ -65,7 +68,7 @@ const ASSETS = {
 const server = createServer(async (req, res) => {
   let path;
   try { path = decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
-  if (path === '/') {
+  if (workerFirst.has(path)) {
     /** @type {[string, string][]} */
     const headers = Object.entries(req.headers).flatMap(([name, value]) => (value === undefined ? [] : [[name, Array.isArray(value) ? value.join(', ') : value]]));
     const response = await worker.fetch(new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers }), { ASSETS });
@@ -358,6 +361,27 @@ await httpCheck('root language: an explicit choice is re-issued by the server (S
     assert.equal(response.headers.get('set-cookie'), null, `a cookie was set without a valid choice (${cookie})`);
   }
 });
+await httpCheck('POST /lang: only the site itself sets the choice, as an HTTP cookie', async () => {
+  const origin = new URL(base).origin;
+  const accepted = await rootFetch('/lang?set=pt', { origin, 'sec-fetch-site': 'same-origin' }, 'POST');
+  assert.equal(accepted.status, 204, `same-origin choice not accepted: ${accepted.status}`);
+  assert.match(accepted.headers.get('set-cookie') ?? '', /^mn-lang=pt;.*Max-Age=31536000/, 'no HTTP cookie for the choice');
+  assert.match(accepted.headers.get('cache-control') ?? '', /no-store/);
+  /** @type {[Record<string, string>, string, string, number][]} */
+  const refused = [
+    [{ origin: 'https://evil.example', 'sec-fetch-site': 'cross-site' }, 'POST', '/lang?set=en', 403],
+    [{ origin: 'https://evil.example' }, 'POST', '/lang?set=en', 403],
+    [{}, 'POST', '/lang?set=en', 403],
+    [{ origin, 'sec-fetch-site': 'same-origin' }, 'POST', '/lang?set=fr', 400],
+    [{ origin, 'sec-fetch-site': 'same-origin' }, 'POST', '/lang', 400],
+    [{ origin, 'sec-fetch-site': 'same-origin' }, 'GET', '/lang?set=en', 405],
+  ];
+  for (const [headers, method, path, status] of refused) {
+    const response = await rootFetch(path, headers, method);
+    assert.equal(response.status, status, `${method} ${path} ${JSON.stringify(headers)}: ${response.status}`);
+    assert.equal(response.headers.get('set-cookie'), null, `${method} ${path} set a cookie`);
+  }
+});
 await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {
   await page.goto(`${base}/`);
   assert.equal(new URL(page.url()).pathname, '/pt-br/', 'pt-BR browser not sent to /pt-br/');
@@ -369,7 +393,13 @@ await check('root language: a Portuguese browser lands on /pt-br/, and choosing 
 await check('root language: an English browser stays on /, and choosing Portuguese sticks', async (page) => {
   await page.goto(`${base}/`);
   assert.equal(new URL(page.url()).pathname, '/', 'en-US browser was redirected');
+  // The choice must reach the server as an HTTP cookie before any later visit to / (Safari keeps a script-set one 7 days).
+  // Wait on the response: the keepalive request outlives its page, so Playwright later reports it as failed.
+  const choicePosted = page.context().waitForEvent('response', (response) => response.url().endsWith('/lang?set=pt') && response.request().method() === 'POST');
   await Promise.all([page.waitForURL(`${base}/pt-br/`), page.click('.header-control[data-lang-switch="pt"]')]);
+  const posted = await choicePosted;
+  assert.equal(posted.status(), 204, 'the choice was not stored by the server');
+  assert.match(await posted.headerValue('set-cookie') ?? '', /^mn-lang=pt;/, 'the server did not set the choice cookie');
   await page.goto(`${base}/`);
   assert.equal(new URL(page.url()).pathname, '/pt-br/', 'the Portuguese choice was not remembered on the next visit');
 }, { locale: 'en-US' });

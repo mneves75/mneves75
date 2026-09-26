@@ -1,8 +1,23 @@
-// Root language for mvneves.dev, run only for "/" (assets.run_worker_first in wrangler.jsonc). Only the default
-// export may live here: workerd refuses a main module with a named export that is not a handler (see language.js).
-import { choiceCookie, explicitChoice, redirectsToPortuguese } from './language.js';
+// Root language for mvneves.dev, run only for "/" and "/lang" (assets.run_worker_first in wrangler.jsonc). Only the
+// default export may live here: workerd refuses a main module with a named export that is not a handler (see
+// language.js).
+import { choiceCookie, explicitChoice, isLanguage, isSameOrigin, redirectsToPortuguese } from './language.js';
 
 const VARY = 'Accept-Language, Cookie';
+
+/**
+ * POST /lang?set=en|pt, sent by the language control on click: the choice as an HTTP cookie, which Safari keeps its
+ * full year (a document.cookie one only 7 days). Only the site's own pages may set it.
+ * @param {Request} request
+ */
+function storeChoice(request) {
+  const headers = { 'cache-control': 'no-store' };
+  if (request.method !== 'POST') return new Response(null, { status: 405, headers: { ...headers, allow: 'POST' } });
+  if (!isSameOrigin(request)) return new Response(null, { status: 403, headers });
+  const choice = new URL(request.url).searchParams.get('set');
+  if (!isLanguage(choice)) return new Response(null, { status: 400, headers });
+  return new Response(null, { status: 204, headers: { ...headers, 'set-cookie': choiceCookie(choice) } });
+}
 
 export default {
   /**
@@ -11,6 +26,7 @@ export default {
    */
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/lang') return storeChoice(request);
     const choice = explicitChoice(request);
     if (url.pathname === '/' && redirectsToPortuguese(request)) {
       // Fixed path plus the request's own query: no open redirect. Never cached, since it depends on the visitor.

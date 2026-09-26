@@ -6,7 +6,7 @@ const LANGUAGE_COOKIE = 'mn-lang';
 const QVALUE = /^(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/;
 
 /** @param {unknown} value @returns {value is 'en' | 'pt'} */
-const isLanguage = (value) => value === 'en' || value === 'pt';
+export const isLanguage = (value) => value === 'en' || value === 'pt';
 
 /**
  * Portuguese when the browser's top language is Portuguese (any pt-* tag), English for everything else: the owner's
@@ -60,15 +60,22 @@ export function choiceCookie(choice) {
   return `${LANGUAGE_COOKIE}=${choice}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
 }
 
-/** A click on a link of this site: never redirect it. @param {Request} request */
-function isInternalNavigation(request) {
+/**
+ * A request made by a page of this site: an internal navigation (never redirected) or the language control's POST
+ * (the only one allowed to store a choice). Fetch Metadata first; older browsers still send Origin on a POST and, with
+ * the site's strict-origin-when-cross-origin policy, a same-origin Referer.
+ * @param {Request} request
+ */
+export function isSameOrigin(request) {
   const site = request.headers.get('sec-fetch-site');
   if (site) return site === 'same-origin';
-  // Browsers without Fetch Metadata: the site sends a same-origin Referer (strict-origin-when-cross-origin).
+  const own = new URL(request.url).origin;
+  const origin = request.headers.get('origin');
+  if (origin) return origin === own;
   const referer = request.headers.get('referer');
   if (!referer) return false;
   try {
-    return new URL(referer).origin === new URL(request.url).origin;
+    return new URL(referer).origin === own;
   } catch {
     return false;
   }
@@ -80,7 +87,7 @@ function isInternalNavigation(request) {
  */
 export function redirectsToPortuguese(request) {
   if (request.method !== 'GET' && request.method !== 'HEAD') return false;
-  if (isInternalNavigation(request)) return false;
+  if (isSameOrigin(request)) return false;
   const choice = explicitChoice(request);
   if (choice) return choice === 'pt';
   return negotiate(request.headers.get('accept-language')) === 'pt';

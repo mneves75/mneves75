@@ -35,8 +35,8 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
   goes to `/pt-br/` with a 302; every other language stays English ("pt-br or other → us"). The language control's
   choice wins and is remembered (the `mn-lang` cookie).
   Internal navigation and every other URL never redirect; crawlers, which send no `Accept-Language`, get English.
-- No tracker or contact database. The only server-side code is that root redirect (`worker/index.js`), which stores
-  nothing. The only measurement is cookieless Cloudflare Web Analytics, injected at the edge (no client-side state,
+- No tracker or contact database. The only server-side code is `worker/index.js`: that root redirect and the endpoint
+  that writes the language choice into the visitor's own cookie; nothing is stored server-side. The only measurement is cookieless Cloudflare Web Analytics, injected at the edge (no client-side state,
   no fingerprinting).
 - Accessibility target: WCAG 2.2 AA; keyboard, reduced motion, contrast, responsive layout.
 - Motion uses native CSS plus one shared `IntersectionObserver` fallback; reduced-motion users receive visible static content.

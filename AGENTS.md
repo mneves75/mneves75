@@ -55,13 +55,13 @@ CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun
   the Person gets no `jobTitle` or `image` until a page shows one ("visible" excludes the closed command palette and
   other hidden subtrees). Titles are unique and at most 60 characters.
   The route test's search contract asserts all of this plus sitemap = indexable canonicals.
-- **Root language** (`worker/index.js`, run only for `/`): `/` stays the English x-default. An arrival whose
-  browser's top language is Portuguese (any `pt-*`; q-values per RFC 9110), or whose `mn-lang` cookie says `pt`,
-  gets a 302 to `/pt-br/` (`no-store`); `mn-lang=en` and every other language keep English. Internal navigation
-  (`Sec-Fetch-Site: same-origin`, else a same-origin Referer) never redirects, so the language control, which sets
-  `mn-lang` when followed (`data-lang-switch`), always works; the Worker re-issues the cookie over HTTP. Both
-  responses `Vary: Accept-Language, Cookie`. The main module exports only its handler; the logic lives in
-  `worker/language.js`.
+- **Root language** (`worker/index.js`, run only for `/` and `/lang`): `/` stays the English x-default. An arrival
+  whose browser's top language is Portuguese (any `pt-*`; q-values per RFC 9110), or whose `mn-lang` cookie says
+  `pt`, gets a 302 to `/pt-br/` (`no-store`); `mn-lang=en` and every other language keep English. Internal navigation
+  (`Sec-Fetch-Site: same-origin`, else a same-origin Referer) never redirects, so the language control
+  (`data-lang-switch`) always works. Following it writes `mn-lang` and POSTs it to `/lang` (same-origin only), which
+  sets it as an HTTP cookie so Safari keeps it a year; `/` re-issues a valid one. Responses at `/` vary on
+  `Accept-Language, Cookie`. The main module exports only its handler; the logic lives in `worker/language.js`.
 - **Staging never claims prod domains**: `env.staging` keeps `"routes": []` (named envs inherit top-level
   `routes`). Production has `workers_dev`/`preview_urls` off.
 - pt-BR copy is correct Brazilian Portuguese with accents; English and pt-BR ship together.
