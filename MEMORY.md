@@ -91,7 +91,9 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 ## Open items
 
 1. `www.mvneves.dev` now serves the site as a second custom domain (canonical = apex). Optional: replace with a strict 301 Redirect Rule in the dashboard; `mvneves.app → mvneves.dev` redirect still pending (separate zone).
-2. Every one of the 31 projects now carries a written case study sourced from its repository README or live site (1.2.0). The only remaining visible TODO is recommendation slot 08. `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
+2. No rendered page shows a content TODO (checked 2026-09-25 on the 1.10.0 build: 0 of 96 project pages carry the
+   fallback "content TODO" text from `src/data/site.ts`; the recommendations page lists seven, with no open slot).
+   `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
 4. Web Analytics automatic setup excludes EU visitors by default (dashboard toggle); a product decision, not code.
 5. Revoke Cloudflare API tokens pasted into agent chats: marcusneves2005 account (2026-09-23, unused) and the
