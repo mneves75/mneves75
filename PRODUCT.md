@@ -30,9 +30,13 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 - Primary pages: home, work index, project detail, about, recommendations, contact, and a not-found page in each locale.
 - Project content is local and canonical; the work index lists 48 projects (`src/data/site.ts` is the inventory): current work first, older and promotional work in an Archive group. Each project has a release stage (live, in App Store review, beta, in construction); only live projects with a public destination count as public, and unreleased ones carry a visible text badge and never a staging or pre-lookup store link. External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
-- No browser-language auto-redirect.
-- No tracker, contact database, or server-side runtime. The only measurement is cookieless Cloudflare Web
-  Analytics, injected at the edge (no client-side state, no fingerprinting).
+- Browser language decides only at the root (owner decision 2026-09-25, replacing the 1.0.0 rule "no browser-language
+  auto-redirect"): an arrival at `/`, the English x-default, whose browser prefers Portuguese goes to `/pt-br/` with
+  a 302, unless the visitor chose a language with the language control (remembered in the `mn-lang` cookie).
+  Internal navigation and every other URL never redirect; crawlers, which send no `Accept-Language`, get English.
+- No tracker or contact database. The only server-side code is that root redirect (`worker/index.js`), which stores
+  nothing. The only measurement is cookieless Cloudflare Web Analytics, injected at the edge (no client-side state,
+  no fingerprinting).
 - Accessibility target: WCAG 2.2 AA; keyboard, reduced motion, contrast, responsive layout.
 - Motion uses native CSS plus one shared `IntersectionObserver` fallback; reduced-motion users receive visible static content.
 - Cloudflare staging deployment is an explicit operator action; production deployment and domain redirects remain separate, explicit operations.

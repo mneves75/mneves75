@@ -42,16 +42,42 @@ const notFoundFile = (path) => {
   }
 };
 
-const server = createServer((req, res) => {
-  let path;
-  try { path = decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
+/** Workers Static Assets for one path: status, `_headers` and body. @param {string} path */
+const asset = (path) => {
   let file = normalize(join(root, path));
-  if (!file.startsWith(root)) { res.writeHead(400).end(); return; }
+  if (!file.startsWith(root)) return { status: 400, headers: {}, body: Buffer.alloc(0) };
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   const found = existsSync(file);
   if (!found) file = notFoundFile(path);
-  res.writeHead(found ? 200 : 404, { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' });
-  res.end(readFileSync(file));
+  return { status: found ? 200 : 404, headers: { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' }, body: readFileSync(file) };
+};
+// `run_worker_first: ["/"]` in wrangler.jsonc: only the root goes through worker/index.js, whose ASSETS binding is the
+// static server above. Without the module the root is plain static, and the language checks below fail.
+const workerPath = fileURLToPath(new URL('../worker/index.js', import.meta.url));
+/** @type {{ fetch: (request: Request, env: { ASSETS: { fetch: (request: Request) => Promise<Response> } }) => Promise<Response> } | null} */
+const worker = existsSync(workerPath) ? (await import(workerPath)).default : null;
+const ASSETS = {
+  /** @param {Request} request */
+  fetch: async (request) => {
+    const { status, headers, body } = asset(decodeURIComponent(new URL(request.url).pathname));
+    return new Response(request.method === 'HEAD' ? null : new Uint8Array(body), { status, headers });
+  },
+};
+
+const server = createServer(async (req, res) => {
+  let path;
+  try { path = decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
+  if (path === '/' && worker) {
+    /** @type {[string, string][]} */
+    const headers = Object.entries(req.headers).flatMap(([name, value]) => (value === undefined ? [] : [[name, Array.isArray(value) ? value.join(', ') : value]]));
+    const response = await worker.fetch(new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers }), { ASSETS });
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.end(Buffer.from(await response.arrayBuffer()));
+    return;
+  }
+  const { status, headers, body } = asset(path);
+  res.writeHead(status, headers);
+  res.end(req.method === 'HEAD' ? undefined : body);
 });
 await new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(undefined)));
 const address = server.address();
@@ -80,7 +106,8 @@ const failures = [];
  *   for violations the check plants itself, or tolerate the 404 document load of a deliberately missing route
  */
 const check = async (name, fn, options = {}, { plantsViolations = false, visitsMissingRoutes = false } = {}) => {
-  const context = await browser.newContext(options);
+  // English by default: a Portuguese system locale would send the root to /pt-br/ and move every check that opens /.
+  const context = await browser.newContext({ locale: 'en-US', ...options });
   await context.addInitScript(probe);
   const page = await context.newPage();
   /** @type {string[]} */
@@ -241,6 +268,87 @@ await check('terminal stops writing once closed', async (page) => {
   await settle(page, 1500);
   assert.equal(await lines(), atClose, 'matrix kept writing after close');
 });
+
+// Root language (worker/index.js): only an arrival at / from a Portuguese-preferring browser, or an explicit choice,
+// goes to /pt-br/. Crawlers send no Accept-Language and get the English x-default; internal navigation never bounces.
+/** @param {string} name @param {() => Promise<void>} fn */
+const httpCheck = async (name, fn) => {
+  try { await fn(); console.log(`  ok  ${name}`); } catch (error) {
+    failures.push(name);
+    console.error(`  FAIL ${name}\n       ${error instanceof Error ? error.message.split('\n').join('\n       ') : String(error)}`);
+  }
+};
+/** @param {string} path @param {Record<string, string>} headers @param {string} [method] */
+const rootFetch = (path, headers, method = 'GET') => fetch(`${base}${path}`, { method, headers, redirect: 'manual' });
+/** @type {[string | null, Record<string, string>, 'pt' | 'en'][]} */
+const languageCases = [
+  ['pt-BR,pt;q=0.9,en;q=0.8', {}, 'pt'],
+  ['pt-PT', {}, 'pt'],
+  ['PT-br', {}, 'pt'],
+  ['es-ES,es;q=0.9,pt;q=0.8', {}, 'pt'],
+  ['en;q=0.5,pt;q=0.6', {}, 'pt'],
+  ['en-US,en;q=0.9', {}, 'en'],
+  ['en-US,pt-BR;q=0.9', {}, 'en'],
+  ['es-ES,es;q=0.9', {}, 'en'],
+  ['pt;q=0,en;q=0.5', {}, 'en'],
+  ['*', {}, 'en'],
+  [null, {}, 'en'],
+  [';;q=abc,,pt;q=2', {}, 'en'],
+  ['pt-BR', { cookie: 'mn-lang=en' }, 'en'],
+  ['en-US', { cookie: 'mn-theme=dark; mn-lang=pt' }, 'pt'],
+  ['pt-BR', { cookie: 'mn-lang=fr' }, 'pt'],
+  ['pt-BR', { 'sec-fetch-site': 'same-origin' }, 'en'],
+  ['pt-BR', { 'sec-fetch-site': 'none' }, 'pt'],
+  ['pt-BR', { 'sec-fetch-site': 'cross-site' }, 'pt'],
+  ['pt-BR', { referer: `${base}/pt-br/` }, 'en'],
+  ['pt-BR', { referer: 'https://www.google.com/' }, 'pt'],
+];
+await httpCheck(`root language: ${languageCases.length} Accept-Language, cookie and navigation cases`, async () => {
+  for (const [acceptLanguage, extra, expected] of languageCases) {
+    const response = await rootFetch('/', { ...(acceptLanguage === null ? {} : { 'accept-language': acceptLanguage }), ...extra });
+    const label = `${JSON.stringify(acceptLanguage)} ${JSON.stringify(extra)}`;
+    if (expected === 'pt') {
+      assert.equal(response.status, 302, `${label}: expected a redirect, got ${response.status}`);
+      assert.equal(new URL(response.headers.get('location') ?? '', base).pathname, '/pt-br/', `${label}: wrong Location`);
+    } else {
+      assert.equal(response.status, 200, `${label}: expected the English root, got ${response.status} → ${response.headers.get('location')}`);
+    }
+  }
+});
+await httpCheck('root language: headers, query, HEAD, POST and other paths', async () => {
+  const redirect = await rootFetch('/?utm_source=test', { 'accept-language': 'pt-BR' });
+  assert.equal(redirect.status, 302);
+  const target = new URL(redirect.headers.get('location') ?? '', base);
+  assert.equal(`${target.pathname}${target.search}`, '/pt-br/?utm_source=test', 'query string dropped');
+  assert.match(redirect.headers.get('cache-control') ?? '', /no-store/, 'redirect may be cached');
+  for (const response of [redirect, await rootFetch('/', { 'accept-language': 'en-US' })]) {
+    const vary = (response.headers.get('vary') ?? '').toLowerCase();
+    assert.ok(vary.includes('accept-language') && vary.includes('cookie'), `${response.status} lacks Vary: Accept-Language, Cookie (${vary})`);
+  }
+  const english = await rootFetch('/', { 'accept-language': 'en-US' });
+  assert.match(english.headers.get('content-security-policy') ?? '', /default-src 'self'/, 'root lost the _headers security headers');
+  assert.match(await english.text(), /<html[^>]*lang="en"/);
+  assert.equal((await rootFetch('/', { 'accept-language': 'pt-BR' }, 'HEAD')).status, 302, 'HEAD not redirected like GET');
+  assert.notEqual((await rootFetch('/', { 'accept-language': 'pt-BR' }, 'POST')).status, 302, 'POST redirected');
+  for (const path of ['/pt-br/', '/work/', '/about/']) {
+    assert.equal((await rootFetch(path, { 'accept-language': 'pt-BR' })).status, 200, `${path} redirected`);
+  }
+});
+await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {
+  await page.goto(`${base}/`);
+  assert.equal(new URL(page.url()).pathname, '/pt-br/', 'pt-BR browser not sent to /pt-br/');
+  await Promise.all([page.waitForURL(`${base}/`), page.click('.header-control[data-lang-switch="en"]')]);
+  assert.equal(await page.getAttribute('html', 'lang'), 'en', 'switching to English bounced back to Portuguese');
+  await page.goto(`${base}/`);
+  assert.equal(new URL(page.url()).pathname, '/', 'the English choice was not remembered on the next visit');
+}, { locale: 'pt-BR' });
+await check('root language: an English browser stays on /, and choosing Portuguese sticks', async (page) => {
+  await page.goto(`${base}/`);
+  assert.equal(new URL(page.url()).pathname, '/', 'en-US browser was redirected');
+  await Promise.all([page.waitForURL(`${base}/pt-br/`), page.click('.header-control[data-lang-switch="pt"]')]);
+  await page.goto(`${base}/`);
+  assert.equal(new URL(page.url()).pathname, '/pt-br/', 'the Portuguese choice was not remembered on the next visit');
+}, { locale: 'en-US' });
 
 await check('no horizontal overflow at 360px', async (page) => {
   for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/skills/', '/about/', '/contact/']) {

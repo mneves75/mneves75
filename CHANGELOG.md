@@ -6,6 +6,33 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-09-25
+
+### Added
+
+- `mvneves.dev/` opens in the visitor's language: an arrival whose browser prefers Portuguese goes to `/pt-br/`
+  (302, `no-store`), everyone else stays on the English root. A small Worker (`worker/index.js`) runs only for `/`
+  (`assets.run_worker_first`); every other URL is still served straight from the static assets. Guardrails, after
+  Google's multilingual guidance and W3C's on language negotiation:
+  - The language control's choice wins and is remembered: a click sets the `mn-lang` cookie (`en`/`pt`, a year),
+    and the Worker then stops negotiating.
+  - Internal navigation never redirects (`Sec-Fetch-Site: same-origin`, else a same-origin Referer), so switching
+    to English from `/pt-br/` never bounces back.
+  - `Accept-Language` is negotiated by q-value between the two site languages (`es,pt;q=0.8` → Portuguese,
+    `pt;q=0` → English, malformed → English).
+  - Crawlers send no `Accept-Language` and keep the English x-default; hreflang is unchanged.
+  - Both responses carry `Vary: Accept-Language, Cookie`.
+- Browser gate: the local server routes `/` through the Worker module, as `run_worker_first` does. 20 HTTP cases
+  cover negotiation, cookie and navigation; 2 real-Chrome flows (pt-BR and en-US browsers switching and coming back)
+  check that the choice sticks. The four new checks failed before the Worker existed. The whole gate also passed
+  against `wrangler dev` (real workerd), which caught a bug the Node server could not: workerd refuses a main module
+  with a non-handler named export.
+
+### Changed
+
+- `PRODUCT.md`: the 1.0.0 rule "No browser-language auto-redirect" is replaced by the root-only rule above (owner
+  decision). `DEPLOYMENT.md`'s security posture no longer says the site sets no cookies.
+
 ## [1.9.1] - 2026-09-25
 
 **Deployed 2026-09-25**: staging Worker `46b30ce4-6a77-48c1-a5f6-be1fe29ea938` (tag `v1.9.1-beta1`), production Worker

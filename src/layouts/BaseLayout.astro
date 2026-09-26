@@ -148,7 +148,7 @@ const jsonLd = {
           })}
         </nav>
         <div class="header-tools">
-          <a class="header-control" href={href(otherLocale, alternatePath)} aria-label={otherLocale === 'en' ? 'EN — switch to English' : 'PT — mudar para português'}>{localeConfig[otherLocale].short}</a>
+          <a class="header-control" href={href(otherLocale, alternatePath)} data-lang-switch={otherLocale} aria-label={otherLocale === 'en' ? 'EN — switch to English' : 'PT — mudar para português'}>{localeConfig[otherLocale].short}</a>
           <button class="header-control" type="button" data-theme-toggle aria-label={ui.theme}>◐</button>
           <button class="header-control motion-control" type="button" data-motion-toggle aria-pressed="false" aria-label={ui.motion}><span aria-hidden="true" class="motion-glyph"></span></button>
           <button class="header-control" type="button" data-command-open aria-haspopup="dialog" aria-label={'⌘K — ' + ui.palette}>⌘K</button>
@@ -167,7 +167,7 @@ const jsonLd = {
         <div class="footer-links">
           <a href={site.github} target="_blank" rel="noreferrer">GitHub ↗</a>
           <a href={site.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
-          <a href={href(otherLocale, alternatePath)}>{localeConfig[otherLocale].label}</a>
+          <a href={href(otherLocale, alternatePath)} data-lang-switch={otherLocale}>{localeConfig[otherLocale].label}</a>
         </div>
       </div>
     </footer>
@@ -181,7 +181,7 @@ const jsonLd = {
           <button type="button" data-palette-terminal data-palette-item>{ui.terminal}<span>mn</span></button>
           <button type="button" data-palette-theme data-palette-item>{ui.theme}<span aria-hidden="true">◐</span></button>
           <button type="button" data-palette-motion data-palette-item>{ui.motion}<span aria-hidden="true">❚❚</span></button>
-          <a href={href(otherLocale, alternatePath)} data-palette-item>{ui.language}<span>{localeConfig[otherLocale].short}</span></a>
+          <a href={href(otherLocale, alternatePath)} data-lang-switch={otherLocale} data-palette-item>{ui.language}<span>{localeConfig[otherLocale].short}</span></a>
           <a href={site.github} target="_blank" rel="noreferrer" data-palette-item>{ui.github}<span aria-hidden="true">↗</span></a>
           <a href={site.linkedin} target="_blank" rel="noreferrer" data-palette-item>{ui.linkedin}<span aria-hidden="true">↗</span></a>
           <a href={site.x} target="_blank" rel="noreferrer" data-palette-item>{ui.x}<span aria-hidden="true">↗</span></a>
@@ -239,6 +239,14 @@ const jsonLd = {
       };
       syncMotionToggle();
       document.querySelector('[data-motion-toggle]')?.addEventListener('click', toggleMotion);
+
+      // --- Language: a click on the language control is an explicit choice. worker/index.js reads it at / and
+      // stops redirecting by browser language. A preference cookie only, a year long, never sent to third parties.
+      document.addEventListener('click', (event) => {
+        const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[data-lang-switch]') : null;
+        const choice = link?.dataset.langSwitch;
+        if (choice === 'en' || choice === 'pt') document.cookie = `mn-lang=${choice}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+      });
 
       // --- Command palette ---
       const palette = document.querySelector<HTMLDialogElement>('#command-palette');

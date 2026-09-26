@@ -23,6 +23,18 @@ The production artifact is `dist/`. No API key, database, server runtime, or bui
 
 `wrangler.jsonc` intentionally has no account ID or secret. Do not add tokens to the repository or client bundle.
 
+Since 1.10.0 the Worker has one script, `worker/index.js`, and `assets.run_worker_first: ["/"]` invokes it only for
+the root; every other path is served straight from the assets. It sends a Portuguese-preferring arrival at `/` to
+`/pt-br/` (302, `Cache-Control: no-store`) and otherwise returns the English page from the `ASSETS` binding, where
+`_headers` still apply. Both carry `Vary: Accept-Language, Cookie`. `bun run test` imports the module into its Node
+server, which cannot see workerd-only rules (the main module may export only its handler: a named string export
+made workerd refuse to start). Before a deploy, run the gate against real workerd:
+
+```bash
+wrangler dev --env staging --config wrangler.jsonc --ip 127.0.0.1 --port 8799
+BASE_URL=http://127.0.0.1:8799 bun run smoke
+```
+
 ## Staging publish
 
 The repository defines a separate Workers Static Assets environment so staging cannot target the production Worker by accident:
@@ -143,8 +155,10 @@ CSP has no `'unsafe-inline'`. `script-src` lists sha256 hashes of the inline scr
 `style-src` is `'self'`: `build.inlineStylesheets: 'never'` emits every component stylesheet as a file, and
 runtime style changes go through the CSSOM (`el.style`, `setProperty`), which CSP does not govern. The route
 test fails on any inline `<style>` block, `style=` attribute, or `'unsafe-inline'` in either directive. The
-site takes no user input, sets no cookies, and has no auth; the hidden terminal escapes the visitor's own typed
-input before echoing it. Its only third-party script (since 1.7.0) is the Cloudflare Web Analytics beacon the
+site takes no user input and has no auth; the hidden terminal escapes the visitor's own typed input before echoing
+it. Since 1.10.0 it sets one first-party preference cookie, `mn-lang` (`en` or `pt`, a year, `Path=/`,
+`SameSite=Lax`, `Secure`), and only when the visitor clicks the language control; the root Worker reads it and
+nothing else does. The root redirect goes to a fixed path plus the request's own query (no open redirect). Its only third-party script (since 1.7.0) is the Cloudflare Web Analytics beacon the
 zone injects at the edge: `script-src` allows `https://static.cloudflareinsights.com/beacon.min.js/` (a
 trailing-slash path source prefix-matches the versioned beacon URL and nothing else on the host; the file-exact
 source from Cloudflare's FAQ would block it, and `'strict-dynamic'` cannot cover an edge-inserted tag). Cloudflare

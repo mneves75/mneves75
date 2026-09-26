@@ -2,6 +2,16 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
+## 2026-09-25 — 1.10.0 root language
+
+- `/` redirects Portuguese-preferring arrivals to `/pt-br/` through `worker/index.js` (run only for `/`); the
+  language control's `mn-lang` cookie wins; internal navigation never redirects. Owner decision; it replaces the
+  1.0.0 product rule "No browser-language auto-redirect".
+- Lesson: workerd refuses a main module that has a non-handler named export (a string constant); the Node harness in
+  `bun run test` cannot see that. Run the gate against `wrangler dev` whenever `worker/` changes.
+- Lesson: Playwright contexts default to the machine's locale; the gate now pins `en-US` so a pt-BR Mac does not
+  send `/` to `/pt-br/` under every check.
+
 ## Current state (2026-09-23, 1.8.0 on staging)
 
 - **1.8.0 LIVE** (prod `70ea7855`, tag `v1.8.0` @`52fbcaf4`; staging `948acfc8`, `v1.8.0-beta2`). 48 projects with a `stage` field
