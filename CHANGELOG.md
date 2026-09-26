@@ -8,6 +8,10 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.9.1] - 2026-09-25
 
+**Deployed 2026-09-25**: staging Worker `46b30ce4-6a77-48c1-a5f6-be1fe29ea938` (tag `v1.9.1-beta1`), production Worker
+`7e44581b-2b37-4c0f-a321-eddd1781b61a` (tag `v1.9.1` @`e674ddfd`); `BASE_URL=… bun run smoke` all checks on both; live sitemap crawl
+106 URLs, 0 failures; `/work/` serves the 48-item ItemList.
+
 ### Added
 
 - The work index (`/work/`, `/pt-br/work/`) names its list: the WebPage `mainEntity` is an `ItemList` of the 48

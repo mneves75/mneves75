@@ -39,6 +39,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.9.1 (tag `v1.9.1-beta1` @`e674ddfd`, 2026-09-25): Worker version `46b30ce4-6a77-48c1-a5f6-be1fe29ea938`, only the
+  workers.dev trigger; smoke all checks; `/pt-br/work/` ItemList of 48.
 - 1.9.0 (tag `v1.9.0-beta1` @`083bf131`, 2026-09-25): Worker version `a29771fb-a419-4239-8a11-1ebb095b1c4f`, only the
   workers.dev trigger. `BASE_URL=https://mvneves-dev-staging.mvneves.workers.dev bun run smoke`: all checks passed; served
   headers confirm `/images/projects/og/*.jpg`, the covers and the site cards carry no CORP while pages keep `same-origin`.
@@ -59,6 +61,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.9.1 (tag `v1.9.1` @`e674ddfd`, 2026-09-25): Worker version `7e44581b-2b37-4c0f-a321-eddd1781b61a`, triggers only
+  `mvneves.dev` and `www.mvneves.dev`; smoke all checks; live sitemap crawl 106 URLs, 0 failures.
 - 1.9.0 (tag `v1.9.0` @`083bf131`, 2026-09-25): Worker version `e711703f-9b2a-4544-a603-4713b0aff425`, triggers only
   `mvneves.dev` and `www.mvneves.dev`. `BASE_URL=https://mvneves.dev bun run smoke`: all checks passed. Live sitemap crawl:
   106 URLs, each 200 with one self canonical, `<lastmod>`, OG image 200, `max-image-preview:large`, BreadcrumbList below the
