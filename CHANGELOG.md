@@ -38,8 +38,11 @@ All notable changes to this repository are documented here. The format follows
   GPT-6 Astra in two rounds (q-value grammar; then the choice made away from `/` never reached the server, fixed
   with `POST /lang`), each fixed with red cases first. Independent verification (GPT-6 Astra, fresh context,
   7 frozen criteria) round 1: FAIL because the 302 went out without the security headers and `MEMORY.md` kept stale
-  route counts; both fixed (the headers check was red first). Browser clicks and Safari retention stay outside what
-  the sandboxed verifier can run.
+  route counts; both fixed (the headers check was red first). Reverify, also in a fresh context: PASS on arrivals,
+  fallback, internal navigation, routing and security headers, and gates; BLOCKED on the persistent choice only
+  because browser clicks and Safari retention are outside what the sandboxed verifier can run (it executed `POST
+  /lang` and the cookie overrides over HTTP); FAIL on one more stale `MEMORY.md` open item (recommendation slot 08),
+  fixed after it.
 
 ### Changed
 
