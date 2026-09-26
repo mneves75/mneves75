@@ -57,6 +57,9 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.10.0 (tag `v1.10.0-beta1` @`d25c34fc`, 2026-09-26): Worker version `3098bcd6-9db0-4c4b-a7c1-c2df2c4d89e3` (first
+  deploy with a Worker script: `env.ASSETS`), only the workers.dev trigger; `BASE_URL=… bun run smoke` all 18 checks,
+  including the root-language, `/lang` and Worker security-header checks; pt-BR `GET /` → 302 `/pt-br/`.
 - 1.9.1 (tag `v1.9.1-beta1` @`e674ddfd`, 2026-09-25): Worker version `46b30ce4-6a77-48c1-a5f6-be1fe29ea938`, only the
   workers.dev trigger; smoke all checks; `/pt-br/work/` ItemList of 48.
 - 1.9.0 (tag `v1.9.0-beta1` @`083bf131`, 2026-09-25): Worker version `a29771fb-a419-4239-8a11-1ebb095b1c4f`, only the
@@ -79,6 +82,11 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.10.0 (tag `v1.10.0` @`d25c34fc`, 2026-09-26): Worker version `11bf8f2e-e9cf-494f-a8fe-c3e6208c3101`, triggers only
+  `mvneves.dev` and `www.mvneves.dev`; `BASE_URL=https://mvneves.dev bun run smoke` all 18 checks. Live: pt-BR → 302
+  `/pt-br/` on apex and www, en-US → 200, `POST /lang` → 204 with the `mn-lang` cookie. The Web Analytics beacon is
+  injected on the Worker-served `/` as on asset pages, but only for a browser `Accept` (curl's `*/*` gets none,
+  on any page).
 - 1.9.1 (tag `v1.9.1` @`e674ddfd`, 2026-09-25): Worker version `7e44581b-2b37-4c0f-a321-eddd1781b61a`, triggers only
   `mvneves.dev` and `www.mvneves.dev`; smoke all checks; live sitemap crawl 106 URLs, 0 failures.
 - 1.9.0 (tag `v1.9.0` @`083bf131`, 2026-09-25): Worker version `e711703f-9b2a-4544-a603-4713b0aff425`, triggers only

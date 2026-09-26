@@ -6,7 +6,12 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.10.0] - 2026-09-25
+## [1.10.0] - 2026-09-26
+
+**Deployed 2026-09-26**: staging Worker `3098bcd6-9db0-4c4b-a7c1-c2df2c4d89e3` (tag `v1.10.0-beta1`, workers.dev trigger
+only), production Worker `11bf8f2e-e9cf-494f-a8fe-c3e6208c3101` (tag `v1.10.0` @`d25c34fc`, `mvneves.dev` + `www`);
+`BASE_URL=… bun run smoke` all 18 checks on both; live pt-BR → 302 `/pt-br/` (apex and www), en-US → 200, `POST /lang`
+→ 204 with the cookie, Web Analytics beacon still injected on `/`.
 
 ### Added
 

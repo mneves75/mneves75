@@ -2,7 +2,7 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-25, 1.10.0 committed; 1.9.1 live)
+## Current state (2026-09-26, 1.10.0 LIVE: prod `11bf8f2e`, tag `v1.10.0` @`d25c34fc`; staging `3098bcd6`)
 
 - 1.10.0: `/` sends arrivals whose browser's top language is Portuguese to `/pt-br/` through `worker/index.js` (run
   only for `/` and `/lang`); the language control's `mn-lang` cookie wins, stored over HTTP by `POST /lang`; internal
@@ -15,6 +15,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
   server, and at the moment it is chosen (here `POST /lang`), not on some later visit.
 - Lesson: Playwright reports a `keepalive` request that outlives its page as `requestfailed` even after a 204; wait on
   its `response` event instead of `requestfinished`.
+- Lesson: Cloudflare injects the Web Analytics beacon only for a browser `Accept` header (text/html first); curl's
+  default `*/*` gets no beacon on any page, so a curl check alone reads as a regression that is not there.
 
 ## Earlier state (2026-09-23, 1.8.0 on staging)
 
