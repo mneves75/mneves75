@@ -1,4 +1,4 @@
-import { categoryLabels, site, type Locale, type Project } from './site';
+import { categoryLabels, href, site, workIndexOrder, type Locale, type Project } from './site';
 
 /** Search results cut long titles; the route test holds every title to this. */
 export const TITLE_MAX = 60;
@@ -47,4 +47,20 @@ export function projectEntity(project: Project, locale: Locale, pageUrl: string)
     return { '@type': 'SoftwareSourceCode', ...base, codeRepository: project.source, ...(programmingLanguage.length ? { programmingLanguage } : {}) };
   }
   return { '@type': 'CreativeWork', ...base };
+}
+
+/** The work index's mainEntity: the project rows it shows, in the order it shows them. */
+export function workItemList(locale: Locale) {
+  const { current, archive } = workIndexOrder();
+  const rows = [...current, ...archive];
+  return {
+    '@type': 'ItemList',
+    numberOfItems: rows.length,
+    itemListElement: rows.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${site.domain}${href(locale, `/work/${project.slug}/`)}`,
+      name: project.title,
+    })),
+  };
 }

@@ -390,6 +390,25 @@ await searchCheck('home pages carry a WebSite node and a ProfilePage about the P
   }
 });
 
+await searchCheck('the work index describes its list: mainEntity is an ItemList of the project links it shows, in order', () => {
+  for (const route of ['/work/', '/pt-br/work/']) {
+    const html = builtPages.get(route);
+    assert.ok(html, `${route} not built`);
+    const page = ofType(pageNodes(html), 'WebPage')[0];
+    const list = field(page, 'mainEntity');
+    assert.equal(str(list, '@type'), 'ItemList', `${route}: mainEntity is ${str(list, '@type') ?? 'missing'}`);
+    const prefix = route === '/work/' ? '/work/' : '/pt-br/work/';
+    // The rows' own links, in page order: each project once (a row links its title and its detail button).
+    const shown = [...new Set([...visibleMarkup(html).matchAll(/href="(\/(?:pt-br\/)?work\/[^"/]+\/)"/g)].map((m) => m[1]).filter((h) => h.startsWith(prefix)))];
+    assert.equal(shown.length, PROJECTS, `${route}: ${shown.length} project links shown, expected ${PROJECTS}`);
+    const items = listOf(list, 'itemListElement');
+    assert.deepEqual(items.map((item) => str(item, 'url')), shown.map((h) => `${SITE}${h}`), `${route}: ItemList urls differ from the rows shown`);
+    assert.deepEqual(items.map((item) => field(item, 'position')), shown.map((_, i) => i + 1), `${route}: ItemList positions are not 1..n`);
+    assert.equal(field(list, 'numberOfItems'), shown.length, `${route}: numberOfItems`);
+    for (const item of items) assert.ok(str(item, 'name'), `${route}: ItemList entry without a name`);
+  }
+});
+
 await searchCheck('og:image is a built file with its real size, fetchable cross-site; project pages preview their cover', () => {
   let covers = 0;
   for (const [route, html] of builtPages) {

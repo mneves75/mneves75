@@ -1,6 +1,6 @@
 ---
 import ProjectRow from './ProjectRow.astro';
-import { isInMotion, projects, type Locale } from '../data/site';
+import { isInMotion, projects, workIndexOrder, type Locale } from '../data/site';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -42,10 +42,7 @@ const copy = locale === 'en' ? {
   archive: 'Arquivo',
 };
 const categories = Object.keys(copy.filters) as Array<keyof typeof copy.filters>;
-// Flagships first, then the rest of what is live, then work still in motion; the sort is stable within each group.
-const rank = (project: (typeof projects)[number]) => (project.featured ? 0 : isInMotion(project) ? 2 : 1);
-const current = projects.filter((project) => !project.archived).sort((a, b) => rank(a) - rank(b));
-const archive = projects.filter((project) => project.archived);
+const { current, archive } = workIndexOrder();
 const motionCount = projects.filter(isInMotion).length;
 const counts = projects.reduce<Record<string, number>>((totals, project) => {
   totals[project.category] = (totals[project.category] ?? 0) + 1;

@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WorkIndex from '../../components/WorkIndex.astro';
+import { workItemList } from '../../data/seo';
 ---
 
-<BaseLayout locale="en" currentPath="/work/" title="Work — Marcus Neves" description="Selected software, data, AI, developer tooling, privacy, and creative engineering projects by Marcus Neves.">
+<BaseLayout locale="en" currentPath="/work/" mainEntity={workItemList('en')} title="Work — Marcus Neves" description="Selected software, data, AI, developer tooling, privacy, and creative engineering projects by Marcus Neves.">
   <WorkIndex locale="en" />
 </BaseLayout>

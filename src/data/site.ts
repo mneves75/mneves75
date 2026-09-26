@@ -413,3 +413,14 @@ export const range = [
 export function projectBySlug(slug: string) {
   return projects.find((project) => project.slug === slug);
 }
+
+/**
+ * The work index's row order: current work (flagships first, then the rest of what is live, then work still in
+ * motion; stable within each group), then the archive. WorkIndex renders it and its JSON-LD ItemList mirrors it.
+ */
+export function workIndexOrder() {
+  const rank = (project: Project) => (project.featured ? 0 : isInMotion(project) ? 2 : 1);
+  const current = projects.filter((project) => !project.archived).sort((a, b) => rank(a) - rank(b));
+  const archive = projects.filter((project) => project.archived);
+  return { current, archive };
+}

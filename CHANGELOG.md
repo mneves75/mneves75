@@ -6,6 +6,15 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-09-25
+
+### Added
+
+- The work index (`/work/`, `/pt-br/work/`) names its list: the WebPage `mainEntity` is an `ItemList` of the 48
+  project rows it shows, in row order (`workIndexOrder()` in `src/data/site.ts` now feeds both the component and the
+  JSON-LD). An independent verification of 1.9.0 found the hubs had a BreadcrumbList but no `mainEntity`. The route
+  test compares the list with the rows' links (red on 1.9.0); only the two hub URLs were re-dated in the manifest.
+
 ## [1.9.0] - 2026-09-25
 
 Search pass: honest sitemap dates and structured data that states only what each page shows. **Deployed 2026-09-25**:
