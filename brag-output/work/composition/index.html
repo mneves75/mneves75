@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>brag — mvneves.dev</title>
+<style>
+  @font-face { font-family: 'Archivo'; font-weight: 100 900; font-stretch: 62% 125%; src: url('/fonts/archivo-100-900-latin.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('/fonts/space-mono-400-latin.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('/fonts/space-mono-700-latin.woff2') format('woff2'); }
+  :root {
+    --paper: #f0eee9; --ink: #1a1a18; --ink-soft: #3a3a36; --muted: #6b6a64; --line: #d8d6d0;
+    --signal: #c8481f; --signal-text: #a83a16;
+    --display: 'Archivo', system-ui, sans-serif; --mono: 'Space Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); font-family: var(--display); color: var(--ink); }
+  #grid { position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(var(--gridline) 1px, transparent 1px), linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+    background-size: 72px 72px; background-position: 24px 36px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 75% at 40% 40%, black, transparent 78%); }
+  .layer { position: absolute; inset: 0; will-change: transform, opacity; }
+
+  /* Scene 1 — hook */
+  #hook { padding: 206px 0 0 176px; }
+  .route-label { font-family: var(--mono); font-size: 22px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); height: 30px; margin: 0; white-space: pre; }
+  .route-label .caret { display: inline-block; width: .6em; height: 1em; background: var(--signal); vertical-align: -.12em; margin-left: .1em; }
+  .hook-h1 { margin: 34px 0 0; font-size: 138px; font-weight: 800; letter-spacing: -.045em; line-height: .98; }
+  .hook-h1 .ln { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .hook-h1 .w { display: inline-block; will-change: transform, opacity; }
+  .hook-h1 .building { margin-top: .32em; }
+  .decoder { color: var(--signal-text); white-space: pre; }
+
+  /* Browser frame holding the real pages */
+  #frame { position: absolute; left: 239px; top: 69px; width: 1442px; height: 942px; transform-origin: 50% 50%;
+    border: 1px solid var(--frame-border); background: var(--frame-bar); }
+  .bar { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-bottom: 1px solid var(--frame-border);
+    font-family: var(--mono); font-size: 15px; letter-spacing: .04em; color: var(--frame-text); }
+  .bar .sq { width: 10px; height: 10px; background: var(--signal); flex: none; }
+  .bar .url { flex: 1; }
+  .bar .url b { color: var(--frame-strong); font-weight: 700; }
+  .viewport { position: relative; width: 1440px; height: 900px; overflow: hidden; background: var(--paper); }
+  .viewport iframe { position: absolute; inset: 0; width: 1440px; height: 900px; border: 0; visibility: hidden; }
+  .viewport .dip { position: absolute; inset: 0; background: var(--dip); opacity: 0; pointer-events: none; }
+
+  /* Caption card */
+  #caption { position: absolute; left: 96px; bottom: 84px; display: flex; align-items: center; gap: 18px;
+    padding: 22px 30px 22px 24px; background: var(--ink); color: var(--paper); font-size: 44px; font-weight: 700; letter-spacing: -.025em; opacity: 0; }
+  #caption .sq { width: 16px; height: 16px; background: #ff6b35; flex: none; }
+
+  #cursor { position: absolute; left: 0; top: 0; width: 34px; height: 44px; opacity: 0; transform-origin: 4px 4px; }
+
+  #keys { position: absolute; left: 0; right: 0; bottom: 118px; display: flex; flex-direction: column; align-items: center; gap: 20px; opacity: 0; }
+  #keys .caps { display: flex; gap: 18px; }
+  .cap { width: 108px; height: 108px; display: grid; place-items: center; background: #15181d; color: #f0ece0; border: 1px solid #2b3038;
+    border-bottom-width: 6px; font-family: var(--mono); font-size: 54px; font-weight: 700; opacity: 0; }
+  .cap.down { border-bottom-width: 2px; transform: translateY(4px); background: #1f232a; }
+  #keys .hint { font-family: var(--mono); font-size: 24px; letter-spacing: .08em; text-transform: uppercase; color: #f0ece0;
+    background: #15181d; padding: 8px 16px; }
+  #keys .hint b { color: #ff6b35; }
+
+  /* Scene 6 — outro (dark) */
+  #outro { display: flex; flex-direction: column; justify-content: center; padding: 0 150px 20px; opacity: 0; color: #f0ece0; }
+  .mast { font-size: 236px; font-weight: 900; letter-spacing: -.04em; line-height: .9; text-transform: uppercase; white-space: nowrap; }
+  .mast .hollow { color: transparent; -webkit-text-stroke: 3px #ff6b35; }
+  .outro-line { margin-top: 58px; font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .brandrow { margin-top: 44px; display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 34px; letter-spacing: .02em; }
+  .chip { width: 58px; height: 58px; display: grid; place-items: center; background: #ff6b35; color: #0e0e0d; font-weight: 700; font-size: 22px; letter-spacing: .02em; }
+  .brandrow .muted { color: #9c988d; font-size: 24px; letter-spacing: .1em; text-transform: uppercase; margin-left: 12px; }
+  .rule { height: 1px; background: #3d3c38; margin-top: 44px; transform-origin: 0 50%; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grid"></div>
+
+  <div id="hook" class="layer">
+    <p class="route-label" id="routeLabel"></p>
+    <h1 class="hook-h1">
+      <span class="ln"><span class="w">Three</span> <span class="w">decades</span> <span class="w">shipping</span></span>
+      <span class="ln"><span class="w">production</span> <span class="w">systems.</span></span>
+      <span class="ln building"><span class="w">Now</span> <span class="w">building</span></span>
+      <span class="ln"><span class="w decoder" id="decoder"></span></span>
+    </h1>
+  </div>
+
+  <div id="frame">
+    <div class="bar"><span class="sq"></span><span class="url" id="url"></span></div>
+    <div class="viewport">
+      <iframe id="f-home" src="/"></iframe>
+      <iframe id="f-work" src="/work/"></iframe>
+      <iframe id="f-hay" src="/work/hay/"></iframe>
+      <iframe id="f-term" src="/"></iframe>
+      <div class="dip" id="dip"></div>
+    </div>
+  </div>
+
+  <div id="caption"><span class="sq"></span><span id="captionText"></span></div>
+
+  <div id="keys">
+    <div class="caps"><div class="cap" id="capM">m</div><div class="cap" id="capN">n</div></div>
+    <div class="hint">Type <b>mn</b> anywhere on the site</div>
+  </div>
+
+  <div id="esc" class="cap" style="position:absolute;left:906px;bottom:118px;width:auto;padding:0 26px;font-size:40px">esc</div>
+
+  <svg id="cursor" viewBox="0 0 34 44"><path d="M3 3 L3 36 L12 28 L18 41 L24 38 L18 25 L30 25 Z" fill="#1a1a18" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+
+  <div id="outro" class="layer">
+    <div class="mast" id="mast">Marcus <span class="hollow">Neves</span></div>
+    <div class="rule" id="rule"></div>
+    <div class="outro-line" id="outroLine">Ship beats perfect.</div>
+    <div class="brandrow" id="brandrow"><span class="chip">MN</span><span>mvneves.dev</span><span class="muted">EN / PT-BR</span></div>
+  </div>
+</div>
+
+<script>
+// Every frame is a pure function of t (seconds). renderAt(t) sets all state, including the iframes'.
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOut = (x) => 1 - Math.pow(1 - x, 3);
+const eOutExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+const eInOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const eIn = (x) => x * x * x;
+const lerp = (a, b, x) => a + (b - a) * x;
+const mix = (c1, c2, x) => { const p = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)); const a = p(c1), b = p(c2);
+  return '#' + a.map((v, i) => Math.round(lerp(v, b[i], x)).toString(16).padStart(2, '0')).join(''); };
+const hash = (a, b) => { let h = (a * 374761393 + b * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+
+const T = { hookEnd: 3.5, workStart: 7.5, hayStart: 11.5, termStart: 15.5, outroStart: 19.5, end: 22.0 };
+window.DURATION = T.end;
+
+// ---- iframe helpers -------------------------------------------------------
+const frames = { home: $('f-home'), work: $('f-work'), hay: $('f-hay'), term: $('f-term') };
+const doc = (k) => frames[k].contentDocument;
+const win = (k) => frames[k].contentWindow;
+const S = {}; // cached nodes inside iframes
+
+function injectStyle(d) {
+  const s = d.createElement('style');
+  s.textContent = `*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+    html{scrollbar-width:none} ::-webkit-scrollbar{display:none}
+    mark.bk{background:linear-gradient(#ffd9c7,#ffd9c7) no-repeat 0 60%/var(--mk,0%) 70%;color:inherit;padding:0 .08em}
+    html[data-theme='dark'] mark.bk{background-image:linear-gradient(#5a2a14,#5a2a14)}`;
+  d.head.appendChild(s);
+}
+async function prepFrame(k) {
+  const f = frames[k];
+  if (!f.contentDocument || f.contentDocument.readyState !== 'complete' || f.contentDocument.URL === 'about:blank') await new Promise((r) => f.addEventListener('load', r, { once: true }));
+  const d = f.contentDocument;
+  injectStyle(d);
+  d.documentElement.dataset.theme = 'light';
+  d.querySelectorAll('img').forEach((img) => { img.loading = 'eager'; img.decoding = 'sync'; });
+  await d.fonts.ready;
+  await Promise.all([...d.images].map((img) => (img.complete ? img.decode().catch(() => {}) : new Promise((r) => { img.onload = img.onerror = r; }))));
+}
+function scrollFrame(k, y) { const w = win(k); if (Math.abs(w.scrollY - y) > .01) w.scrollTo({ top: y, behavior: 'instant' }); }
+function show(k) { for (const [key, f] of Object.entries(frames)) f.style.visibility = key === k ? 'visible' : 'hidden'; }
+// Position of an element inside frame k, in stage pixels (frame transforms included).
+function stagePoint(k, el, fx = .5, fy = .5) {
+  const fr = frames[k].getBoundingClientRect(); const s = fr.width / 1440; const r = el.getBoundingClientRect();
+  const st = $('stage').getBoundingClientRect();
+  return [fr.left - st.left + (r.left + r.width * fx) * s, fr.top - st.top + (r.top + r.height * fy) * s];
+}
+
+async function setup() {
+  await document.fonts.load('800 138px Archivo'); await document.fonts.load('400 22px "Space Mono"'); await document.fonts.load('700 22px "Space Mono"');
+  await document.fonts.ready;
+  await Promise.all(Object.keys(frames).map(prepFrame));
+  // Scene 2: terminal lines + stat numbers on the home page
+  S.termLines = [...doc('home').querySelectorAll('.hero-term .term-body > p')];
+  // clone the stat numbers so the site's own count-up observer no longer writes to them
+  S.stats = [...doc('home').querySelectorAll('.stat-num')].map((old) => { const el = old.cloneNode(true); old.replaceWith(el); return { el, v: Number(el.dataset.countup) }; });
+  // Scene 3: work filter
+  S.chipMotion = doc('work').querySelector('[data-filter="in-motion"]');
+  S.chipAll = doc('work').querySelector('[data-filter="all"]');
+  S.workHeading = [...doc('work').querySelectorAll('h2')].find((h) => /routes through/.test(h.textContent));
+  // Scene 4: hay route steps + outcome marks
+  const dg = doc('hay').querySelector('figure.diagram');
+  S.diagram = dg; S.routeItems = [...dg.querySelectorAll('li')]; S.diagramPrompt = dg.querySelector('.diagram-prompt');
+  const outcomeH = [...doc('hay').querySelectorAll('h2')].find((h) => /outcome/i.test(h.textContent));
+  S.outcomeH = outcomeH;
+  let para = outcomeH.parentElement.querySelector('p') || outcomeH.nextElementSibling;
+  if (!para || !/0\.458/.test(para.textContent)) para = [...doc('hay').querySelectorAll('p')].find((p) => /0\.458/.test(p.textContent));
+  S.outcomeP = para;
+  const wrap = (needle) => { const html = para.innerHTML; const i = html.indexOf(needle); if (i < 0) throw new Error('needle ' + needle);
+    para.innerHTML = html.slice(0, i) + `<mark class="bk">${needle}</mark>` + html.slice(i + needle.length); };
+  wrap('44.9% → 77.1%'); wrap('Still worse on 115 of those queries (12%) — the README says so.');
+  S.marks = [...para.querySelectorAll('mark.bk')];
+  // Scene 5: hidden terminal
+  S.dialog = doc('term').getElementById('mn-terminal');
+  S.screen = doc('term').getElementById('mn-screen');
+  S.input = doc('term').getElementById('mn-input');
+  S.screenHTML = '';
+  // Outro masthead: fit to 1620px at the final stretch
+  const m = $('mast'); m.style.fontStretch = '100%';
+  m.style.fontSize = (236 * 1620 / m.scrollWidth) + 'px';
+  S.ready = true;
+}
+
+// ---- scene state ---------------------------------------------------------
+const DECODER = [
+  { word: 'native iOS apps', from: 1.05, lock: 1.5 },
+  { word: 'tools for coding agents', from: 2.05, lock: 2.5 },
+];
+const GLYPHS = 'abcdefghijklmnopqrstuvwxyz#%&*+/<>=01';
+function decoderText(t) {
+  let cur = null; for (const d of DECODER) if (t >= d.from) cur = d;
+  if (!cur) return '';
+  const idx = DECODER.indexOf(cur); const prev = idx > 0 ? DECODER[idx - 1].word : '';
+  const n = cur.word.length; const len = Math.max(n, Math.round(lerp(prev.length || n, n, prog(t, cur.from, cur.lock))));
+  const frame = Math.floor(t * 30); let out = '';
+  for (let i = 0; i < len; i++) {
+    const lockAt = lerp(cur.from + .08, cur.lock, i / Math.max(1, n - 1));
+    const ch = cur.word[i] ?? ' ';
+    if (t >= lockAt) out += ch;
+    else out += ch === ' ' ? ' ' : GLYPHS[Math.floor(hash(i + idx * 50, frame) * GLYPHS.length)];
+  }
+  return out.slice(0, len);
+}
+
+const BOOT = [
+  ['mn@dev:~$ mn --status', 'sys'], ['..............................', 'sys'],
+  ['&gt; signal: received    &gt; system: ready', ''],
+  ['&gt; you found the hidden terminal. welcome.', ''],
+  ['&gt; type <b>help</b> to see available commands.', ''],
+];
+const TT = { open: 16.05, boot: 16.12, type: 16.95, enter: 17.5, esc: 18.15 };
+
+function paint(t) {
+  const stage = $('stage');
+  // ---- global palette: paper → graphite when `theme` runs
+  const dark = eOut(prog(t, TT.enter + .02, TT.enter + .32));
+  stage.style.setProperty('--paper', mix('#f0eee9', '#0e0e0d', dark));
+  stage.style.setProperty('--gridline', mix('#d8d6d0', '#262624', dark));
+  stage.style.setProperty('--frame-bar', mix('#e7e4db', '#1c1c1a', dark));
+  stage.style.setProperty('--frame-border', mix('#b3b0a8', '#3d3c38', dark));
+  stage.style.setProperty('--frame-text', mix('#6b6a64', '#9c988d', dark));
+  stage.style.setProperty('--frame-strong', mix('#1a1a18', '#f0ece0', dark));
+  stage.style.setProperty('--dip', mix('#f0eee9', '#0e0e0d', dark));
+
+  // ---- Scene 1: hook
+  const hook = $('hook');
+  const hookOut = eIn(prog(t, 3.22, 3.5));
+  hook.style.opacity = t < T.hookEnd ? 1 - hookOut : 0;
+  hook.style.transform = `translateY(${-50 * hookOut}px) scale(${1 - .06 * hookOut})`;
+  if (t < T.hookEnd) {
+    const label = 'Marcus Neves / software · data · AI';
+    const n = Math.floor(prog(t, .05, .55) * label.length);
+    $('routeLabel').innerHTML = label.slice(0, n) + (t < 1.2 && Math.floor(t * 4) % 2 === 0 ? '<span class="caret"></span>' : (t < 1.2 ? '<span class="caret" style="opacity:0"></span>' : ''));
+    const words = hook.querySelectorAll('.w');
+    const starts = [.12, .24, .36, .5, .62, .86, .96, 1.05];
+    words.forEach((w, i) => { const p = eOutExpo(prog(t, starts[i], starts[i] + .42));
+      w.style.transform = `translateY(${(1 - p) * 105}%)`; w.style.opacity = i === 7 ? 1 : p; });
+    $('decoder').textContent = decoderText(t) || ' ';
+  }
+
+  // ---- Frame (scenes 2–5)
+  const fr = $('frame');
+  const inP = eOut(prog(t, 3.48, 3.95));
+  const outP = eIn(prog(t, 19.2, 19.5));
+  const frameVisible = t >= 3.48 && t < T.outroStart;
+  fr.style.visibility = frameVisible ? 'visible' : 'hidden';
+  let scale = 1, tx = 0, ty = 0, origin = '50% 50%';
+  let scene = t < T.workStart ? 'home' : t < T.hayStart ? 'work' : t < T.termStart ? 'hay' : 'term';
+  show(scene);
+  $('url').innerHTML = { home: '<b>mvneves.dev</b>', work: '<b>mvneves.dev</b>/work/', hay: '<b>mvneves.dev</b>/work/hay/', term: '<b>mvneves.dev</b>' }[scene];
+  // soft dip at every in-frame cut
+  const cuts = [T.workStart, T.hayStart, T.termStart];
+  let dip = 0; for (const c of cuts) { if (t >= c - .12 && t < c) dip = prog(t, c - .12, c); if (t >= c && t < c + .2) dip = 1 - eOut(prog(t, c, c + .2)); }
+  $('dip').style.opacity = dip;
+
+  if (S.ready && scene === 'home') {
+    // terminal prints line by line
+    const shown = Math.floor((t - 3.9) / .1) + 1;
+    S.termLines.forEach((p, i) => { p.style.visibility = i < shown ? 'visible' : 'hidden'; });
+    scrollFrame('home', 400 * eInOut(prog(t, 5.55, 6.35)));
+    const c = eOut(prog(t, 5.85, 6.85));
+    S.stats.forEach(({ el, v }) => { el.textContent = String(Math.round(v * c)); });
+    scale = lerp(1, 1.025, prog(t, 3.5, 7.5));
+  }
+  if (S.ready && scene === 'work') {
+    const clicked = t >= 9.05;
+    const want = clicked ? S.chipMotion : S.chipAll;
+    if (want.getAttribute('aria-pressed') !== 'true') want.click();
+    const headY = S.workHeading.getBoundingClientRect().top + win('work').scrollY;
+    const y0 = headY - 190, y1 = headY - 110;
+    scrollFrame('work', lerp(y0, y1, eOut(prog(t, 7.5, 8.3))) + 170 * eInOut(prog(t, 9.45, 11.3)));
+    scale = lerp(1.0, 1.02, prog(t, 7.5, 11.5));
+  }
+  if (S.ready && scene === 'hay') {
+    const sy = win('hay').scrollY;
+    const dgR = S.diagram.getBoundingClientRect(), ocR = S.outcomeP.getBoundingClientRect();
+    const dgDoc = dgR.top + sy + dgR.height / 2, ocDoc = ocR.top + sy + ocR.height / 2;
+    const yA = dgDoc - 330, yB = ocDoc - 520;
+    const z = eInOut(prog(t, 12.8, 13.55));
+    scrollFrame('hay', lerp(yA, yB, z));
+    S.diagramPrompt.style.visibility = t >= 11.62 ? 'visible' : 'hidden';
+    S.routeItems.forEach((li, i) => { li.style.visibility = t >= 11.85 + i * .22 ? 'visible' : 'hidden'; });
+    S.marks[0].style.setProperty('--mk', (100 * eOut(prog(t, 13.62, 13.9))) + '%');
+    S.marks[1].style.setProperty('--mk', (100 * eOut(prog(t, 14.0, 14.45))) + '%');
+    // camera: focus point (frame coords) and scale, interpolated between the two shots
+    const scroll = lerp(yA, yB, z);
+    const fx = 1 + lerp(dgR.left + dgR.width / 2, ocR.left + ocR.width / 2, z);
+    const fy = 41 + lerp(dgDoc, ocDoc, z) - scroll;
+    scale = lerp(1.3, 1.34, z) * lerp(1, 1.015, prog(t, 11.5, 15.5));
+    const ox = 721, oy = 471; origin = `${ox}px ${oy}px`;
+    const targetY = lerp(470, 585, z);
+    tx = 960 - 239 - ox - scale * (fx - ox); ty = targetY - 69 - oy - scale * (fy - oy);
+    scale /= 1; // tx/ty already include the scale
+  }
+  if (S.ready && scene === 'term') {
+    const open = t >= TT.open && t < TT.esc;
+    if (open && !S.dialog.open) { S.dialog.showModal(); doc('term').documentElement.classList.add('mn-terminal-open'); }
+    if (!open && S.dialog.open) { S.dialog.close(); doc('term').documentElement.classList.remove('mn-terminal-open'); }
+    const lines = [];
+    const nBoot = Math.floor((t - TT.boot) / .11) + 1;
+    BOOT.slice(0, clamp(nBoot, 0, 5)).forEach(([h, c]) => lines.push(`<div${c ? ` class="${c}"` : ''}>${h}</div>`));
+    const typed = 'theme'.slice(0, clamp(Math.floor((t - TT.type) / .09) + 1, 0, 5));
+    const entered = t >= TT.enter;
+    if (entered) { lines.push('<div class="ok"><span class="acc">MN://&gt;</span> theme</div>'); if (t >= TT.enter + .08) lines.push('<div>&gt; theme: graphite (dark)</div>'); }
+    const html = lines.join('');
+    if (html !== S.screenHTML) { S.screen.innerHTML = html; S.screenHTML = html; }
+    const val = entered ? '' : (t >= TT.type ? typed : '');
+    if (S.input.value !== val) S.input.value = val;
+    const th = entered ? 'dark' : 'light';
+    if (doc('term').documentElement.dataset.theme !== th) doc('term').documentElement.dataset.theme = th;
+    // camera: in on the dialog, back out after the flip
+    const zin = eInOut(prog(t, TT.open, TT.open + .45)), zout = eInOut(prog(t, TT.esc + .02, TT.esc + .6));
+    const z = zin * (1 - zout);
+    scale = lerp(1, 1.5, z);
+    origin = '50% 48%';
+  }
+  // entrance / exit
+  const s0 = lerp(.965, 1, inP) * lerp(1, .95, outP);
+  fr.style.opacity = frameVisible ? Math.min(inP, 1 - outP) : 0;
+  fr.style.transformOrigin = origin;
+  fr.style.transform = `translate(${tx}px, ${ty + 70 * (1 - inP)}px) scale(${scale * s0})`;
+
+  // ---- captions
+  const caps = [
+    { text: 'Unshipped work wears a badge.', a: 9.35, b: 11.42 },
+    { text: 'Even the misses are on the page.', a: 13.75, b: 15.42 },
+  ];
+  let cap = null; for (const c of caps) if (t >= c.a && t < c.b) cap = c;
+  const capEl = $('caption');
+  if (cap) { const p = eOut(prog(t, cap.a, cap.a + .3)); const q = eIn(prog(t, cap.b - .15, cap.b));
+    $('captionText').textContent = cap.text; capEl.style.opacity = p * (1 - q); capEl.style.transform = `translateY(${(1 - p) * 24}px)`; }
+  else capEl.style.opacity = 0;
+
+  // ---- cursor (scene 3)
+  const cur = $('cursor');
+  if (S.ready && scene === 'work' && t >= 8.25 && t < 9.9) {
+    const [cx, cy] = stagePoint('work', S.chipMotion, .45, .55);
+    const p = eInOut(prog(t, 8.3, 8.95));
+    const x = lerp(cx + 360, cx, p), y = lerp(cy + 300, cy, p);
+    const press = t >= 8.98 && t < 9.12 ? .82 : 1;
+    cur.style.opacity = Math.min(prog(t, 8.25, 8.4), 1 - prog(t, 9.6, 9.9));
+    cur.style.transform = `translate(${x - 4}px, ${y - 4}px) scale(${press})`;
+  } else cur.style.opacity = 0;
+
+  // ---- keycaps (scene 5)
+  const keys = $('keys');
+  if (t >= 15.55 && t < 16.5) {
+    keys.style.opacity = 1 - prog(t, 16.2, 16.45);
+    [['capM', 15.65], ['capN', 15.85]].forEach(([id, at]) => { const el = $(id); const p = eOut(prog(t, at - .12, at));
+      el.style.opacity = p; el.classList.toggle('down', t >= at && t < at + .1); el.style.transform = el.classList.contains('down') ? '' : `translateY(${(1 - p) * 18}px)`; });
+  } else keys.style.opacity = 0;
+  const esc = $('esc'); const ep = eOut(prog(t, TT.esc - .3, TT.esc - .12)) * (1 - prog(t, TT.esc + .25, TT.esc + .45));
+  esc.style.opacity = ep; esc.classList.toggle('down', t >= TT.esc && t < TT.esc + .1);
+  esc.style.transform = esc.classList.contains('down') ? 'translateY(4px)' : `translateY(${(1 - ep) * 18}px)`;
+
+  // ---- Scene 6: outro
+  const out = $('outro');
+  if (t >= T.outroStart - .05) {
+    out.style.opacity = 1;
+    const p = eOutExpo(prog(t, 19.5, 20.35));
+    const m = $('mast'); m.style.fontStretch = lerp(62, 100, p) + '%'; m.style.opacity = prog(t, 19.5, 19.7);
+    m.style.transform = `translateY(${(1 - p) * 30}px)`;
+    $('rule').style.transform = `scaleX(${eOut(prog(t, 19.9, 20.5))})`;
+    const l = eOutExpo(prog(t, 20.05, 20.5)); $('outroLine').style.opacity = l; $('outroLine').style.transform = `translateY(${(1 - l) * 40}px)`;
+    const b = eOutExpo(prog(t, 20.3, 20.75)); $('brandrow').style.opacity = b; $('brandrow').style.transform = `translateY(${(1 - b) * 30}px)`;
+  } else out.style.opacity = 0;
+}
+
+window.renderAt = async (t) => {
+  if (!S.ready) await window.ready;
+  paint(t);
+  // layout inside iframes after scroll/filter, then a paint
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+};
+window.ready = setup().catch((e) => { console.error('setup failed', e); throw e; });
+</script>
+</body>
+</html>

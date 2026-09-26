@@ -1,0 +1,1 @@
+mvneves.dev: three decades of shipping, 48 projects, and a case study that admits the tool is still worse on 12% of queries. The terminal's numbers are computed from the data, and unshipped work wears a badge. Type "mn" anywhere for the rest.

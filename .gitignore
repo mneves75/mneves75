@@ -7,3 +7,10 @@ dist/
 .env.*
 !.env.example
 .wrangler/
+# /brag launch video: regenerable render intermediates (node brag-output/work/render.mjs frames)
+brag-output/work/frames/
+brag-output/work/seq/
+brag-output/work/stills/
+brag-output/work/ref/
+brag-output/work/*.png
+brag-output/work/*.wav
