@@ -2,17 +2,19 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## 2026-09-25 — 1.10.0 root language
+## Current state (2026-09-25, 1.10.0 committed; 1.9.1 live)
 
-- `/` redirects Portuguese-preferring arrivals to `/pt-br/` through `worker/index.js` (run only for `/`); the
-  language control's `mn-lang` cookie wins; internal navigation never redirects. Owner decision; it replaces the
-  1.0.0 product rule "No browser-language auto-redirect".
+- 1.10.0: `/` sends arrivals whose browser's top language is Portuguese to `/pt-br/` through `worker/index.js` (run
+  only for `/`); the language control's `mn-lang` cookie wins and is re-issued over HTTP; internal navigation never
+  redirects.
 - Lesson: workerd refuses a main module that has a non-handler named export (a string constant); the Node harness in
   `bun run test` cannot see that. Run the gate against `wrangler dev` whenever `worker/` changes.
 - Lesson: Playwright contexts default to the machine's locale; the gate now pins `en-US` so a pt-BR Mac does not
   send `/` to `/pt-br/` under every check.
+- Lesson: Safari keeps a `document.cookie` cookie only 7 days; a preference meant to last must also be set by the
+  server.
 
-## Current state (2026-09-23, 1.8.0 on staging)
+## Earlier state (2026-09-23, 1.8.0 on staging)
 
 - **1.8.0 LIVE** (prod `70ea7855`, tag `v1.8.0` @`52fbcaf4`; staging `948acfc8`, `v1.8.0-beta2`). 48 projects with a `stage` field
   (live / appReview / beta / building); public count = live with a link (37). Evidence per stage:
@@ -72,6 +74,10 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 ## Key decisions + why
 
 - Custom domain `mvneves.dev` is attached **declaratively** via `routes` + `custom_domain: true` in `wrangler.jsonc` (2026-08-10). Before that the apex had **no DNS record at all** — prod only existed on workers.dev. Never go back to dashboard-only attachment.
+- **Root language (owner, 2026-09-25)**: `mvneves.dev/` follows the visitor's language ("pt-br or other → us"),
+  replacing the 1.0.0 rule "No browser-language auto-redirect". Only `/` redirects, only on arrival, and the
+  language control's choice wins, so crawlers keep the English x-default and nobody is trapped (Google and W3C
+  guidance).
 - **Named Wrangler envs inherit top-level `routes`**: a staging deploy once claimed the prod custom domains. `env.staging` must keep `"routes": []` (+ `workers_dev: true`); details in `DEPLOYMENT.md`.
 - Palette stays graphite/bone/copper (not CT's coral) so the personal site reads as a sibling of conhecendotudo, not a twin. Terminal panels (`--term-*`) are theme-invariant dark.
 - Dosage rule (anti-pastiche): each signature device appears exactly once — decoder in hero h1, masthead+marquee once, count-ups on stat rail, magnetic on hero CTA, terminal panels as hero session + detail slab. Enforce in any future page.

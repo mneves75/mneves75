@@ -56,11 +56,12 @@ CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun
   other hidden subtrees). Titles are unique and at most 60 characters.
   The route test's search contract asserts all of this plus sitemap = indexable canonicals.
 - **Root language** (`worker/index.js`, run only for `/`): `/` stays the English x-default. An arrival whose
-  browser prefers Portuguese (q-values negotiated), or whose `mn-lang` cookie says `pt`, gets a 302 to `/pt-br/`
-  (`no-store`); `mn-lang=en` keeps English. Internal navigation (`Sec-Fetch-Site: same-origin`, else a same-origin
-  Referer) never redirects, so the language control, which sets `mn-lang` on click (`data-lang-switch`), always
-  works. Both responses `Vary: Accept-Language, Cookie`. The main module exports only its handler; the logic lives
-  in `worker/language.js`.
+  browser's top language is Portuguese (any `pt-*`; q-values per RFC 9110), or whose `mn-lang` cookie says `pt`,
+  gets a 302 to `/pt-br/` (`no-store`); `mn-lang=en` and every other language keep English. Internal navigation
+  (`Sec-Fetch-Site: same-origin`, else a same-origin Referer) never redirects, so the language control, which sets
+  `mn-lang` when followed (`data-lang-switch`), always works; the Worker re-issues the cookie over HTTP. Both
+  responses `Vary: Accept-Language, Cookie`. The main module exports only its handler; the logic lives in
+  `worker/language.js`.
 - **Staging never claims prod domains**: `env.staging` keeps `"routes": []` (named envs inherit top-level
   `routes`). Production has `workers_dev`/`preview_urls` off.
 - pt-BR copy is correct Brazilian Portuguese with accents; English and pt-BR ship together.

@@ -31,8 +31,9 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 - Project content is local and canonical; the work index lists 48 projects (`src/data/site.ts` is the inventory): current work first, older and promotional work in an Archive group. Each project has a release stage (live, in App Store review, beta, in construction); only live projects with a public destination count as public, and unreleased ones carry a visible text badge and never a staging or pre-lookup store link. External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
 - Browser language decides only at the root (owner decision 2026-09-25, replacing the 1.0.0 rule "no browser-language
-  auto-redirect"): an arrival at `/`, the English x-default, whose browser prefers Portuguese goes to `/pt-br/` with
-  a 302, unless the visitor chose a language with the language control (remembered in the `mn-lang` cookie).
+  auto-redirect"): an arrival at `/`, the English x-default, whose browser's top language is Portuguese (any `pt-*`)
+  goes to `/pt-br/` with a 302; every other language stays English ("pt-br or other → us"). The language control's
+  choice wins and is remembered (the `mn-lang` cookie).
   Internal navigation and every other URL never redirect; crawlers, which send no `Accept-Language`, get English.
 - No tracker or contact database. The only server-side code is that root redirect (`worker/index.js`), which stores
   nothing. The only measurement is cookieless Cloudflare Web Analytics, injected at the edge (no client-side state,

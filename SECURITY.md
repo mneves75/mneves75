@@ -3,8 +3,8 @@
 ## Supported versions
 
 Only the current `main` branch is supported. This repository holds a GitHub profile README and the
-static site published at [mvneves.dev](https://mvneves.dev); there is no server, database, or user
-data.
+static site published at [mvneves.dev](https://mvneves.dev); there is no database or user data, and the only
+server-side code is a small Worker that picks the language at the root (`worker/`).
 
 ## Reporting a vulnerability
 

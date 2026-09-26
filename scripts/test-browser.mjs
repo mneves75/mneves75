@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 import { dirname, extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import worker from '../worker/index.js';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 /** @type {Record<string, string>} */
@@ -52,10 +53,7 @@ const asset = (path) => {
   return { status: found ? 200 : 404, headers: { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' }, body: readFileSync(file) };
 };
 // `run_worker_first: ["/"]` in wrangler.jsonc: only the root goes through worker/index.js, whose ASSETS binding is the
-// static server above. Without the module the root is plain static, and the language checks below fail.
-const workerPath = fileURLToPath(new URL('../worker/index.js', import.meta.url));
-/** @type {{ fetch: (request: Request, env: { ASSETS: { fetch: (request: Request) => Promise<Response> } }) => Promise<Response> } | null} */
-const worker = existsSync(workerPath) ? (await import(workerPath)).default : null;
+// static server above.
 const ASSETS = {
   /** @param {Request} request */
   fetch: async (request) => {
@@ -67,7 +65,7 @@ const ASSETS = {
 const server = createServer(async (req, res) => {
   let path;
   try { path = decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
-  if (path === '/' && worker) {
+  if (path === '/') {
     /** @type {[string, string][]} */
     const headers = Object.entries(req.headers).flatMap(([name, value]) => (value === undefined ? [] : [[name, Array.isArray(value) ? value.join(', ') : value]]));
     const response = await worker.fetch(new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers }), { ASSETS });
@@ -99,6 +97,11 @@ const probe = () => {
 const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: 'chrome' });
 /** @type {string[]} */
 const failures = [];
+/** @param {string} name @param {unknown} error */
+const fail = (name, error) => {
+  failures.push(name);
+  console.error(`  FAIL ${name}\n       ${error instanceof Error ? error.message.split('\n').join('\n       ') : String(error)}`);
+};
 /**
  * @param {string} name @param {(page: import('playwright-core').Page) => Promise<void>} fn
  * @param {import('playwright-core').BrowserContextOptions} [options]
@@ -120,8 +123,7 @@ const check = async (name, fn, options = {}, { plantsViolations = false, visitsM
     if (!plantsViolations) assert.deepEqual(consoleErrors.filter((text) => !expected(text)), [], 'console errors');
     console.log(`  ok  ${name}`);
   } catch (error) {
-    failures.push(name);
-    console.error(`  FAIL ${name}\n       ${error instanceof Error ? error.message.split('\n').join('\n       ') : String(error)}`);
+    fail(name, error);
   } finally {
     await context.close();
   }
@@ -269,14 +271,12 @@ await check('terminal stops writing once closed', async (page) => {
   assert.equal(await lines(), atClose, 'matrix kept writing after close');
 });
 
-// Root language (worker/index.js): only an arrival at / from a Portuguese-preferring browser, or an explicit choice,
-// goes to /pt-br/. Crawlers send no Accept-Language and get the English x-default; internal navigation never bounces.
+// Root language (worker/index.js): an arrival at / whose browser's top language is Portuguese, or whose explicit
+// choice is Portuguese, goes to /pt-br/; every other language stays on the English x-default ("pt-br or other → us").
+// Crawlers send no Accept-Language; internal navigation never bounces.
 /** @param {string} name @param {() => Promise<void>} fn */
 const httpCheck = async (name, fn) => {
-  try { await fn(); console.log(`  ok  ${name}`); } catch (error) {
-    failures.push(name);
-    console.error(`  FAIL ${name}\n       ${error instanceof Error ? error.message.split('\n').join('\n       ') : String(error)}`);
-  }
+  try { await fn(); console.log(`  ok  ${name}`); } catch (error) { fail(name, error); }
 };
 /** @param {string} path @param {Record<string, string>} headers @param {string} [method] */
 const rootFetch = (path, headers, method = 'GET') => fetch(`${base}${path}`, { method, headers, redirect: 'manual' });
@@ -285,15 +285,24 @@ const languageCases = [
   ['pt-BR,pt;q=0.9,en;q=0.8', {}, 'pt'],
   ['pt-PT', {}, 'pt'],
   ['PT-br', {}, 'pt'],
-  ['es-ES,es;q=0.9,pt;q=0.8', {}, 'pt'],
   ['en;q=0.5,pt;q=0.6', {}, 'pt'],
+  ['fr;q=0.5,pt-BR;q=0.9', {}, 'pt'],
+  ['pt;q=1.000,en', {}, 'pt'],
+  ['es-ES,es;q=0.9,pt;q=0.8', {}, 'en'],
+  ['de,pt;q=0.1', {}, 'en'],
   ['en-US,en;q=0.9', {}, 'en'],
   ['en-US,pt-BR;q=0.9', {}, 'en'],
+  ['en,pt', {}, 'en'],
   ['es-ES,es;q=0.9', {}, 'en'],
   ['pt;q=0,en;q=0.5', {}, 'en'],
   ['*', {}, 'en'],
+  ['*,pt;q=0.9', {}, 'en'],
   [null, {}, 'en'],
   [';;q=abc,,pt;q=2', {}, 'en'],
+  ['pt;q=1e0,en;q=0.9', {}, 'en'],
+  ['pt;q=0x1,en;q=0.9', {}, 'en'],
+  ['pt;q=.9,en;q=0.8', {}, 'en'],
+  ['pt;q=0.9999,en;q=0.8', {}, 'en'],
   ['pt-BR', { cookie: 'mn-lang=en' }, 'en'],
   ['en-US', { cookie: 'mn-theme=dark; mn-lang=pt' }, 'pt'],
   ['pt-BR', { cookie: 'mn-lang=fr' }, 'pt'],
@@ -332,6 +341,21 @@ await httpCheck('root language: headers, query, HEAD, POST and other paths', asy
   assert.notEqual((await rootFetch('/', { 'accept-language': 'pt-BR' }, 'POST')).status, 302, 'POST redirected');
   for (const path of ['/pt-br/', '/work/', '/about/']) {
     assert.equal((await rootFetch(path, { 'accept-language': 'pt-BR' })).status, 200, `${path} redirected`);
+  }
+});
+await httpCheck('root language: an explicit choice is re-issued by the server (Safari caps script-set cookies at 7 days)', async () => {
+  /** @type {[string, string, number][]} */
+  const refreshCases = [['en', 'pt-BR', 200], ['pt', 'en-US', 302]];
+  for (const [choice, acceptLanguage, status] of refreshCases) {
+    const response = await rootFetch('/', { 'accept-language': acceptLanguage, cookie: `mn-lang=${choice}` });
+    assert.equal(response.status, status);
+    const setCookie = response.headers.get('set-cookie') ?? '';
+    assert.match(setCookie, new RegExp(`^mn-lang=${choice};`), `choice ${choice} not re-issued: ${setCookie}`);
+    for (const attribute of ['Path=/', 'Max-Age=31536000', 'SameSite=Lax', 'Secure']) assert.ok(setCookie.includes(attribute), `Set-Cookie lacks ${attribute}`);
+  }
+  for (const cookie of [null, 'mn-lang=fr', 'other=1']) {
+    const response = await rootFetch('/', { 'accept-language': 'pt-BR', ...(cookie ? { cookie } : {}) });
+    assert.equal(response.headers.get('set-cookie'), null, `a cookie was set without a valid choice (${cookie})`);
   }
 });
 await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {

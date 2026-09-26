@@ -10,28 +10,34 @@ All notable changes to this repository are documented here. The format follows
 
 ### Added
 
-- `mvneves.dev/` opens in the visitor's language: an arrival whose browser prefers Portuguese goes to `/pt-br/`
-  (302, `no-store`), everyone else stays on the English root. A small Worker (`worker/index.js`) runs only for `/`
-  (`assets.run_worker_first`); every other URL is still served straight from the static assets. Guardrails, after
-  Google's multilingual guidance and W3C's on language negotiation:
-  - The language control's choice wins and is remembered: a click sets the `mn-lang` cookie (`en`/`pt`, a year),
-    and the Worker then stops negotiating.
+- `mvneves.dev/` opens in the visitor's language: an arrival whose browser's top language is Portuguese (any
+  `pt-*`) goes to `/pt-br/` (302, `no-store`); every other language stays on the English root ("pt-br or other →
+  us"). A small Worker (`worker/index.js`) runs only for `/` (`assets.run_worker_first`); every other URL is still
+  served straight from the static assets. Guardrails, after Google's multilingual guidance and W3C's on language
+  negotiation:
+  - The language control's choice wins and is remembered: following it (click or middle-click) sets the `mn-lang`
+    cookie (`en`/`pt`), and the Worker re-issues it as an HTTP cookie with a year's `Max-Age`, because Safari keeps a
+    script-set cookie only 7 days. Responses that set it are `private`.
   - Internal navigation never redirects (`Sec-Fetch-Site: same-origin`, else a same-origin Referer), so switching
     to English from `/pt-br/` never bounces back.
-  - `Accept-Language` is negotiated by q-value between the two site languages (`es,pt;q=0.8` → Portuguese,
-    `pt;q=0` → English, malformed → English).
+  - The top language follows RFC 9110 q-values: `en;q=0.5,pt;q=0.6` → Portuguese; `es,pt;q=0.8`, `de,pt;q=0.1`,
+    `*` and `pt;q=0` → English; a range with an invalid q (`1e0`, `0x1`, `.9`, four decimals) is ignored.
   - Crawlers send no `Accept-Language` and keep the English x-default; hreflang is unchanged.
   - Both responses carry `Vary: Accept-Language, Cookie`.
-- Browser gate: the local server routes `/` through the Worker module, as `run_worker_first` does. 20 HTTP cases
-  cover negotiation, cookie and navigation; 2 real-Chrome flows (pt-BR and en-US browsers switching and coming back)
-  check that the choice sticks. The four new checks failed before the Worker existed. The whole gate also passed
-  against `wrangler dev` (real workerd), which caught a bug the Node server could not: workerd refuses a main module
-  with a non-handler named export.
+- Browser gate: the local server routes `/` through the Worker module, as `run_worker_first` does. 29 HTTP cases
+  cover negotiation, cookie and navigation, one check covers the server-issued cookie, and 2 real-Chrome flows
+  (pt-BR and en-US browsers switching and coming back) check that the choice sticks. Each new check failed before
+  its code existed. The whole gate also passed against `wrangler dev` (real workerd), which caught a bug the Node
+  server could not: workerd refuses a main module with a non-handler named export.
+- Review: code review in two axes (standards: no hard violation; spec: Portuguese only as the top language, the
+  Safari cookie cap and two stale "no server" lines, all fixed), security review (no finding), and autoreview P3 on
+  GPT-6 Astra (1 finding, q-value grammar, fixed with red cases first).
 
 ### Changed
 
 - `PRODUCT.md`: the 1.0.0 rule "No browser-language auto-redirect" is replaced by the root-only rule above (owner
-  decision). `DEPLOYMENT.md`'s security posture no longer says the site sets no cookies.
+  decision). `DEPLOYMENT.md`'s security posture no longer says the site sets no cookies, and `SECURITY.md` no longer
+  says there is no server.
 
 ## [1.9.1] - 2026-09-25
 
