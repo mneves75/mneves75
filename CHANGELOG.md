@@ -8,7 +8,11 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.9.0] - 2026-09-25
 
-Search pass: honest sitemap dates and structured data that states only what each page shows. **Not deployed yet.**
+Search pass: honest sitemap dates and structured data that states only what each page shows. **Deployed 2026-09-25**:
+staging Worker `a29771fb-a419-4239-8a11-1ebb095b1c4f` (tag `v1.9.0-beta1`, workers.dev trigger only; `BASE_URL=… bun run
+smoke` all checks; `/images/projects/og/*.jpg` served without CORP), then production Worker
+`e711703f-9b2a-4544-a603-4713b0aff425` (tag `v1.9.0` @`083bf131`, `mvneves.dev` + `www.mvneves.dev`; `BASE_URL=https://mvneves.dev
+bun run smoke` all checks; live crawl of the sitemap: 106 URLs, all 200, all with `<lastmod>`, 0 failures).
 
 ### Added
 
