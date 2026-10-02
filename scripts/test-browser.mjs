@@ -283,6 +283,54 @@ const httpCheck = async (name, fn) => {
 };
 /** @param {string} path @param {Record<string, string>} headers @param {string} [method] */
 const rootFetch = (path, headers, method = 'GET') => fetch(`${base}${path}`, { method, headers, redirect: 'manual' });
+
+await httpCheck('served robots and sitemap preserve the intended policy and significant-change dates', async () => {
+  const robots = await rootFetch('/robots.txt', {});
+  assert.equal(robots.status, 200, 'robots.txt is not accessible');
+  assert.match(robots.headers.get('content-type') ?? '', /text\/plain/);
+  assert.equal((await robots.text()).replace(/\r\n/g, '\n'), readFileSync(new URL('../public/robots.txt', import.meta.url), 'utf8'), 'served crawler policy differs from the reviewed policy');
+  const sitemap = await rootFetch('/sitemap.xml', {});
+  assert.equal(sitemap.status, 200, 'sitemap is not accessible');
+  assert.match(sitemap.headers.get('content-type') ?? '', /(?:application|text)\/xml/);
+  const xml = await sitemap.text();
+  const blocks = [...xml.matchAll(/<url>\s*([\s\S]*?)\s*<\/url>/g)];
+  assert.equal(blocks.length, (xml.match(/<url(?:\s|>)/g) ?? []).length, 'malformed sitemap URL entry');
+  assert.equal(blocks.length, (xml.match(/<loc(?:\s|>)/g) ?? []).length, 'sitemap locations outside URL entries');
+  const entries = blocks.map(([, block]) => {
+    const locations = [...block.matchAll(/<loc>([^<]+)<\/loc>/g)];
+    const dates = [...block.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)];
+    assert.equal(locations.length, 1, 'each sitemap entry must have exactly one location');
+    assert.equal(dates.length, 1, `${locations[0][1]}: each sitemap entry must have its manifest date`);
+    return [locations[0][1], dates[0][1]];
+  });
+  const manifest = JSON.parse(readFileSync(new URL('../src/data/sitemap-lastmod.json', import.meta.url), 'utf8'));
+  assert.equal(entries.length, Object.keys(manifest).length, 'missing or duplicate sitemap entries');
+  assert.deepEqual(Object.fromEntries(entries), Object.fromEntries(Object.entries(manifest).map(([url, entry]) => [url, entry.lastmod])), 'served sitemap differs from the significant-change manifest');
+  assert.doesNotMatch(xml, /\/404(?:[/.<])|missing-search-control|utm_source=/, 'non-indexable or campaign URL in sitemap');
+});
+
+await httpCheck('initial HTML is attributable in both languages; campaigns and 404s stay out of canonicals', async () => {
+  for (const path of ['/', '/pt-br/', '/work/skills/', '/pt-br/work/skills/', '/about/', '/pt-br/about/']) {
+    for (const source of ['chatgpt.com', 'chatgpt.com.evil.example']) {
+      const response = await rootFetch(`${path}?utm_source=${source}`, { 'accept-language': 'en-US' });
+      assert.equal(response.status, 200, path);
+      assert.match(response.headers.get('content-type') ?? '', /text\/html/);
+      assert.doesNotMatch(response.headers.get('x-robots-tag') ?? '', /noindex|none/i, path);
+      const html = await response.text();
+      assert.ok(html.includes(`<link rel="canonical" href="https://mvneves.dev${path}"`), `${path}: missing clean canonical`);
+      assert.doesNotMatch(html, /<meta name="robots" content="[^"]*(?:noindex|none)/i, path);
+      assert.match(html, /<main\b[^>]*>[\s\S]*?<h1\b[^>]*>[\s\S]+?<\/h1>/, `${path}: meaningful initial HTML missing`);
+      assert.match(html, /<script\b[^>]*type="application\/ld\+json"/, `${path}: attribution markup missing`);
+    }
+  }
+  for (const path of ['/missing-search-control/', '/pt-br/missing-search-control/']) {
+    const response = await rootFetch(path, {});
+    assert.equal(response.status, 404, path);
+    const html = await response.text();
+    assert.match(html, /<meta name="robots" content="noindex"/, `${path}: missing noindex`);
+    assert.doesNotMatch(html, /<link rel="canonical"|application\/ld\+json/, `${path}: missing route advertises an entity`);
+  }
+});
 /** @type {[string | null, Record<string, string>, 'pt' | 'en'][]} */
 const languageCases = [
   ['pt-BR,pt;q=0.9,en;q=0.8', {}, 'pt'],

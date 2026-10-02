@@ -7,6 +7,7 @@ dist/
 .env.*
 !.env.example
 .wrangler/
+.cloudflare/cache/
 # /brag launch video: regenerable render intermediates (node brag-output/work/render.mjs frames)
 brag-output/work/frames/
 brag-output/work/seq/

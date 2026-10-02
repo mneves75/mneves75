@@ -212,12 +212,17 @@ choice lives in the dashboard (Web Analytics → site settings).
 Do not add Google Analytics or any other third-party script without a separate product decision and
 consent/privacy review.
 
+ChatGPT Search audit and the fixed citation/referral protocol:
+[docs/chatgpt-search.md](docs/chatgpt-search.md). The current vendor reports Referer
+hosts, not a verified UTM campaign category; do not claim UTM-only attribution or
+actual visits from beacon injection alone.
+
 ## Launch checklist
 
-- [ ] Verify the 26 local project image assets' provenance before public launch.
+- [ ] Verify project image provenance against the current inventory in `src/data/site.ts`.
 - [ ] Confirm LinkedIn and GitHub URLs.
 - [ ] Confirm custom domains and redirect rules return the expected 301/200 behavior.
 - [ ] Check `/robots.txt`, `/sitemap.xml`, canonical, hreflang, and OG metadata on both locales.
-- [ ] Run `bun run check && bun run build` from a clean checkout.
-- [ ] Confirm the generated sitemap includes all 34 project slugs in both locales.
+- [ ] Run `bun run check && bun run build && bun run test` from a clean checkout, then the real workerd smoke gate above.
+- [ ] Confirm sitemap membership and dates against `src/data/sitemap-lastmod.json`; `bun run smoke` now checks the served discovery files and representative initial HTML, including non-indexable controls.
 - [ ] Inspect desktop and mobile screenshots after deployment.

@@ -4,7 +4,18 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.10.1] - 2026-10-02
+
+### Fixed
+
+- Updated only the transitive build-time `fast-uri` dependency from 3.1.6 to 3.1.7 after the mandatory audit failed on two high-severity advisories; no new runtime dependency.
+- Post-deploy smoke now verifies served robots policy, sitemap membership and significant-change dates, initial HTML attribution in both languages, clean campaign canonicals and non-indexable 404 controls.
+- Independent review caught an extra sitemap URL without `lastmod` escaping the new gate; a real-entry regression reproduced the false pass before the parser was corrected to inspect every URL entry.
+- Deployment checklist uses the current project inventory and includes all three mandatory gates; the previous image/project counts and two-command gate were stale.
+
+### Added
+
+- ChatGPT Search audit and a fixed six-question, three-run citation protocol; separates eligibility, genuine crawler access, citations and referrals, preserving existing training permissions and cookieless analytics. Current analytics API access is blocked by HTTP 403; UTM-only attribution is not available in the documented Web Analytics dimensions.
 
 ## [1.10.0] - 2026-09-26
 
