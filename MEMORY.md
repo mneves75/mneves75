@@ -2,7 +2,13 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-09-26, 1.10.0 LIVE: prod `11bf8f2e`, tag `v1.10.0` @`d25c34fc`; staging `3098bcd6`)
+## Current state (2026-10-02, 1.10.1 LIVE: prod `3f8d7819`, tag `v1.10.1` @`417fd21`; staging `84fe8e95`)
+
+- ChatGPT Search audit: existing initial HTML, canonical metadata, sitemap, 404 exclusions and crawler policies passed. Preserved wildcard search/training permissions and cookieless Web Analytics; no content or significant-change dates moved.
+- Smoke now verifies served discovery files and campaign-independent canonicals, with local negative controls. Every sitemap URL must be inspected, including one without `lastmod`; filtering only dated entries misses extra URLs. All 20 checks passed on real workerd, staging, apex and www; release CI passed. Build-time fast-uri 3.1.6 → 3.1.7 fixed the failing high-severity audit.
+- Measurement remains separate: current analytics catalogue access returned 403; Cloudflare Web Analytics explicitly does not support UTM parameters/custom events. Use exact Referer host `chatgpt.com` for the ChatGPT report category. Genuine OpenAI events and ChatGPT UI citations were not measured. The fixed six-question protocol and access steps live in `docs/chatgpt-search.md`.
+
+## Earlier state (2026-09-26, 1.10.0 LIVE: prod `11bf8f2e`, tag `v1.10.0` @`d25c34fc`; staging `3098bcd6`)
 
 - 1.10.0: `/` sends arrivals whose browser's top language is Portuguese to `/pt-br/` through `worker/index.js` (run
   only for `/` and `/lang`); the language control's `mn-lang` cookie wins, stored over HTTP by `POST /lang`; internal

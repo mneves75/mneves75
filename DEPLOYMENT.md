@@ -57,6 +57,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.10.1 (tag `v1.10.1-beta1` @`417fd21`, 2026-10-02): Worker version `84fe8e95-50f5-4d46-99da-59d78adea75d`, only the workers.dev trigger; all 20 `BASE_URL=https://mvneves-dev-staging.mvneves.workers.dev bun run smoke` checks passed, including served robots/sitemap, campaign canonicals and excluded-route controls. API annotations confirm the tag/commit message and 100% active deployment.
 - 1.10.0 (tag `v1.10.0-beta1` @`d25c34fc`, 2026-09-26): Worker version `3098bcd6-9db0-4c4b-a7c1-c2df2c4d89e3` (first
   deploy with a Worker script: `env.ASSETS`), only the workers.dev trigger; `BASE_URL=… bun run smoke` all 18 checks,
   including the root-language, `/lang` and Worker security-header checks; pt-BR `GET /` → 302 `/pt-br/`.
@@ -82,6 +83,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.10.1 (tag `v1.10.1` @`417fd21`, 2026-10-02): Worker version `3f8d7819-5549-4d8a-b09d-79cd7bc25648`, only `mvneves.dev` and `www.mvneves.dev`; all 20 smoke checks passed separately on both origins. API annotations confirm `v1.10.1` / `417fd21` and the active deployment uses this version at 100%. [CI passed](https://github.com/mneves75/mneves75/actions/runs/36965570304). Staging and production used the unchanged artifact fingerprint `988ef5579dd2a9b98abcb0a3e45347adbdcd5ff79e3fde5e93c40f5979665e1b` (dist and Worker source). Rollback: `wrangler rollback 11bf8f2e-e9cf-494f-a8fe-c3e6208c3101 --env="" --config wrangler.jsonc`. Evidence: ignored `.tmp/chatgpt-search/` deploy, smoke, control and promotion-proof files.
 - 1.10.0 (tag `v1.10.0` @`d25c34fc`, 2026-09-26): Worker version `11bf8f2e-e9cf-494f-a8fe-c3e6208c3101`, triggers only
   `mvneves.dev` and `www.mvneves.dev`; `BASE_URL=https://mvneves.dev bun run smoke` all 18 checks. Live: pt-BR → 302
   `/pt-br/` on apex and www, en-US → 200, `POST /lang` → 204 with the `mn-lang` cookie. The Web Analytics beacon is

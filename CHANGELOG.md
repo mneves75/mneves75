@@ -4,7 +4,11 @@ All notable changes to this repository are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.10.1] - 2026-10-02
+
+**Deployed 2026-10-02**: staging Worker `84fe8e95-50f5-4d46-99da-59d78adea75d` (tag `v1.10.1-beta1`), production Worker `3f8d7819-5549-4d8a-b09d-79cd7bc25648` (tag `v1.10.1`), both @`417fd21`; all 20 smoke checks passed on staging, apex and www. Local check/build/test, high-severity dependency audit and real workerd smoke exited 0; independent Codex review rerun was scoped-clean through P3. [CI passed](https://github.com/mneves75/mneves75/actions/runs/36965570304). No sitemap dates changed.
 
 ### Fixed
 

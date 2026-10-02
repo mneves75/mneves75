@@ -5,6 +5,19 @@ collaborator, technical lead or open-source builder, in English and pt-BR.
 The canonical origin is <https://mvneves.dev>. This is a portfolio, not a news
 publisher: a feed or additional thin search pages would not serve its purpose.
 
+## Publication
+
+Version **1.10.1**, release commit `417fd21cd6b158db6e3248a3bb13f288179822da`,
+published 2026-10-02 to staging (`v1.10.1-beta1`, Worker
+`84fe8e95-50f5-4d46-99da-59d78adea75d`) and production (`v1.10.1`, Worker
+`3f8d7819-5549-4d8a-b09d-79cd7bc25648`). All 20 smoke checks exited 0 separately
+on staging, <https://mvneves.dev> and <https://www.mvneves.dev>. Cloudflare readback
+confirmed the tag/commit annotations and each active version at 100%; the artifact
+fingerprint was unchanged between environments. [Release CI passed](https://github.com/mneves75/mneves75/actions/runs/36965570304).
+Deployment/rollback details are in [DEPLOYMENT.md](../DEPLOYMENT.md); ignored
+`.tmp/chatgpt-search/promotion-proof.json` and `*-postdeploy-smoke.log` contain the
+repeatable local evidence. Remaining steps concern measurement access, not deployment.
+
 ## Findings
 
 | Surface | Result | Evidence / limit |
