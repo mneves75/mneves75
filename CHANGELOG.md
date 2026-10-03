@@ -8,6 +8,10 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.11.1] - 2026-10-03
 
+**Deployed 2026-10-03**: staging Worker `647a1a3e-de13-4b5a-b891-b4d31daca5b8` (tag `v1.11.1-beta1`), production Worker
+`6e472c29-bece-448a-ad3a-197717c989be` (tag `v1.11.1`), both @`763463af`; all 23 smoke checks passed on staging, apex
+and www, which serve the corrected copy. Autoreview P3 of the correction commit was scoped-clean. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37159948582).
+
 ### Fixed
 
 - WhatsImovel's case study said the product keeps personal data "anonymised under the LGPD". Its

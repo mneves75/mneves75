@@ -57,6 +57,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.11.1 (tag `v1.11.1-beta1` @`763463af`, 2026-10-03): Worker version `647a1a3e-de13-4b5a-b891-b4d31daca5b8`, only the workers.dev trigger; all 23 smoke checks passed; `/pt-br/work/whatsimovel/` shows "cliques pseudonimizados".
 - 1.11.0 (tag `v1.11.0-beta2` @`2bd99e1e`, 2026-10-03): Worker version `83ca69e8-a169-4a0b-8ae2-210abca110a2`, only the workers.dev trigger; all 23 smoke checks passed. `v1.11.0-beta1` (`e9e4e20e` @`2974a4c6`) passed the same 23 before review fixes changed only the tests. Simulated-mobile LCP 1.14–1.44 s.
 - 1.10.1 (tag `v1.10.1-beta1` @`417fd21`, 2026-10-02): Worker version `84fe8e95-50f5-4d46-99da-59d78adea75d`, only the workers.dev trigger; all 20 `BASE_URL=https://mvneves-dev-staging.mvneves.workers.dev bun run smoke` checks passed, including served robots/sitemap, campaign canonicals and excluded-route controls. API annotations confirm the tag/commit message and 100% active deployment.
 - 1.10.0 (tag `v1.10.0-beta1` @`d25c34fc`, 2026-09-26): Worker version `3098bcd6-9db0-4c4b-a7c1-c2df2c4d89e3` (first
@@ -84,6 +85,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.11.1 (tag `v1.11.1` @`763463af`, 2026-10-03): Worker version `6e472c29-bece-448a-ad3a-197717c989be`, only `mvneves.dev` and `www.mvneves.dev`; all 23 smoke checks passed on both, both serve the corrected WhatsImovel copy. Rollback: `wrangler rollback 90cd72c6-8c6c-4b99-831a-5428275b3c71 --env="" --config wrangler.jsonc`. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37159948582).
 - 1.11.0 (tag `v1.11.0` @`2bd99e1e`, 2026-10-03): Worker version `90cd72c6-8c6c-4b99-831a-5428275b3c71`, only `mvneves.dev` and `www.mvneves.dev`; all 23 smoke checks passed on both; deployments list shows the tag/message at 100%; live HTML on both hosts references `archivo-400-900-latin.woff2` (no stale edge copy). Rollback: `wrangler rollback 3f8d7819-5549-4d8a-b09d-79cd7bc25648 --env="" --config wrangler.jsonc`. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37158857706).
 - 1.10.1 (tag `v1.10.1` @`417fd21`, 2026-10-02): Worker version `3f8d7819-5549-4d8a-b09d-79cd7bc25648`, only `mvneves.dev` and `www.mvneves.dev`; all 20 smoke checks passed separately on both origins. API annotations confirm `v1.10.1` / `417fd21` and the active deployment uses this version at 100%. [CI passed](https://github.com/mneves75/mneves75/actions/runs/36965570304). Staging and production used the unchanged artifact fingerprint `988ef5579dd2a9b98abcb0a3e45347adbdcd5ff79e3fde5e93c40f5979665e1b` (dist and Worker source). Rollback: `wrangler rollback 11bf8f2e-e9cf-494f-a8fe-c3e6208c3101 --env="" --config wrangler.jsonc`. Evidence: ignored `.tmp/chatgpt-search/` deploy, smoke, control and promotion-proof files.
 - 1.10.0 (tag `v1.10.0` @`d25c34fc`, 2026-09-26): Worker version `11bf8f2e-e9cf-494f-a8fe-c3e6208c3101`, triggers only

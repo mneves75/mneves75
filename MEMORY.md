@@ -2,7 +2,11 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-03, 1.11.0 LIVE: prod `90cd72c6`, tag `v1.11.0` @`2bd99e1e`; staging `83ca69e8`)
+## Current state (2026-10-03, 1.11.1 LIVE: prod `6e472c29`, tag `v1.11.1` @`763463af`; staging `647a1a3e`)
+
+- 1.11.1: independent verification of 1.11.0 (Codex, 20 frozen criteria) passed 19; it failed WhatsImovel's
+  "anonymised under the LGPD" claim, which the product's privacy policy contradicts (pseudonymised HMAC per IP).
+  Fixed. Lesson: privacy wording (anonymised vs pseudonymised) is a factual claim; check it against the policy.
 
 - Google Search pass (`docs/google-search.md`): most of the checklist already held; shipped the font trim (Archivo wght
   400–900, normal width, 88 → 33 KB preload), lazy work-index covers, ≥100-char descriptions from visible text, a
