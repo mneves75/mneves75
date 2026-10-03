@@ -1,6 +1,7 @@
 ---
 import ProjectDiagram from './ProjectDiagram.astro';
 import { categoryLabels, href, stageLabels, stageOf, type Locale, type Project } from '../data/site';
+import { coverSrcset } from '../data/seo';
 
 interface Props { locale: Locale; project: Project; }
 const { locale, project } = Astro.props;
@@ -177,7 +178,7 @@ const blocks = project.caseStudyPending ? [] : [
     {project.stack.map((item) => <li>{item}</li>)}
   </ul>
   {project.image
-    ? <figure class="detail-media"><img src={project.image} alt={project.alt[locale]} width="1600" height="1000" fetchpriority="high" decoding="async" /></figure>
+    ? <figure class="detail-media"><img src={project.image} srcset={coverSrcset(project.image)} sizes="(min-width: 1160px) 1060px, calc(100vw - 3rem)" alt={project.alt[locale]} width="1600" height="1000" fetchpriority="high" decoding="async" /></figure>
     : <figure class="detail-media detail-media-plate"><span class="plate-prompt">$</span> {project.source ? `gh repo view ${project.source.replace('https://github.com/', '')}` : `open ${project.slug}`}</figure>}
   <div class="page-actions"><a class="text-link" href={href(locale, '/work/')}>{copy.back}</a></div>
 </section>

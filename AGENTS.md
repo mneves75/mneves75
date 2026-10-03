@@ -49,7 +49,7 @@ Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore
 - **CORP is `same-origin` except on link-preview assets**: `public/_headers` detaches it
   (`! Cross-Origin-Resource-Policy`) on the OG images, the project covers (`/images/projects/*`, whose
   `og/<slug>.jpg` share copies are each project page's `og:image`) and the favicon. `og:image` is PNG or JPEG only
-  (LinkedIn documents no WebP): after adding or replacing a cover, run `bash scripts/og-covers.sh` and commit the copy and `src/data/og-covers.json`
+  (LinkedIn documents no WebP): after adding or replacing a cover, run `bash scripts/og-covers.sh` (needs `cwebp`) and commit the copy, the 400w/800w srcset copies in `public/images/projects/400/` and `800/`, and `src/data/og-covers.json`
   (the cover hashes the route test checks, so a stale copy fails). Overlapping rules comma-join values, so never set a second CORP value there.
 - **Sitemap `<lastmod>` is the last significant change**, never a build date. `scripts/sitemap-lastmod.mjs`
   hashes each page's title, description, canonical, `<main>` text and internal links, and JSON-LD into the

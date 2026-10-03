@@ -1,6 +1,7 @@
 ---
 import type { Locale, Project } from '../data/site';
 import { categoryLabels, href, pad, stageLabels, stageOf } from '../data/site';
+import { coverSrcset } from '../data/seo';
 
 interface Props { project: Project; locale: Locale; index: number; headingLevel?: 3 | 4; }
 const { project, locale, index, headingLevel = 3 } = Astro.props;
@@ -13,7 +14,7 @@ const stage = stageOf(project);
   <span class="idx" aria-hidden="true">{pad(index)}</span>
   <a class="project-image" href={url} tabindex="-1" aria-hidden="true">
     {project.image
-      ? <img src={project.image} alt={project.alt[locale]} width="1600" height="1000" loading="lazy" decoding="async" />
+      ? <img src={project.image} srcset={coverSrcset(project.image)} sizes="12rem" alt={project.alt[locale]} width="1600" height="1000" loading="lazy" decoding="async" />
       : <span class="image-plate"><span class="plate-prompt">$</span> {project.slug}</span>}
   </a>
   <div class="project-copy">

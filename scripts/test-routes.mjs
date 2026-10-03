@@ -428,7 +428,8 @@ await searchCheck('og:image is a built file with its real size, fetchable cross-
     assert.deepEqual({ width: Number(metaContent(html, 'og:image:width')), height: Number(metaContent(html, 'og:image:height')) }, size, `${route}: declared og:image size differs from ${pathname}`);
     assert.equal(metaContent(html, 'twitter:image'), image, `${route}: twitter:image differs from og:image`);
     assert.ok(!servesCorp(pathname), `${route}: ${pathname} is served with CORP same-origin, so web-view link previews blank it`);
-    const cover = html.match(/<figure class="detail-media"[^>]*><img src="([^"]+)" alt="([^"]*)"/);
+    const coverTag = html.match(/<figure class="detail-media"[^>]*><img\b[^>]*>/)?.[0];
+    const cover = coverTag ? [coverTag, coverTag.match(/\bsrc="([^"]+)"/)?.[1] ?? '', coverTag.match(/\balt="([^"]*)"/)?.[1] ?? ''] : null;
     if (cover) {
       covers += 1;
       // The share copy of the cover: /images/projects/<slug>.webp → /images/projects/og/<slug>.jpg (scripts/og-covers.sh).
@@ -494,8 +495,11 @@ const sameSitePaths = (html, route, pattern) => [...html.matchAll(pattern)].flat
   try { url = new URL(decodeEntities(raw), `${SITE}${route}`); } catch { return [`unparsable ${raw}`]; }
   return url.origin === SITE ? [url.pathname] : [];
 });
-/** Every same-site href/src target of a page. @param {string} html @param {string} route */
-const internalTargets = (html, route) => sameSitePaths(html, route, /\b(?:href|src)="([^"]+)"/g);
+/** Every same-site href/src target of a page, plus each srcset candidate. @param {string} html @param {string} route */
+const internalTargets = (html, route) => [
+  ...sameSitePaths(html, route, /\b(?:href|src)="([^"]+)"/g),
+  ...[...html.matchAll(/\bsrcset="([^"]+)"/g)].flatMap(([, list = '']) => list.split(',').flatMap((candidate) => sameSitePaths(`src="${candidate.trim().split(/\s+/)[0]}"`, route, /src="([^"]+)"/g))),
+];
 // Workers Static Assets answers a path without a trailing slash, and any *.html URL, with a redirect to the canonical
 // directory path (https://developers.cloudflare.com/workers/static-assets/routing/advanced/html-handling/).
 /** @param {string} html @param {string} route */
@@ -534,6 +538,41 @@ const faultsOn = (finder, pages) => pages.flatMap(([route, html]) => finder(html
 await searchCheck('every page has exactly one <h1>', () => {
   assert.deepEqual(faultsOn(headingOneFaults, [...builtPages]), []);
   assert.equal(headingOneFaults(sampleProjectHtml.replace('</main>', '<h1>Second</h1></main>')).length, 1, 'planted second <h1> not caught');
+});
+
+/** Pixel width of a WebP file (lossy VP8, lossless VP8L or extended VP8X). @param {string} file */
+const webpWidth = (file) => {
+  const bytes = readFileSync(file);
+  const chunk = bytes.toString('latin1', 12, 16);
+  if (chunk === 'VP8 ') return bytes.readUInt16LE(26) & 0x3fff;
+  if (chunk === 'VP8L') return 1 + (bytes.readUInt16LE(21) & 0x3fff);
+  if (chunk === 'VP8X') return 1 + bytes.readUIntLE(24, 3);
+  throw new Error(`${file} is not a WebP image`);
+};
+// A phone shows a project cover 300-360px wide and a work row 120-190px wide; the 1600px original alone made the cover
+// the slowest part of a project page (LCP over 2 s on simulated mobile). Covers ship 400w and 800w copies.
+const COVER_WIDTHS = [400, 800, 1600];
+/** @param {string} html @param {string} route */
+const coverFaults = (html, route) => [...html.matchAll(/<img\b[^>]*\bsrc="(\/images\/projects\/[^"/]+\.webp)"[^>]*>/g)].flatMap(([tag, src = '']) => {
+  const candidates = (tag.match(/\bsrcset="([^"]+)"/)?.[1] ?? '').split(',').map((entry) => entry.trim().split(/\s+/)).filter(([url]) => url);
+  const faults = [];
+  if (!/\bsizes="[^"]+"/.test(tag)) faults.push(`${src}: no sizes`);
+  const widths = candidates.map(([, descriptor = '']) => Number(descriptor.replace(/w$/, '')));
+  if (JSON.stringify(widths) !== JSON.stringify(COVER_WIDTHS)) faults.push(`${src}: srcset widths ${widths.join('/') || 'none'}, expected ${COVER_WIDTHS.join('/')}`);
+  for (const [url = '', descriptor = ''] of candidates) {
+    const path = sameSitePaths(`src="${url}"`, route, /src="([^"]+)"/g)[0] ?? '';
+    const file = join(root, path);
+    if (!existsSync(file)) faults.push(`${url}: missing`);
+    else if (`${webpWidth(file)}w` !== descriptor) faults.push(`${url}: ${webpWidth(file)}px wide, srcset says ${descriptor}`);
+  }
+  return faults;
+});
+
+await searchCheck('every project cover offers 400w and 800w WebP copies through srcset and sizes, each at its stated width', () => {
+  assert.deepEqual(faultsOn(coverFaults, [...builtPages]), []);
+  assert.ok(projectRoutes.some((route) => /<img\b[^>]*src="\/images\/projects\//.test(builtPages.get(route) ?? '')), 'no project cover found; the cover check would pass vacuously');
+  assert.equal(coverFaults('<img src="/images/projects/dnschat.webp" alt="x">', '/work/dnschat/').length, 2, 'planted cover without srcset or sizes not caught');
+  assert.deepEqual(coverFaults('<img src="/images/projects/dnschat.webp" srcset="/images/projects/dnschat.webp 400w, /images/projects/dnschat.webp 800w, /images/projects/dnschat.webp 1600w" sizes="1px">', '/work/dnschat/'), ['/images/projects/dnschat.webp: 1600px wide, srcset says 400w', '/images/projects/dnschat.webp: 1600px wide, srcset says 800w'], 'planted wrong srcset width not caught');
 });
 
 await searchCheck('every <img> has alt text, width and height, and a WebP/AVIF/SVG source', () => {

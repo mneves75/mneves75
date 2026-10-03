@@ -6,6 +6,19 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.2] - 2026-10-03
+
+### Fixed
+
+- **Project pages under 2 s on a phone.** The fresh reverify of 1.11.1 measured `/work/dnschat/` at LCP 2.04, 2.05
+  and 1.42 s (median over the 2 s line): the cover is the largest paint, and every screen downloaded the 1600px
+  original (51 KB for DNSChat) for a cover 300–360px wide on a phone. Covers now ship 400w and 800w WebP copies
+  (`public/images/projects/400/`, `800/`, written by `scripts/og-covers.sh` with `cwebp`) through `srcset` and
+  `sizes`; the work-index rows, 120–190px wide, take the 400w copy. DNSChat's phone cover is 17 KB.
+- Gates: every cover `<img>` must list 400w/800w/1600w candidates whose files exist at those real widths (read from
+  the WebP header), the link check follows `srcset`, and the browser gate asserts that a 412px phone loads the 800w
+  copy and a 1920px desktop the original. Each failed before the change.
+
 ## [1.11.1] - 2026-10-03
 
 **Deployed 2026-10-03**: staging Worker `647a1a3e-de13-4b5a-b891-b4d31daca5b8` (tag `v1.11.1-beta1`), production Worker

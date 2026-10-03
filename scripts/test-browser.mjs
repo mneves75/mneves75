@@ -491,6 +491,19 @@ await check('images below the first screen load lazily; images on it do not', as
   }
 }, { viewport: { width: 412, height: 823 } });
 
+// The project cover is the page's largest paint: a phone must fetch the 800w copy, not the 1600px original.
+await check('a phone loads the 800w project cover; a wide desktop loads the original', async (page) => {
+  // DPR 1.75 (Lighthouse's phone): 359px x 1.75 needs the 800w copy; 1052px x 1.75 needs the original.
+  for (const [width, height, expected] of /** @type {const} */ ([[412, 823, '/images/projects/800/dnschat.webp'], [1920, 1080, '/images/projects/dnschat.webp']])) {
+    await page.setViewportSize({ width, height });
+    await page.goto(`${base}/work/dnschat/`);
+    const cover = page.locator('.detail-media img');
+    await cover.evaluate((img) => /** @type {HTMLImageElement} */ (img).decode());
+    const current = new URL(await cover.evaluate((img) => /** @type {HTMLImageElement} */ (img).currentSrc)).pathname;
+    assert.equal(current, expected, `at ${width}px the cover loaded ${current}`);
+  }
+}, { deviceScaleFactor: 1.75 });
+
 // Lighthouse never scrolls or hovers, so it reports CLS 0 for shifts real visitors get. Scrolling is not "recent input"
 // for the Layout Instability API, and neither is a hover, so both count in field CLS. Entries are buffered from load.
 /** Total unexpected layout shift since load. @param {import('playwright-core').Page} page @returns {Promise<number>} */

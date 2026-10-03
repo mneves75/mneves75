@@ -37,6 +37,16 @@ export function projectPreview(project: Project, locale: Locale) {
   return { path, alt: project.alt[locale], ...projectShareSize };
 }
 
+/**
+ * srcset for a 1600px project cover with the 400w and 800w copies scripts/og-covers.sh writes beside it; a phone
+ * otherwise downloads the original for a 300-360px cover. The route test checks each file's real width.
+ */
+export function coverSrcset(image: string) {
+  const name = image.match(/^\/images\/projects\/([^/]+\.webp)$/)?.[1];
+  if (!name) throw new Error(`cover ${image} is not /images/projects/<slug>.webp; run scripts/og-covers.sh`);
+  return `/images/projects/400/${name} 400w, /images/projects/800/${name} 800w, ${image} 1600w`;
+}
+
 // Stack chips that are programming languages; everything else there is a framework, service or topic.
 const languages = new Set(['Bash', 'C', 'Rust', 'Swift', 'TypeScript', 'V', 'Zig']);
 
