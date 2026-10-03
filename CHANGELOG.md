@@ -23,7 +23,8 @@ Console steps that need the owner's login: `docs/google-search.md`.
   anti-aliasing (same line breaks and page heights). Work-index covers, all below the first screen, now load lazily
   instead of the first three competing with the stylesheets. Local A/B on simulated mobile (Lighthouse 13.5, three
   runs each): `/` LCP 2.1–2.3 s → 1.8 s, `/work/` 3.7–3.8 s → 2.1–2.3 s.
-- **Meta descriptions.** 42 project pages had a description under 100 characters (38 at the shortest). A short
+- **Meta descriptions.** 40 indexable pages had a description under 100 characters (35 project pages and 5 static
+  pages; 38 at the shortest). A short
   summary is now followed by the page's own problem statement, so the description says what the project is for and
   still claims only what the page shows. About, contact and the pt-BR recommendations page got descriptions built
   from facts on those pages.
@@ -52,7 +53,8 @@ Console steps that need the owner's login: `docs/google-search.md`.
 
 - No FAQ schema: Google stopped showing FAQ rich results for every site on 2026-05-07, and the site has no visible
   FAQ to mark up.
-- No `www` → apex 301: `www` already serves the apex canonical, and an edge 301 would make `http://www` a two-hop chain.
+- No `www` → apex 301: `www` serves one 200 with the apex canonical (no chain). A strict 301 stays an optional
+  dashboard change.
 
 ## [1.10.1] - 2026-10-02
 

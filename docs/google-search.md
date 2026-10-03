@@ -16,7 +16,7 @@ changes only what was measured as missing and adds gates so the rest cannot regr
 | Redirect chains | None. `http→https`, a missing trailing slash and `/index.html` are one hop each; `/` → `/pt-br/` is one 302 for Portuguese browsers only (crawlers send no `Accept-Language`). | none | new route check: every internal link resolves without a redirect hop |
 | 404s | None internal. All 64 outbound links answered (LinkedIn's anti-bot 999 aside); unknown URLs return a real 404. | none | new route check: every internal link and asset resolves to a built file |
 | Canonical tags | One self-referencing canonical per indexable page. | none | route test (existing) |
-| Meta description on every page | Present everywhere, but 47 were under 100 characters (38 at the shortest), too thin to pitch the page. | **fixed** | new route check: ≥ 100 characters, and on project pages only text the page shows |
+| Meta description on every page | Present everywhere, but 40 indexable pages were under 100 characters (35 project pages plus about, contact and pt-BR recommendations; 38 at the shortest), too thin to pitch the page. | **fixed** | new route check: ≥ 100 characters, and on project pages only text the page shows |
 | One H1 per page | Already true on all 108 pages. | none | new route check, with a planted second `<h1>` |
 | FAQ schema | Not added. Google stopped showing FAQ rich results for every site on 2026-05-07 and removed the documentation on 2026-06-15 ([Search Central changelog](https://developers.google.com/search/updates)); the site has no visible FAQ, and its markup states only what a page shows. | **declined** | — |
 | Breadcrumbs | `BreadcrumbList` already on all 104 sub-pages, following the visible brand → section → page path; the `MN://WORK/<slug>` label above each project title was plain text. | **linked** | that label is now a breadcrumb `<nav>` (`MN://` → home, `WORK` → work index, the slug `aria-current`), same visible text, 24px+ targets; route test: its links equal the `BreadcrumbList` |
@@ -39,5 +39,5 @@ The verification record exists, so the Domain property should already be there.
 5. Check again after about two weeks. Indexing is not guaranteed; links from places that already rank (the GitHub
    profile README, LinkedIn, project READMEs) are what moves a new personal site.
 
-A `www` → apex 301 stays optional: `www` serves the same page with an apex canonical, and an edge 301 would turn
-`http://www` into a two-hop chain.
+A `www` → apex 301 stays an optional dashboard change: `www` already serves one 200 with the apex canonical, which is
+not a redirect chain. If you add the 301, confirm afterwards that `http://www.mvneves.dev/` reaches the apex in one hop.
