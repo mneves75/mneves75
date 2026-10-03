@@ -8,6 +8,12 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.11.2] - 2026-10-03
 
+**Deployed 2026-10-03**: staging Worker `9793e8d7-932a-476b-8ad9-cd9d4d9d5bc7` (tag `v1.11.2-beta1`), production Worker
+`8f1cdb5a-3a7e-49da-8ede-758436be9b6c` (tag `v1.11.2`), both @`5cdbb652`; all 24 smoke checks passed on staging, apex
+and www. Live simulated-mobile LCP (Lighthouse 13.5, `en-US`, five runs): `/work/dnschat/` 1.28–1.30 s with one 1.88 s
+run, `/` 1.61–1.65 s with one 1.92 s run (both outliers had first paint 1.6–1.7 s, i.e. network), `/work/` 1.40–1.44 s
+(four valid runs). Autoreview P3 of the text diff was scoped-clean. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37161415199).
+
 ### Fixed
 
 - **Project pages under 2 s on a phone.** The fresh reverify of 1.11.1 measured `/work/dnschat/` at LCP 2.04, 2.05

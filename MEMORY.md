@@ -2,7 +2,13 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-03, 1.11.1 LIVE: prod `6e472c29`, tag `v1.11.1` @`763463af`; staging `647a1a3e`)
+## Current state (2026-10-03, 1.11.2 LIVE: prod `8f1cdb5a`, tag `v1.11.2` @`5cdbb652`; staging `9793e8d7`)
+
+- 1.11.2: the fresh reverify of 1.11.1 passed 19/20 and failed load time on `/work/dnschat/` (median 2.04 s): the
+  cover is the LCP element and phones fetched the 1600px original. Covers now ship 400w/800w copies via srcset
+  (`scripts/og-covers.sh`, needs `cwebp`); live 1.28–1.30 s. Lesson: lab LCP is bimodal; take 5 runs, never 1–3.
+
+## Earlier state (2026-10-03, 1.11.1 LIVE: prod `6e472c29`, tag `v1.11.1` @`763463af`; staging `647a1a3e`)
 
 - 1.11.1: independent verification of 1.11.0 (Codex, 20 frozen criteria) passed 19; it failed WhatsImovel's
   "anonymised under the LGPD" claim, which the product's privacy policy contradicts (pseudonymised HMAC per IP).
