@@ -2,7 +2,22 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-02, 1.10.1 LIVE: prod `3f8d7819`, tag `v1.10.1` @`417fd21`; staging `84fe8e95`)
+## Current state (2026-10-03, 1.11.0 LIVE: prod `90cd72c6`, tag `v1.11.0` @`2bd99e1e`; staging `83ca69e8`)
+
+- Google Search pass (`docs/google-search.md`): most of the checklist already held; shipped the font trim (Archivo wght
+  400–900, normal width, 88 → 33 KB preload), lazy work-index covers, ≥100-char descriptions from visible text, a
+  linked `MN://WORK/<slug>` breadcrumb, and gates for each item. Live LCP 1.4–1.6 s. FAQ schema declined (Google
+  retired FAQ rich results 2026-05-07). Search Console submission/indexing status needs the owner's login.
+- CI audit ignores only GHSA-ch52-4w7c-c8xp (http-cache-semantics, no fix; Astro build-time remote-image cache only).
+  Remove the ignore when a patched release exists.
+- Lesson: Lighthouse never scrolls or hovers; measure CLS for those in the browser gate. Scroll anchoring absorbs a
+  header that shrinks above the viewport (measured 0).
+- Lesson: a link gate that only reads root-relative hrefs, or counts `<head>` hreflang as inbound links, passes
+  orphans and broken relative links; resolve URLs against the page and walk body anchors from the homes.
+- Lesson: in zsh never name a loop variable `path` (it is tied to `PATH`); briefs for helper agents must forbid killing
+  processes they did not start (a reviewer killed babimakeup's 8765 server on 2026-10-03).
+
+## Earlier state (2026-10-02, 1.10.1 LIVE: prod `3f8d7819`, tag `v1.10.1` @`417fd21`; staging `84fe8e95`)
 
 - ChatGPT Search audit: existing initial HTML, canonical metadata, sitemap, 404 exclusions and crawler policies passed. Preserved wildcard search/training permissions and cookieless Web Analytics; no content or significant-change dates moved.
 - Smoke now verifies served discovery files and campaign-independent canonicals, with local negative controls. Every sitemap URL must be inspected, including one without `lastmod`; filtering only dated entries misses extra URLs. All 20 checks passed on real workerd, staging, apex and www; release CI passed. Build-time fast-uri 3.1.6 → 3.1.7 fixed the failing high-severity audit.

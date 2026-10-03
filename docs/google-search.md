@@ -1,6 +1,7 @@
 # Google Search — audit and owner steps
 
-Checked 2026-10-03 against a fresh build and the live site, with release 1.11.0. Each line of the common "Google
+Checked 2026-10-03 against a fresh build and the live site; fixes shipped in 1.11.0 (production Worker `90cd72c6`,
+tag `v1.11.0` @`2bd99e1e`). Each line of the common "Google
 isn't showing my site" checklist was measured before anything changed. Most of it already held, so the release
 changes only what was measured as missing and adds gates so the rest cannot regress silently.
 
@@ -24,7 +25,7 @@ changes only what was measured as missing and adds gates so the rest cannot regr
 | Alt text on every image | Already true on all 172 `<img>`. | none | new route check |
 | WebP | Every `<img>` is WebP. The JPEG/PNG files are `og:image` share copies, which LinkedIn requires. | none | new route check: WebP/AVIF/SVG only |
 | Layout shifts | Load ≈ 0.000005 (sub-pixel font swap), scroll 0 (scroll anchoring absorbs the header shrink), hover on a project row ≈ 0.0004. Google's "good" limit is 0.1. | none | new browser check (budget 0.001 per phase, with a planted-shift control) |
-| Load under 2 s | Simulated mobile LCP was 2.0–2.9 s live (Lighthouse 13.5). Two causes: the preloaded Archivo file carried an unused width axis (88 KB), and three work-index covers below the first screen loaded eagerly. | **fixed** | font 88 → 33 KB, both fonts 172 → 64 KB; local A/B, 3 runs each: `/` LCP 2.1–2.3 → 1.8 s, `/work/` 3.7–3.8 → 2.1–2.3 s. Gates: preload ≤ 40 KiB; images below the first screen lazy, those on it not |
+| Load under 2 s | Simulated mobile LCP was 2.0–2.9 s live (Lighthouse 13.5). Two causes: the preloaded Archivo file carried an unused width axis (88 KB), and three work-index covers below the first screen loaded eagerly. | **fixed** | font 88 → 33 KB, both fonts 172 → 64 KB; local A/B, 3 runs each: `/` LCP 2.1–2.3 → 1.8 s, `/work/` 3.7–3.8 → 2.1–2.3 s (uncompressed local server). Live after deploy: `/` 1.62–1.64 s, `/work/` 1.44–1.48 s, `/work/dnschat/` 1.41–1.44 s. Gates: preload ≤ 40 KiB; images below the first screen lazy, those on it not |
 | Obvious AI slop | Copy scan found one unsupported buzzword: WhatsImovel's "intelligent lead tracking", which its live page never says. "Smart" on WeatherSunscreen is the App Store's own wording and stays. `impeccable detect`: 3 layout-transition warnings and one advisory, no slop finding. | **fixed** (one summary) | primary sources: whatsimovel.com.br, `itunes.apple.com/lookup` |
 
 ## Owner steps (need your Google login)

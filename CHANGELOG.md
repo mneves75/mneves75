@@ -6,7 +6,27 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.1] - 2026-10-03
+
+### Fixed
+
+- WhatsImovel's case study said the product keeps personal data "anonymised under the LGPD". Its
+  [privacy policy](https://whatsimovel.com.br/privacidade) says each IP becomes a pseudonymised HMAC identifier and
+  that, with the WhatsApp integration, lead names, numbers and messages are stored. The constraint now says what the
+  policy says (no readable IP; each click under a pseudonymised identifier), and the diagram step "anonymised report"
+  is "pseudonymised clicks" (pt-BR "cliques pseudonimizados"). Found by the independent verification of 1.11.0 (19 of
+  20 criteria passed; this was the failing one).
+
 ## [1.11.0] - 2026-10-03
+
+**Deployed 2026-10-03**: staging Worker `83ca69e8-a169-4a0b-8ae2-210abca110a2` (tag `v1.11.0-beta2`; `v1.11.0-beta1` was
+`e9e4e20e` @`2974a4c6`, before the review-driven test fixes), production Worker `90cd72c6-8c6c-4b99-831a-5428275b3c71`
+(tag `v1.11.0`), both @`2bd99e1e`; all 23 smoke checks passed on staging, apex and www; live HTML on both hosts
+references the new font. Live simulated-mobile LCP (Lighthouse 13.5, `en-US`, three runs): `/` 1.62–1.64 s, `/work/`
+1.44–1.48 s, `/work/dnschat/` 1.41–1.44 s (1.10.1 live: 2.0–2.9 s). [CI passed](https://github.com/mneves75/mneves75/actions/runs/37158857706).
+Review: code review in two axes, then autoreview P3 found four false passes in the new gates (relative URLs, `*.html`
+links, head `hreflang` counted as navigation, a control satisfiable by the load's own shift), fixed in `2bd99e1e`;
+the rerun was scoped-clean.
 
 A Google Search pass against the common "Google isn't showing my site" checklist: each line was measured on the
 build and the live site before anything changed. Most already held (static HTML, sitemap, open `robots.txt`,
