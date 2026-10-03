@@ -49,6 +49,14 @@ Console steps that need the owner's login: `docs/google-search.md`.
   layout shift stays under 0.001 on load, on scrolling past the header threshold and on hovering a project row, with
   a planted-shift control. Measured: load ≈ 0.000005, scroll 0, hover ≈ 0.0004.
 
+### Security
+
+- CI's `bun audit --audit-level=high` began failing on GHSA-ch52-4w7c-c8xp (http-cache-semantics ≤ 4.2.0, a
+  transitive Astro dependency, no patched release). Astro uses it only for its build-time remote-image cache; this
+  site is static with no remote images, so the vulnerable path never runs where users can reach it. CI now ignores
+  exactly that advisory, with the reason inline; any other high advisory still fails (checked by ignoring an
+  unrelated ID: exit 1).
+
 ### Not changed, on purpose
 
 - No FAQ schema: Google stopped showing FAQ rich results for every site on 2026-05-07, and the site has no visible

@@ -19,7 +19,8 @@ bun run check && bun run build && bun run test
 interactive behaviour gets a check there, proved to fail without the fix. After every deploy run the same checks
 against the live site: `BASE_URL=<url> bun run smoke`. The gate routes `/` through `worker/index.js` like
 `run_worker_first`; a change to `worker/` is also run against real workerd (`wrangler dev`, see `DEPLOYMENT.md`).
-CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun (`packageManager`), e.g.
+CI also runs `bun audit --audit-level=high`, ignoring only GHSA-ch52-4w7c-c8xp (build-time remote-image cache in
+Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore when a fix ships). Keep the lockfile on the pinned bun (`packageManager`), e.g.
 `bunx bun@1.3.14 install`, so CI's `--frozen-lockfile` accepts it.
 
 ## Invariants

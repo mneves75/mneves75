@@ -197,7 +197,11 @@ Supply chain: both workflows pin `actions/checkout` to a commit SHA and declare 
 `permissions`; CI runs with a read-only token and `persist-credentials: false`; Dependabot watches
 GitHub Actions and the `bun` ecosystem. Dependabot alerts do not see bun's transitive tree, so CI runs
 `bun audit --audit-level=high` (1.6.0: astro 7.3.2 and in-range fast-uri/js-yaml/svgo updates took it from
-10 advisories to 0; none of that code reaches `dist/`). `lint:design` pins `impeccable@3.6.1`. A TruffleHog
+10 advisories to 0; none of that code reaches `dist/`). Since 1.11.0 it ignores exactly one advisory,
+GHSA-ch52-4w7c-c8xp (http-cache-semantics ≤ 4.2.0, published 2026-09-18, no patched release): Astro uses that
+package only for its build-time remote-image cache, and this site is static with no remote images, so no cache
+answers users. Checked both ways on bun 1.3.14: without the ignore the audit exits 1; ignoring an unrelated ID still
+exits 1. `lint:design` pins `impeccable@3.6.1`. A TruffleHog
 `verified,unknown` scan over all 113 tracked and modified files returned no findings. The repository
 holds no secrets, and deployment credentials live only in the operator's local Wrangler session.
 
