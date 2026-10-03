@@ -12,6 +12,18 @@ export function projectTitle(project: Project, locale: Locale) {
   return [...described].length <= TITLE_MAX ? described : `${project.title} — ${site.name}`;
 }
 
+/** A description shorter than this is a weak search snippet; the route test holds indexable pages to it. */
+const DESCRIPTION_MIN = 100;
+
+/**
+ * The meta description: the summary, followed by the page's own problem statement when the summary alone is too
+ * short to say what the project is for. Both sentences are visible on the page, so nothing new is claimed.
+ */
+export function projectDescription(project: Project, locale: Locale) {
+  const summary = project.summary[locale];
+  return [...summary].length >= DESCRIPTION_MIN ? summary : `${summary} ${project.problem[locale]}`;
+}
+
 /**
  * Link previews use a 1200×750 JPEG share copy of the cover (scripts/og-covers.sh): the WebP cover stays in the page,
  * but LinkedIn documents no WebP support. The route test compares this size with the real file behind each og:image.

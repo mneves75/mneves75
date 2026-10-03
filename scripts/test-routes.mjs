@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -345,6 +345,11 @@ await searchCheck('every page below home has one BreadcrumbList from its locale 
       assert.equal(crumbs.length, 3, `${route}: project breadcrumb is not Home › Work › Project`);
       assert.equal(crumbs[1]?.item, `${localeHome(route)}work/`, `${route}: middle breadcrumb is not the work index`);
       assert.equal(crumbs[2]?.name, decodeEntities(html.match(/<h1\b[^>]*>([^<]+)<\/h1>/)?.[1] ?? ''), `${route}: last breadcrumb is not the project title`);
+      // The trail is also shown as one breadcrumb nav above the title: links to the steps above, the page marked current.
+      const trail = html.match(/<nav\b[^>]*aria-label="(?:Breadcrumb|Trilha de navegação)"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+      assert.ok(trail, `${route}: no visible breadcrumb nav`);
+      assert.deepEqual([...trail.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), crumbs.slice(0, -1).map((crumb) => new URL(crumb.item).pathname), `${route}: breadcrumb nav links differ from the BreadcrumbList`);
+      assert.match(trail, /aria-current="page"/, `${route}: breadcrumb nav does not mark the current page`);
     } else {
       assert.equal(crumbs.length, 2, `${route}: section breadcrumb is not Home › Page`);
     }
@@ -460,6 +465,103 @@ await searchCheck('robots meta: max-image-preview:large on indexable pages, noin
   for (const [route, html] of builtPages) {
     const robots = metaTags(html).filter((tag) => tag.name === 'robots').map((tag) => tag.content);
     assert.deepEqual(robots, isNoindex(html) ? ['noindex'] : ['max-image-preview:large'], `${route}: robots meta`);
+  }
+});
+
+// --- Page hygiene: each finder returns its violations, runs on the build and on a planted sample, so a green result
+// is never vacuous (a finder that silently matches nothing would pass every build). ---
+const sampleProjectHtml = builtPages.get('/work/hay/') ?? '';
+assert.ok(sampleProjectHtml, 'hygiene probes need /work/hay/');
+/** @param {string} html */
+const headingOneFaults = (html) => {
+  const count = (html.match(/<h1\b/g) ?? []).length;
+  return count === 1 ? [] : [`${count} <h1>`];
+};
+// Raster images ship as WebP; og:image share copies are <meta>, not <img>, and stay JPEG/PNG for LinkedIn.
+/** @param {string} html */
+const imageFaults = (html) => [...html.matchAll(/<img\b[^>]*>/g)].flatMap(([tag]) => {
+  const src = tag.match(/\bsrc="([^"]*)"/)?.[1] ?? '';
+  return [
+    ...(/\balt="[^"]+"/.test(tag) || /\baria-hidden="true"/.test(tag) ? [] : [`no alt text: ${src}`]),
+    ...(/\bwidth="\d+"/.test(tag) && /\bheight="\d+"/.test(tag) ? [] : [`no width/height (layout shift): ${src}`]),
+    ...(/\.(?:webp|avif|svg)(?:[?#]|$)/.test(src) ? [] : [`not WebP/AVIF/SVG: ${src}`]),
+  ];
+});
+/** Same-site href/src targets, as paths. @param {string} html */
+const internalTargets = (html) => [...html.matchAll(/\b(?:href|src)="([^"]+)"/g)].flatMap(([, raw]) => {
+  const value = raw.startsWith(SITE) ? raw.slice(SITE.length) || '/' : raw;
+  if (!value.startsWith('/') || value.startsWith('//')) return [];
+  const path = value.split(/[?#]/)[0] ?? '';
+  return path ? [path] : [];
+});
+// A path without a file extension or trailing slash costs a 307 hop on Workers Static Assets before the page.
+/** @param {string} html */
+const linkFaults = (html) => internalTargets(html).flatMap((path) => {
+  const file = join(root, decodeURIComponent(path));
+  if (path.endsWith('/')) return existsSync(join(file, 'index.html')) ? [] : [`broken link ${path}`];
+  if (!/\.[a-z0-9]+$/i.test(path)) return [`redirecting link ${path} (add the trailing slash)`];
+  return existsSync(file) ? [] : [`broken link ${path}`];
+});
+/** Indexable routes that no other page links to. @param {[string, string][]} pages */
+const orphans = (pages) => {
+  const linked = new Set(pages.flatMap(([route, html]) => internalTargets(html).filter((path) => path !== route)));
+  return pages.map(([route]) => route).filter((route) => route !== '/' && !linked.has(route));
+};
+const DESCRIPTION_MIN = 100; // mirrors DESCRIPTION_MIN in src/data/seo.ts, which pads short project descriptions to reach it
+/** @param {string} html */
+const descriptionFaults = (html) => {
+  const description = decodeEntities(metaContent(html, 'description') ?? '');
+  return [...description].length >= DESCRIPTION_MIN ? [] : [`description of ${[...description].length} characters: "${description}"`];
+};
+/** @param {(html: string) => string[]} finder @param {[string, string][]} pages */
+const faultsOn = (finder, pages) => pages.flatMap(([route, html]) => finder(html).map((fault) => `${route}: ${fault}`));
+
+await searchCheck('every page has exactly one <h1>', () => {
+  assert.deepEqual(faultsOn(headingOneFaults, [...builtPages]), []);
+  assert.equal(headingOneFaults(sampleProjectHtml.replace('</main>', '<h1>Second</h1></main>')).length, 1, 'planted second <h1> not caught');
+});
+
+await searchCheck('every <img> has alt text, width and height, and a WebP/AVIF/SVG source', () => {
+  assert.deepEqual(faultsOn(imageFaults, [...builtPages]), []);
+  assert.ok((sampleProjectHtml.match(/<img\b/g) ?? []).length > 0, 'the hygiene sample has no <img>; the image check would pass vacuously');
+  assert.equal(imageFaults('<img src="/images/x.png" alt="">').length, 3, 'planted image without alt, size or modern format not caught');
+});
+
+await searchCheck('every internal link and asset resolves to a built file without a redirect hop', () => {
+  assert.deepEqual(faultsOn(linkFaults, [...builtPages]), []);
+  assert.ok(internalTargets(sampleProjectHtml).length > 10, 'the hygiene sample has almost no internal links; the link check would pass vacuously');
+  assert.deepEqual(linkFaults('<a href="/work">x</a><a href="https://mvneves.dev/missing/">y</a><img src="/images/none.webp">'), ['redirecting link /work (add the trailing slash)', 'broken link /missing/', 'broken link /images/none.webp']);
+});
+
+await searchCheck('every indexable page except home is linked from another page (no orphans)', () => {
+  assert.deepEqual(orphans(indexable), []);
+  assert.deepEqual(orphans([...indexable, ['/work/planted-orphan/', sampleProjectHtml]]), ['/work/planted-orphan/'], 'planted orphan not caught');
+});
+
+await searchCheck(`every indexable page has a meta description of at least ${DESCRIPTION_MIN} characters`, () => {
+  assert.deepEqual(faultsOn(descriptionFaults, indexable), []);
+  assert.equal(descriptionFaults('<meta name="description" content="Short.">').length, 1, 'planted short description not caught');
+  // Content truth: a project description is the visible summary, optionally followed by the visible problem statement.
+  for (const route of projectRoutes) {
+    const html = builtPages.get(route) ?? '';
+    const description = decodeEntities(metaContent(html, 'description') ?? '');
+    const text = visibleText(html);
+    const summary = html.match(/<p class="detail-summary"[^>]*>([^<]+)<\/p>/)?.[1];
+    assert.ok(summary, `${route}: no visible summary (.detail-summary) to build the description from`);
+    const lede = decodeEntities(summary);
+    assert.ok(description === lede || (description.startsWith(`${lede} `) && text.includes(description.slice(lede.length + 1))), `${route}: description is not the visible summary plus visible text: "${description}"`);
+  }
+});
+
+// The preloaded fonts sit on the critical path of every first visit; Archivo's unused width axis once tripled its size.
+const FONT_PRELOAD_BUDGET = 40 * 1024;
+await searchCheck(`every preloaded font exists and is at most ${FONT_PRELOAD_BUDGET / 1024} KiB`, () => {
+  const preloads = [...new Set([...builtPages.values()].flatMap((html) => [...html.matchAll(/<link rel="preload" href="([^"]+)" as="font"/g)].map((match) => match[1] ?? '')))];
+  assert.ok(preloads.length > 0, 'no font preload found; the budget would pass vacuously');
+  for (const href of preloads) {
+    const file = join(root, href);
+    assert.ok(existsSync(file), `preloaded font missing: ${href}`);
+    assert.ok(statSync(file).size <= FONT_PRELOAD_BUDGET, `${href} is ${Math.round(statSync(file).size / 1024)} KiB`);
   }
 });
 

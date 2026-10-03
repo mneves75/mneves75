@@ -2,7 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ProjectDetail from '../../../components/ProjectDetail.astro';
 import { href, projects, site } from '../../../data/site';
-import { projectEntity, projectPreview, projectTitle } from '../../../data/seo';
+import { projectDescription, projectEntity, projectPreview, projectTitle } from '../../../data/seo';
 
 export function getStaticPaths() {
   return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
@@ -13,6 +13,6 @@ if (!project) throw new Error('Project not found');
 const currentPath = `/work/${project.slug}/`;
 ---
 
-<BaseLayout locale="pt" currentPath={currentPath} title={projectTitle(project, 'pt')} description={project.summary.pt} type="article" image={projectPreview(project, 'pt')} crumb={project.title} mainEntity={projectEntity(project, 'pt', `${site.domain}${href('pt', currentPath)}`)}>
+<BaseLayout locale="pt" currentPath={currentPath} title={projectTitle(project, 'pt')} description={projectDescription(project, 'pt')} type="article" image={projectPreview(project, 'pt')} crumb={project.title} mainEntity={projectEntity(project, 'pt', `${site.domain}${href('pt', currentPath)}`)}>
   <ProjectDetail locale="pt" project={project} />
 </BaseLayout>

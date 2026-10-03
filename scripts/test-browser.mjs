@@ -477,6 +477,63 @@ await check('no horizontal overflow at 360px', async (page) => {
   }
 }, { viewport: { width: 360, height: 780 } });
 
+// An eager image below the first screen is fetched by the preload scanner alongside the render-blocking CSS and the
+// fonts, which on a slow phone connection delays the first paint; an image on the first screen must not be lazy, or
+// it waits for layout. The phone viewport is where eager covers cost the most.
+await check('images below the first screen load lazily; images on it do not', async (page) => {
+  for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/dnschat/', '/about/']) {
+    await page.goto(`${base}${path}`);
+    const wrong = await page.evaluate(() => [...document.images].flatMap((img) => {
+      const belowFold = img.getBoundingClientRect().top >= window.innerHeight;
+      return belowFold === (img.loading === 'lazy') ? [] : [`${img.getAttribute('src')} (${img.loading} at ${Math.round(img.getBoundingClientRect().top)}px)`];
+    }));
+    assert.deepEqual(wrong, [], `wrong loading attribute on ${path}`);
+  }
+}, { viewport: { width: 412, height: 823 } });
+
+// Lighthouse never scrolls or hovers, so it reports CLS 0 for shifts real visitors get. Scrolling is not "recent input"
+// for the Layout Instability API, and neither is a hover, so both count in field CLS. Entries are buffered from load.
+/** Total unexpected layout shift since load. @param {import('playwright-core').Page} page @returns {Promise<number>} */
+const layoutShift = (page) => page.evaluate(() => new Promise((resolve) => {
+  let total = 0;
+  // The buffered entries arrive in the observer's first callback, a task after observe(); 100 ms covers it.
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of /** @type {(PerformanceEntry & { value: number, hadRecentInput: boolean })[]} */ (list.getEntries())) if (!entry.hadRecentInput) total += entry.value;
+  });
+  observer.observe({ type: 'layout-shift', buffered: true });
+  setTimeout(() => { observer.disconnect(); resolve(total); }, 100);
+}));
+// Budget 0.001, a hundredth of Google's 0.1 "good" line: a font swap leaves ~0.000005 of sub-pixel noise.
+const SHIFT_BUDGET = 0.001;
+await check('no layout shift on load, on scroll past the header threshold, or on hovering a project row', async (page) => {
+  await page.goto(`${base}/`);
+  await page.evaluate(() => document.fonts.ready);
+  await settle(page);
+  const load = (await layoutShift(page));
+  assert.ok(load < SHIFT_BUDGET, `layout shift during load: ${load}`);
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await settle(page, 600);
+  const scrolled = (await layoutShift(page));
+  assert.ok(scrolled - load < SHIFT_BUDGET, `layout shift when the header reacts to scrolling: ${scrolled - load}`);
+  const row = page.locator('a.featured-row').first();
+  await row.scrollIntoViewIfNeeded();
+  await settle(page, 600);
+  const before = (await layoutShift(page));
+  await row.hover();
+  await settle(page, 600);
+  const hovered = (await layoutShift(page)) - before;
+  assert.ok(hovered < SHIFT_BUDGET, `layout shift when hovering a project row: ${hovered}`);
+}, { viewport: { width: 1280, height: 800 } });
+
+// Positive control for the check above: a planted shift must register, or a silent observer would pass it.
+await check('layout-shift probe registers a planted shift (positive control)', async (page) => {
+  await page.goto(`${base}/work/`);
+  await settle(page);
+  await page.evaluate(() => { document.querySelector('main')?.prepend(Object.assign(document.createElement('div'), { textContent: 'planted', className: 'eyebrow' })); });
+  await settle(page);
+  assert.ok((await layoutShift(page)) > 0, 'a planted 1-line insertion above the content was not reported');
+}, { viewport: { width: 1280, height: 800 } });
+
 await browser.close();
 server.close();
 assert.equal(failures.length, 0, `${failures.length} browser check(s) failed: ${failures.join('; ')}`);

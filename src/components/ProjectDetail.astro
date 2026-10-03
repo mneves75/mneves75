@@ -169,7 +169,7 @@ const blocks = project.caseStudyPending ? [] : [
 ---
 
 <section class="detail-hero">
-  <p class="eyebrow">{`MN://WORK/${project.slug}`}</p>
+  <nav class="eyebrow crumbs" aria-label={locale === 'en' ? 'Breadcrumb' : 'Trilha de navegação'}><a href={href(locale, '/')} aria-label={locale === 'en' ? 'MN:// home' : 'MN:// início'}>MN://</a><a href={href(locale, '/work/')}>WORK</a>/<span aria-current="page">{project.slug}</span></nav>
   <h1>{project.title}</h1>
   <p class="detail-summary">{project.summary[locale]}</p>
   <p class="detail-meta label-mono"><span>{project.kicker[locale]}</span><span>{categoryLabels[project.category][locale]}</span><span>{project.status[locale]}</span></p>
@@ -217,6 +217,9 @@ const blocks = project.caseStudyPending ? [] : [
 
 <style>
   .detail-hero { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
+  /* Inline padding widens the hit area to the 24px target size (WCAG 2.5.8) without moving the line. */
+  .crumbs a { padding-block: .45rem; text-decoration: underline; text-decoration-color: var(--line-strong); text-decoration-thickness: 1px; text-underline-offset: .3em; transition: color var(--t-fast), text-decoration-color var(--t-fast); }
+  .crumbs a:hover, .crumbs a:focus-visible { color: var(--ink); text-decoration-color: currentColor; }
   .detail-hero h1 { max-width: 16ch; margin: .9rem 0 0; overflow-wrap: anywhere; font-size: var(--step-4); font-weight: 800; letter-spacing: -.045em; line-height: .95; }
   .detail-summary { max-width: 54ch; margin: 1.3rem 0 0; color: var(--ink-soft); font-size: var(--step-1); }
   .detail-meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: 1.6rem 0 0; }

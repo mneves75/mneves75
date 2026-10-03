@@ -6,6 +6,54 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-10-03
+
+A Google Search pass against the common "Google isn't showing my site" checklist: each line was measured on the
+build and the live site before anything changed. Most already held (static HTML, sitemap, open `robots.txt`,
+`noindex` only on 404s, one-hop redirects, no broken or orphan pages, canonicals, breadcrumbs, one `<h1>`, alt text,
+WebP). This release fixes what was measured as missing and gates the rest. Item-by-item evidence and the Search
+Console steps that need the owner's login: `docs/google-search.md`.
+
+### Changed
+
+- **Faster first load.** Archivo is trimmed to the weights and width the site uses (wght 400–900, normal width); the
+  scroll-driven width animation that needed the rest was removed in 1.2.1. The preloaded file drops from 88 KB to
+  33 KB, both Archivo files from 172 KB to 64 KB, with the same glyphs and pt-BR accents; files are renamed
+  `archivo-400-900-*` because `/fonts/*` is cached `immutable`. Screenshots before and after differ only in edge
+  anti-aliasing (same line breaks and page heights). Work-index covers, all below the first screen, now load lazily
+  instead of the first three competing with the stylesheets. Local A/B on simulated mobile (Lighthouse 13.5, three
+  runs each): `/` LCP 2.1–2.3 s → 1.8 s, `/work/` 3.7–3.8 s → 2.1–2.3 s.
+- **Meta descriptions.** 42 project pages had a description under 100 characters (38 at the shortest). A short
+  summary is now followed by the page's own problem statement, so the description says what the project is for and
+  still claims only what the page shows. About, contact and the pt-BR recommendations page got descriptions built
+  from facts on those pages.
+- WhatsImovel's summary said "intelligent lead tracking and conversion analytics", which its live page never claims;
+  it now says what the product page says: WhatsApp links and QR codes that show which sign, ad or post brought each
+  conversation.
+- **Visible breadcrumb.** The `MN://WORK/<slug>` label above each project title is now a breadcrumb `<nav>`: `MN://`
+  links home, `WORK` links the work index, the slug is the current page. Same visible text; inline padding gives each
+  link a target of at least 24px (WCAG 2.5.8) without moving the line. The JSON-LD `BreadcrumbList` already matched
+  the brand link and the header nav; it now also matches a trail beside the content. Every project page gained two
+  internal links, so their sitemap `lastmod` moves.
+- `DESIGN.md` no longer describes the removed width animation.
+
+### Added
+
+- Route-test checks, each proved by a planted violation: exactly one `<h1>` per page; every `<img>` has alt text,
+  width/height and a WebP/AVIF/SVG source; every internal link and asset resolves without a redirect hop; no orphan
+  pages; descriptions of at least 100 characters, built only from visible text on project pages; preloaded fonts at
+  most 40 KiB (failed on the 88 KB file); a project breadcrumb nav whose links equal the `BreadcrumbList` (failed
+  before the nav existed).
+- Browser-gate checks: images below the first screen are lazy and none on it are (failed on the three eager covers);
+  layout shift stays under 0.001 on load, on scrolling past the header threshold and on hovering a project row, with
+  a planted-shift control. Measured: load ≈ 0.000005, scroll 0, hover ≈ 0.0004.
+
+### Not changed, on purpose
+
+- No FAQ schema: Google stopped showing FAQ rich results for every site on 2026-05-07, and the site has no visible
+  FAQ to mark up.
+- No `www` → apex 301: `www` already serves the apex canonical, and an edge 301 would make `http://www` a two-hop chain.
+
 ## [1.10.1] - 2026-10-02
 
 **Deployed 2026-10-02**: staging Worker `84fe8e95-50f5-4d46-99da-59d78adea75d` (tag `v1.10.1-beta1`), production Worker `3f8d7819-5549-4d8a-b09d-79cd7bc25648` (tag `v1.10.1`), both @`417fd21`; all 20 smoke checks passed on staging, apex and www. Local check/build/test, high-severity dependency audit and real workerd smoke exited 0; independent Codex review rerun was scoped-clean through P3. [CI passed](https://github.com/mneves75/mneves75/actions/runs/36965570304). No sitemap dates changed.

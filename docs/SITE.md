@@ -12,11 +12,12 @@ Personal site for **Marcus Neves** — software, data, and AI built for real-wor
 
 - English homepage at [`/`](https://mvneves.dev/)
 - Brazilian Portuguese at [`/pt-br/`](https://mvneves.dev/pt-br/)
-- Source-backed work index with 33 typed project detail pages, every one carrying a written case study
+- Source-backed work index with a typed detail page per project (the count lives in `src/data/site.ts`), every one carrying a written case study
 - About, recommendations, contact, robots, Cloudflare headers, and a `sitemap.xml` generated from `src/data/site.ts`
 - Local project content in `src/data/site.ts`
 - Impeccable design contract in [`DESIGN.md`](../DESIGN.md)
 - Research and implementation plan in [`PLAN.md`](./PLAN.md) and [`RESEARCH.md`](./RESEARCH.md)
+- Search visibility: Google checklist audit and Search Console steps in [`google-search.md`](./google-search.md); ChatGPT Search in [`chatgpt-search.md`](./chatgpt-search.md)
 
 ## Development
 

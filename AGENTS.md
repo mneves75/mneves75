@@ -35,6 +35,13 @@ CI also runs `bun audit --audit-level=high`. Keep the lockfile on the pinned bun
 - **Content truth.** Every claim is checked against its primary source (repo README, release, live page,
   `itunes.apple.com/lookup`). `openSource: true` only with a detected license; no store link before the app is
   in the public lookup; missing material stays an explicit TODO, never invented copy.
+- **Page hygiene is gated** (route test, each check proved by a planted violation): one `<h1>` per page; every `<img>`
+  WebP/AVIF/SVG with alt text and width/height; internal links resolve with no redirect hop (keep the trailing slash);
+  no orphan pages; descriptions of at least 100 characters, made only of visible text on project pages
+  (`projectDescription` in `src/data/seo.ts`). Images below the first screen are `loading="lazy"` and none on it are
+  (browser gate, 412×823). Archivo is trimmed to wght 400–900 at normal width (preload budget 40 KiB); a new weight or
+  width needs a re-cut, and a changed font file needs a new name, because `/fonts/*` is `immutable`. Google Search
+  evidence and owner steps: `docs/google-search.md`.
 - **Motion** runs only under `html[data-motion='on']`; the header pause control (WCAG 2.2.2) and
   reduced-motion users both turn it off. Scroll reveals hide only `.reveal.reveal-pending`.
 - **`[hidden]` wins** via a global `!important` rule; any new filterable list relies on it.
