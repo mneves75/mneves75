@@ -487,25 +487,40 @@ const imageFaults = (html) => [...html.matchAll(/<img\b[^>]*>/g)].flatMap(([tag]
     ...(/\.(?:webp|avif|svg)(?:[?#]|$)/.test(src) ? [] : [`not WebP/AVIF/SVG: ${src}`]),
   ];
 });
-/** Same-site href/src targets, as paths. @param {string} html */
-const internalTargets = (html) => [...html.matchAll(/\b(?:href|src)="([^"]+)"/g)].flatMap(([, raw]) => {
-  const value = raw.startsWith(SITE) ? raw.slice(SITE.length) || '/' : raw;
-  if (!value.startsWith('/') || value.startsWith('//')) return [];
-  const path = value.split(/[?#]/)[0] ?? '';
-  return path ? [path] : [];
+/** Same-site paths of URLs matched by `pattern`, resolved against the page, so relative URLs count too.
+ * @param {string} html @param {string} route @param {RegExp} pattern */
+const sameSitePaths = (html, route, pattern) => [...html.matchAll(pattern)].flatMap(([, raw = '']) => {
+  let url;
+  try { url = new URL(decodeEntities(raw), `${SITE}${route}`); } catch { return [`unparsable ${raw}`]; }
+  return url.origin === SITE ? [url.pathname] : [];
 });
-// A path without a file extension or trailing slash costs a 307 hop on Workers Static Assets before the page.
-/** @param {string} html */
-const linkFaults = (html) => internalTargets(html).flatMap((path) => {
+/** Every same-site href/src target of a page. @param {string} html @param {string} route */
+const internalTargets = (html, route) => sameSitePaths(html, route, /\b(?:href|src)="([^"]+)"/g);
+// Workers Static Assets answers a path without a trailing slash, and any *.html URL, with a redirect to the canonical
+// directory path (https://developers.cloudflare.com/workers/static-assets/routing/advanced/html-handling/).
+/** @param {string} html @param {string} route */
+const linkFaults = (html, route) => internalTargets(html, route).flatMap((path) => {
+  if (path.startsWith('unparsable ')) return [path];
+  if (path === route) return []; // a fragment or self link (the skip link) navigates nowhere
   const file = join(root, decodeURIComponent(path));
   if (path.endsWith('/')) return existsSync(join(file, 'index.html')) ? [] : [`broken link ${path}`];
+  if (path.endsWith('.html')) return [`redirecting link ${path} (link the directory path)`];
   if (!/\.[a-z0-9]+$/i.test(path)) return [`redirecting link ${path} (add the trailing slash)`];
   return existsSync(file) ? [] : [`broken link ${path}`];
 });
-/** Indexable routes that no other page links to. @param {[string, string][]} pages */
+/** Body anchors only: <head> alternates and canonicals are not navigation. @param {string} html @param {string} route */
+const navigationTargets = (html, route) => sameSitePaths(html.slice(html.indexOf('</head>')), route, /<a\b[^>]*?\bhref="([^"]+)"/g);
+/** Indexable routes a visitor cannot reach by following links from either home page. @param {[string, string][]} pages */
 const orphans = (pages) => {
-  const linked = new Set(pages.flatMap(([route, html]) => internalTargets(html).filter((path) => path !== route)));
-  return pages.map(([route]) => route).filter((route) => route !== '/' && !linked.has(route));
+  const byRoute = new Map(pages);
+  const reached = new Set(['/', '/pt-br/']);
+  for (const queue = [...reached]; queue.length;) {
+    const route = queue.shift() ?? '';
+    for (const path of navigationTargets(byRoute.get(route) ?? '', route)) {
+      if (byRoute.has(path) && !reached.has(path)) { reached.add(path); queue.push(path); }
+    }
+  }
+  return pages.map(([route]) => route).filter((route) => !reached.has(route));
 };
 const DESCRIPTION_MIN = 100; // mirrors DESCRIPTION_MIN in src/data/seo.ts, which pads short project descriptions to reach it
 /** @param {string} html */
@@ -513,8 +528,8 @@ const descriptionFaults = (html) => {
   const description = decodeEntities(metaContent(html, 'description') ?? '');
   return [...description].length >= DESCRIPTION_MIN ? [] : [`description of ${[...description].length} characters: "${description}"`];
 };
-/** @param {(html: string) => string[]} finder @param {[string, string][]} pages */
-const faultsOn = (finder, pages) => pages.flatMap(([route, html]) => finder(html).map((fault) => `${route}: ${fault}`));
+/** @param {(html: string, route: string) => string[]} finder @param {[string, string][]} pages */
+const faultsOn = (finder, pages) => pages.flatMap(([route, html]) => finder(html, route).map((fault) => `${route}: ${fault}`));
 
 await searchCheck('every page has exactly one <h1>', () => {
   assert.deepEqual(faultsOn(headingOneFaults, [...builtPages]), []);
@@ -529,13 +544,16 @@ await searchCheck('every <img> has alt text, width and height, and a WebP/AVIF/S
 
 await searchCheck('every internal link and asset resolves to a built file without a redirect hop', () => {
   assert.deepEqual(faultsOn(linkFaults, [...builtPages]), []);
-  assert.ok(internalTargets(sampleProjectHtml).length > 10, 'the hygiene sample has almost no internal links; the link check would pass vacuously');
-  assert.deepEqual(linkFaults('<a href="/work">x</a><a href="https://mvneves.dev/missing/">y</a><img src="/images/none.webp">'), ['redirecting link /work (add the trailing slash)', 'broken link /missing/', 'broken link /images/none.webp']);
+  assert.ok(internalTargets(sampleProjectHtml, '/work/hay/').length > 10, 'the hygiene sample has almost no internal links; the link check would pass vacuously');
+  assert.deepEqual(linkFaults('<a href="/work">x</a><a href="https://mvneves.dev/missing/">y</a><img src="/images/none.webp"><a href="/work/index.html">z</a><a href="./gone/">r</a><img src="cover.webp"><a href="https://example.com/x">e</a><a href="#top">t</a>', '/work/hay/'), ['redirecting link /work (add the trailing slash)', 'broken link /missing/', 'broken link /images/none.webp', 'redirecting link /work/index.html (link the directory path)', 'broken link /work/hay/gone/', 'broken link /work/hay/cover.webp']);
 });
 
 await searchCheck('every indexable page except home is linked from another page (no orphans)', () => {
   assert.deepEqual(orphans(indexable), []);
   assert.deepEqual(orphans([...indexable, ['/work/planted-orphan/', sampleProjectHtml]]), ['/work/planted-orphan/'], 'planted orphan not caught');
+  // Two pages that point only at each other (head alternates, then body links) are still unreachable from home.
+  const island = (/** @type {string} */ other) => `<head><link rel="alternate" hreflang="pt-BR" href="${SITE}${other}"></head><body><a href="${other}">x</a></body>`;
+  assert.deepEqual(orphans([...indexable, ['/work/island-a/', island('/work/island-b/')], ['/work/island-b/', island('/work/island-a/')]]), ['/work/island-a/', '/work/island-b/'], 'planted island of pages linking only each other not caught');
 });
 
 await searchCheck(`every indexable page has a meta description of at least ${DESCRIPTION_MIN} characters`, () => {

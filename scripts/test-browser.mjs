@@ -528,10 +528,14 @@ await check('no layout shift on load, on scroll past the header threshold, or on
 // Positive control for the check above: a planted shift must register, or a silent observer would pass it.
 await check('layout-shift probe registers a planted shift (positive control)', async (page) => {
   await page.goto(`${base}/work/`);
+  await page.evaluate(() => document.fonts.ready);
   await settle(page);
+  // Measured from a baseline: the load's own sub-pixel font-swap shift must not satisfy the control.
+  const baseline = await layoutShift(page);
   await page.evaluate(() => { document.querySelector('main')?.prepend(Object.assign(document.createElement('div'), { textContent: 'planted', className: 'eyebrow' })); });
   await settle(page);
-  assert.ok((await layoutShift(page)) > 0, 'a planted 1-line insertion above the content was not reported');
+  const planted = (await layoutShift(page)) - baseline;
+  assert.ok(planted > SHIFT_BUDGET, `a planted 1-line insertion above the content scored ${planted}, not above the ${SHIFT_BUDGET} budget`);
 }, { viewport: { width: 1280, height: 800 } });
 
 await browser.close();
