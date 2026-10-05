@@ -8,6 +8,12 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.12.1] - 2026-10-05
 
+**Deployed 2026-10-05**: staging Worker `745b76cf-452f-43d2-b2de-d0c04e3aa886` (tag `v1.12.1-beta1`), production Worker
+`3bc55462-8f5b-4ab4-b95c-e0525bc31d71` (tag `v1.12.1`), both @`448200bc`. Smoke: 24/24 on real workerd and www at the
+first run; staging and apex each timed out once on the keepalive `POST /lang` response in the first run after the
+deploy and passed 24/24 on the rerun. Live, the owner's Chrome header gets 302 to `/pt-br/` on apex and www, an
+English-only list gets 200, and a saved `mn-lang=en` choice still wins.
+
 ### Fixed
 
 - **`/` opens in Portuguese for a browser that accepts Portuguese anywhere in its list.** The 1.10.0 rule read only the

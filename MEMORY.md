@@ -2,7 +2,14 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-05, 1.12.0 LIVE: prod `540dff98`, tag `v1.12.0` @`21a44328`; staging `4a070148`)
+## Current state (2026-10-05, 1.12.1 LIVE: prod `3bc55462`, tag `v1.12.1` @`448200bc`; staging `745b76cf`)
+
+- 1.12.1: `/` opens in Portuguese for a browser that accepts Portuguese anywhere in its list (see Key decisions).
+- Lesson: the first smoke run right after a deploy can time out on "choosing Portuguese sticks": the keepalive
+  `POST /lang` races the navigation and a cold Worker loses it, so Playwright never sees the response. Rerun once
+  before judging; `POST /lang` answered 204 with the cookie when called directly.
+
+## Earlier state (2026-10-05, 1.12.0: prod `540dff98`, tag `v1.12.0` @`21a44328`; staging `4a070148`)
 
 - 1.12.0: Busca Remédios Brasil added (49 projects; private repo, so no source link). A `seo-audit` pass of the live
   site found nothing high-impact; shipped three related projects per project page, 39 hand-written cover alts
