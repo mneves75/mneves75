@@ -14,6 +14,11 @@ All notable changes to this repository are documented here. The format follows
   on the day it was added here, and `buscaremedios.app` now answers 301 to it. The project page linked the old
   address and said "Live at buscaremedios.app"; both now name the new one. A recapture from the new address produced
   the same cover byte for byte, so the image stays.
+- **One sentence of that page was wrong.** It said the three chains that block direct access get "one reading" of
+  their search page. The product's README documents a second, AI-assisted reading when the page shows prices in an
+  unknown format (the price still comes from the page text). An independent verifier (another model, live pages plus
+  the product's README, `package.json` and `wrangler.jsonc`) found it; it confirmed every other statement of the page
+  and passed the other seven criteria, including the root language on both hosts with the owner's Chrome header.
 
 ## [1.12.1] - 2026-10-05
 
