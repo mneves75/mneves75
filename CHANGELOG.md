@@ -6,6 +6,15 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-10-05
+
+### Fixed
+
+- **Busca Remédios Brasil links its new address.** The product moved to `https://buscaremediosbrasil.com/` (v0.14.0)
+  on the day it was added here, and `buscaremedios.app` now answers 301 to it. The project page linked the old
+  address and said "Live at buscaremedios.app"; both now name the new one. A recapture from the new address produced
+  the same cover byte for byte, so the image stays.
+
 ## [1.12.1] - 2026-10-05
 
 **Deployed 2026-10-05**: staging Worker `745b76cf-452f-43d2-b2de-d0c04e3aa886` (tag `v1.12.1-beta1`), production Worker
