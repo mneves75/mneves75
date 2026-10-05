@@ -57,6 +57,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.12.0 (tag `v1.12.0-beta1` @`21a44328`, 2026-10-05): Worker version `4a070148-dc5f-4222-99a7-d82c4b81ada4`, only the workers.dev trigger; all 24 smoke checks passed; `/pt-br/work/busca-remedios/` serves the new project with three related rows.
 - 1.11.2 (tag `v1.11.2-beta1` @`5cdbb652`, 2026-10-03): Worker version `9793e8d7-932a-476b-8ad9-cd9d4d9d5bc7`, only the workers.dev trigger; all 24 smoke checks passed; project-page LCP 1.25–1.42 s over ten runs.
 - 1.11.1 (tag `v1.11.1-beta1` @`763463af`, 2026-10-03): Worker version `647a1a3e-de13-4b5a-b891-b4d31daca5b8`, only the workers.dev trigger; all 23 smoke checks passed; `/pt-br/work/whatsimovel/` shows "cliques pseudonimizados".
 - 1.11.0 (tag `v1.11.0-beta2` @`2bd99e1e`, 2026-10-03): Worker version `83ca69e8-a169-4a0b-8ae2-210abca110a2`, only the workers.dev trigger; all 23 smoke checks passed. `v1.11.0-beta1` (`e9e4e20e` @`2974a4c6`) passed the same 23 before review fixes changed only the tests. Simulated-mobile LCP 1.14–1.44 s.
@@ -86,6 +87,7 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest production evidence
 
+- 1.12.0 (tag `v1.12.0` @`21a44328`, 2026-10-05): Worker version `540dff98-7eba-43b6-844e-9e3cc4fadea6`, only `mvneves.dev` and `www.mvneves.dev`; all 24 smoke checks passed on both; the live sitemap lists 108 URLs and `/work/busca-remedios/` serves its cover, share copy and related projects. Rollback: `wrangler rollback 8f1cdb5a-3a7e-49da-8ede-758436be9b6c --env="" --config wrangler.jsonc`.
 - 1.11.2 (tag `v1.11.2` @`5cdbb652`, 2026-10-03): Worker version `8f1cdb5a-3a7e-49da-8ede-758436be9b6c`, only `mvneves.dev` and `www.mvneves.dev`; all 24 smoke checks passed on both; live HTML serves the cover `srcset` (one apex request in the first minute still got the previous edge copy). Rollback: `wrangler rollback 6e472c29-bece-448a-ad3a-197717c989be --env="" --config wrangler.jsonc`. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37161415199).
 - 1.11.1 (tag `v1.11.1` @`763463af`, 2026-10-03): Worker version `6e472c29-bece-448a-ad3a-197717c989be`, only `mvneves.dev` and `www.mvneves.dev`; all 23 smoke checks passed on both, both serve the corrected WhatsImovel copy. Rollback: `wrangler rollback 90cd72c6-8c6c-4b99-831a-5428275b3c71 --env="" --config wrangler.jsonc`. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37159948582).
 - 1.11.0 (tag `v1.11.0` @`2bd99e1e`, 2026-10-03): Worker version `90cd72c6-8c6c-4b99-831a-5428275b3c71`, only `mvneves.dev` and `www.mvneves.dev`; all 23 smoke checks passed on both; deployments list shows the tag/message at 100%; live HTML on both hosts references `archivo-400-900-latin.woff2` (no stale edge copy). Rollback: `wrangler rollback 3f8d7819-5549-4d8a-b09d-79cd7bc25648 --env="" --config wrangler.jsonc`. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37158857706).

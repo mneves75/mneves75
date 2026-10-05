@@ -2,7 +2,18 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-03, 1.11.2 LIVE: prod `8f1cdb5a`, tag `v1.11.2` @`5cdbb652`; staging `9793e8d7`)
+## Current state (2026-10-05, 1.12.0 LIVE: prod `540dff98`, tag `v1.12.0` @`21a44328`; staging `4a070148`)
+
+- 1.12.0: Busca Remédios Brasil added (49 projects; private repo, so no source link). A `seo-audit` pass of the live
+  site found nothing high-impact; shipped three related projects per project page, 39 hand-written cover alts
+  (`portfolioProject` now fails the build on a cover without one), sentence-bounded descriptions, descriptive section
+  titles and `twitter:site`. Left for the owner: the four near-duplicate Cruzadas pages, Skills' 371-character summary.
+- Lesson: `ProjectRow` collapses by container width; any list that reuses it must set `container-type: inline-size`
+  (the browser gate caught a 360px overflow on project pages when the related rows had no container).
+- Lesson: a description cap that keeps whole sentences cannot shorten a first sentence that is already too long; 39
+  descriptions stay over 165 characters until the copy changes.
+
+## Earlier state (2026-10-03, 1.11.2 LIVE: prod `8f1cdb5a`, tag `v1.11.2` @`5cdbb652`; staging `9793e8d7`)
 
 - 1.11.2: the fresh reverify of 1.11.1 passed 19/20 and failed load time on `/work/dnschat/` (median 2.04 s): the
   cover is the LCP element and phones fetched the 1600px original. Covers now ship 400w/800w copies via srcset
@@ -129,7 +140,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
    `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
 4. Web Analytics automatic setup excludes EU visitors by default (dashboard toggle); a product decision, not code.
-5. Revoke Cloudflare API tokens pasted into agent chats: marcusneves2005 account (2026-09-23, unused) and the
+5. Revoke Cloudflare API tokens pasted into agent chats (again on 2026-10-05: one marcusneves2005 token, unused, and
+   the conhecendo.contato "FULL" token, used for two cache rules and a purge): marcusneves2005 account (2026-09-23, unused) and the
    conhecendo.contato account "FULL" token (2026-09-23, used for purges + one cache rule; it lacks RUM write), plus
    the two from 2026-09-15 listed in conhecendoia `plans/README.md`. Tokens go through 1Password, never chat.
 

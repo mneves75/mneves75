@@ -8,6 +8,11 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.12.0] - 2026-10-05
 
+**Deployed 2026-10-05**: staging Worker `4a070148-dc5f-4222-99a7-d82c4b81ada4` (tag `v1.12.0-beta1`), production Worker
+`540dff98-7eba-43b6-844e-9e3cc4fadea6` (tag `v1.12.0`), both @`21a44328`; all 24 smoke checks passed on real workerd,
+staging, apex and www, and the live site serves `/work/busca-remedios/` with its cover and three related projects.
+Autoreview P3 of the release commit was scoped-clean. [CI passed](https://github.com/mneves75/mneves75/actions/runs/37338699924).
+
 ### Added
 
 - **Busca Remédios Brasil** (`/work/busca-remedios/`, 49 projects): the medicine price comparison live at
