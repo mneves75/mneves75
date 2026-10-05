@@ -1,11 +1,12 @@
 ---
 import ProjectDiagram from './ProjectDiagram.astro';
-import { categoryLabels, href, stageLabels, stageOf, type Locale, type Project } from '../data/site';
+import ProjectRow from './ProjectRow.astro';
+import { categoryLabels, href, relatedProjects, stageLabels, stageOf, type Locale, type Project } from '../data/site';
 import { coverSrcset } from '../data/seo';
 
 interface Props { locale: Locale; project: Project; }
 const { locale, project } = Astro.props;
-const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', productPage: 'Product page', appStore: 'App Store', open: 'Open another project', more: 'More work' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', productPage: 'Página do produto', appStore: 'App Store', open: 'Abrir outro projeto', more: 'Mais trabalho' };
+const copy = locale === 'en' ? { back: 'Back to work', problem: 'The problem', constraint: 'The constraint', approach: 'The approach', outcome: 'The outcome', pending: 'Case study status', route: 'System route', source: 'Read source', live: 'Open live project', productPage: 'Product page', appStore: 'App Store', open: 'See all work', more: 'More work' } : { back: 'Voltar ao trabalho', problem: 'O problema', constraint: 'A restrição', approach: 'A abordagem', outcome: 'O resultado', pending: 'Status do case study', route: 'Rota do sistema', source: 'Ler o código', live: 'Abrir projeto ao vivo', productPage: 'Página do produto', appStore: 'App Store', open: 'Ver todo o trabalho', more: 'Mais trabalho' };
 const diagramLabels: Record<string, string> = locale === 'pt' ? {
   prompt: 'prompt', 'DNS TXT': 'DNS TXT', resolver: 'resolver', 'LLM reply': 'resposta do LLM',
   iPhone: 'iPhone', HealthKit: 'HealthKit', 'local network': 'rede local', Mac: 'Mac',
@@ -160,6 +161,10 @@ const diagramLabels: Record<string, string> = locale === 'pt' ? {
   'thumb keyboard': 'teclado para o polegar',
   'on-device hint': 'dica no aparelho',
   'solved grid': 'grade resolvida',
+  'medicine name': 'nome do remédio',
+  'chain catalogues': 'catálogos das redes',
+  'sourced price': 'preço com fonte',
+  'lowest price': 'menor preço',
 } : {};
 const blocks = project.caseStudyPending ? [] : [
   { label: copy.problem, text: project.problem[locale] },
@@ -213,10 +218,15 @@ const blocks = project.caseStudyPending ? [] : [
 
 <section class="section">
   <div class="section-heading"><div><p class="eyebrow">MN://WORK</p><h2>{copy.more}</h2></div></div>
+  <div class="related-work">
+    {relatedProjects(project).map((other, index) => <ProjectRow project={other} locale={locale} index={index + 1} />)}
+  </div>
   <div class="page-actions"><a class="button" href={href(locale, '/work/')}>{copy.open}</a></div>
 </section>
 
 <style>
+  /* ProjectRow collapses by container width, so the list has to be a container (as .project-list is in the index). */
+  .related-work { container-type: inline-size; border-top: 1px solid var(--line); margin-bottom: 2rem; }
   .detail-hero { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
   /* Inline padding widens the hit area to the 24px target size (WCAG 2.5.8) without moving the line. */
   .crumbs a { padding-block: .45rem; text-decoration: underline; text-decoration-color: var(--line-strong); text-decoration-thickness: 1px; text-underline-offset: .3em; transition: color var(--t-fast), text-decoration-color var(--t-fast); }

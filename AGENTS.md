@@ -38,8 +38,10 @@ Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore
   in the public lookup; missing material stays an explicit TODO, never invented copy.
 - **Page hygiene is gated** (route test, each check proved by a planted violation): one `<h1>` per page; every `<img>`
   WebP/AVIF/SVG with alt text and width/height; internal links resolve with no redirect hop (keep the trailing slash);
-  no orphan pages; descriptions of at least 100 characters, made only of visible text on project pages
-  (`projectDescription` in `src/data/seo.ts`). Images below the first screen are `loading="lazy"` and none on it are
+  no orphan pages; descriptions of at least 100 characters, made only of whole visible sentences on project pages and
+  stopping by 165 when a sentence end allows (`projectDescription` in `src/data/seo.ts`); three related projects on
+  every project page (`relatedProjects` in `src/data/site.ts`); section titles of at least 40 characters; cover alt
+  text written after looking at the image (`portfolioProject` fails the build without one). Images below the first screen are `loading="lazy"` and none on it are
   (browser gate, 412×823). Archivo is trimmed to wght 400–900 at normal width (preload budget 40 KiB); a new weight or
   width needs a re-cut, and a changed font file needs a new name, because `/fonts/*` is `immutable`. Google Search
   evidence and owner steps: `docs/google-search.md`.

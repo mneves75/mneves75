@@ -42,3 +42,25 @@ The verification record exists, so the Domain property should already be there.
 
 A `www` → apex 301 stays an optional dashboard change: `www` already serves one 200 with the apex canonical, which is
 not a redirect chain. If you add the 301, confirm afterwards that `http://www.mvneves.dev/` reaches the apex in one hop.
+
+## 2026-10-05 — `seo-audit` pass (1.12.0)
+
+A read-only audit of the live 1.11.2 site (106 URLs, every one 200) against the `seo-audit` skill list found nothing
+high-impact. International SEO (hreflang self-reference, reciprocity, `x-default`, canonicals), structured data and
+Open Graph were clean. Shipped in 1.12.0, each with a gate:
+
+| Finding (measured live) | Action |
+| --- | --- |
+| 30 of 48 project pages had one topical inbound link; "More work" was a single button | three related projects per page, as index rows |
+| 132 of 172 `<img>` used a generated alt ("<Title>: product screen.") | 39 covers described by hand; a cover without alt fails the build |
+| section titles of 19–30 characters ("Work — Marcus Neves") | descriptive titles, 42–58 characters |
+| descriptions joined summary and the whole problem statement (up to 277 characters) | leading sentences only; never cut mid-sentence |
+| no `twitter:site` / `twitter:creator` | added (`@mneves75`) |
+
+Not changed, on purpose: the four Cruzadas pages are near-duplicates (0.83–0.91 body similarity) and merging them is a
+content decision; Skills' summary is one 371-character sentence; a missing trailing slash answers 307 (Workers Static
+Assets default); `content-language` is a non-conforming pragma and `<html lang>` carries the same signal for Bing;
+`/favicon.ico` and `/apple-touch-icon.png` return 404 while the page declares an SVG icon.
+
+Owner steps added: import the site into Bing Webmaster Tools from Search Console and submit the sitemap (only a Google
+verification record exists).

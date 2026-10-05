@@ -6,6 +6,44 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-10-05
+
+### Added
+
+- **Busca Remédios Brasil** (`/work/busca-remedios/`, 49 projects): the medicine price comparison live at
+  buscaremedios.app (v0.13.0), with a cover captured from the live page. Every claim comes from the live page, its
+  README and PRODUCT.md: 19 chains, sixteen read from the chain's own public catalogue and three from a reading of its
+  search page, answers cached in Workers KV with source and age, no account and no cookies, a public price history
+  that keeps medicine names and prices and nothing about who searched. The repository is private with no licence, so
+  the page links no source.
+- **Related projects on every project page.** "More work" was one button to the index, so 30 of 48 project pages had
+  a single topical inbound link. Each page now lists three projects (same category first, then shared stack; archived
+  work only from an archived page) as the index's own rows.
+
+### Changed
+
+- **Cover alt text is written, not generated.** 33 covers carried "<Title>: product screen." and six curated ones
+  "project visual" or "app interface" (132 of 172 `<img>` on the live site). All 39 now say what the image shows;
+  `portfolioProject` fails the build on a cover without alt text.
+- **Descriptions end at a sentence.** A project description is the summary's leading sentences, or the summary plus the
+  problem's, as many as fit 165 characters once 100 are reached; a sentence is never cut. `/work/devtrim/` went from
+  277 to 220 characters. 39 descriptions stay over 165 because their first sentences alone exceed it (Skills is one
+  371-character sentence); shortening those is copy work.
+- **Section titles describe the page**: "Work: apps, tools and data projects — Marcus Neves" instead of
+  "Work — Marcus Neves", and the same for About, Recommendations and Contact in both languages (19–30 characters before).
+- Link previews carry `twitter:site` and `twitter:creator` (`@mneves75`, the account every page links).
+- Gates, each proved on a planted violation: three related projects per project page in its own language, no
+  generated alt text, no description past 165 characters when an earlier sentence end would do, section titles of at
+  least 40 characters, the X tags.
+
+### Audit
+
+- A read-only audit of the live site against the `seo-audit` list (106 URLs) found no high-impact problem: hreflang,
+  canonicals, structured data and social tags were clean. Left as they are, with the reason: the four Cruzadas pages
+  are near-duplicates (merging them is a content decision), the 307 on a missing trailing slash is the platform's
+  default, `content-language` is a non-conforming pragma that `<html lang>` already covers, and share images stay
+  1200×750. Owner steps (Search Console, Bing Webmaster Tools) are in `docs/google-search.md`.
+
 ## [1.11.2] - 2026-10-03
 
 **Deployed 2026-10-03**: staging Worker `9793e8d7-932a-476b-8ad9-cd9d4d9d5bc7` (tag `v1.11.2-beta1`), production Worker

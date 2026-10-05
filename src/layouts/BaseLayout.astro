@@ -50,6 +50,8 @@ const pageKind = noindex ? 'other' : currentPath === '/' ? 'home' : currentPath 
 const ogImage = `${site.domain}${image?.path ?? (locale === 'pt' ? '/og-image-pt.png' : '/og-image.png')}`;
 const ogImageAlt = image?.alt ?? (locale === 'en' ? 'Marcus Neves — software, data and AI' : 'Marcus Neves — software, dados e IA');
 const ogImageSize = image ?? { width: 1200, height: 630 };
+// The X account link previews credit: the one the footer and palette link to.
+const xHandle = `@${site.x.split('/').at(-1)}`;
 const ui = locale === 'en'
   ? { pages: 'Pages', projects: 'Projects', actions: 'Actions', home: 'Home', github: 'Open GitHub', linkedin: 'Open LinkedIn', x: 'Open X', language: 'Switch language', theme: 'Switch theme', motion: 'Pause animations', terminal: 'Open terminal', palette: 'Open command palette', search: 'Search pages, projects, actions…', noResults: 'No match', navigate: 'navigate', open: 'open', close: 'close' }
   : { pages: 'Páginas', projects: 'Projetos', actions: 'Ações', home: 'Início', github: 'Abrir GitHub', linkedin: 'Abrir LinkedIn', x: 'Abrir X', language: 'Mudar idioma', theme: 'Alternar tema', motion: 'Pausar animações', terminal: 'Abrir terminal', palette: 'Abrir paleta de comandos', search: 'Buscar páginas, projetos, ações…', noResults: 'Nada encontrado', navigate: 'navegar', open: 'abrir', close: 'fechar' };
@@ -112,6 +114,8 @@ const jsonLd = {
     <meta property="og:image:height" content={String(ogImageSize.height)} />
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={xHandle} />
+    <meta name="twitter:creator" content={xHandle} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />

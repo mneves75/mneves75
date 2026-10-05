@@ -10,7 +10,7 @@ const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const ogCoverSources = existsSync(join(projectRoot, 'src/data/og-covers.json')) ? JSON.parse(readFileSync(join(projectRoot, 'src/data/og-covers.json'), 'utf8')) : {};
 // Project routes come from the sitemap, so a new project can never be left out of these checks (STOA once was).
 // The count below stays hand-written on purpose: changing the inventory is a deliberate edit.
-const PROJECTS = 48;
+const PROJECTS = 49;
 const sitemapXml = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const projectRoutes = [...sitemapXml.matchAll(/<loc>https:\/\/mvneves\.dev(\/(?:pt-br\/)?work\/[^<]+\/)<\/loc>/g)].map((match) => match[1]);
 assert.equal(projectRoutes.length, 2 * PROJECTS, 'sitemap project routes do not match the inventory count');
@@ -484,6 +484,8 @@ const imageFaults = (html) => [...html.matchAll(/<img\b[^>]*>/g)].flatMap(([tag]
   const src = tag.match(/\bsrc="([^"]*)"/)?.[1] ?? '';
   return [
     ...(/\balt="[^"]+"/.test(tag) || /\baria-hidden="true"/.test(tag) ? [] : [`no alt text: ${src}`]),
+    // The alt a cover once got from a template: it names the project and describes nothing.
+    ...(/\balt="[^"]*: (?:product screen|tela do produto)\."/.test(tag) ? [`generated alt text: ${src}`] : []),
     ...(/\bwidth="\d+"/.test(tag) && /\bheight="\d+"/.test(tag) ? [] : [`no width/height (layout shift): ${src}`]),
     ...(/\.(?:webp|avif|svg)(?:[?#]|$)/.test(src) ? [] : [`not WebP/AVIF/SVG: ${src}`]),
   ];
@@ -527,11 +529,31 @@ const orphans = (pages) => {
   return pages.map(([route]) => route).filter((route) => !reached.has(route));
 };
 const DESCRIPTION_MIN = 100; // mirrors DESCRIPTION_MIN in src/data/seo.ts, which pads short project descriptions to reach it
+const DESCRIPTION_MAX = 165; // mirrors DESCRIPTION_MAX in src/data/seo.ts: a search snippet shows about 160 characters
 /** @param {string} html */
 const descriptionFaults = (html) => {
   const description = decodeEntities(metaContent(html, 'description') ?? '');
   return [...description].length >= DESCRIPTION_MIN ? [] : [`description of ${[...description].length} characters: "${description}"`];
 };
+// Mirrors SENTENCE_BREAK in src/data/seo.ts: a sentence ends at . ! ? followed by a space and a capital, digit or quote.
+const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[\p{Lu}\d“"'(])/u;
+/** Leading whole sentences of a text, shortest first. @param {string} text */
+const sentencePrefixes = (text) => text.split(SENTENCE_BREAK).map((_, index, parts) => parts.slice(0, index + 1).join(' '));
+/** A description over the limit that could stop at an earlier sentence and still reach the minimum. @param {string} html */
+const longDescriptionFaults = (html) => {
+  const description = decodeEntities(metaContent(html, 'description') ?? '');
+  const size = [...description].length;
+  if (size <= DESCRIPTION_MAX) return [];
+  const shorter = sentencePrefixes(description).find((prefix) => [...prefix].length >= DESCRIPTION_MIN && [...prefix].length < size);
+  return shorter ? [`description of ${size} characters could stop after ${[...shorter].length}: "${description}"`] : [];
+};
+/** Other project pages of the page's own language linked from its visible <main>. @param {string} html @param {string} route */
+const relatedProjectLinks = (html, route) => {
+  const main = visibleMarkup(html).match(/<main\b[\s\S]*?<\/main>/)?.[0] ?? '';
+  const index = route.startsWith('/pt-br/') ? '/pt-br/work/' : '/work/';
+  return [...new Set(sameSitePaths(main, route, /<a\b[^>]*?\bhref="([^"]+)"/g))].filter((path) => path !== route && path !== index && path.startsWith(index));
+};
+const RELATED_PROJECTS = 3;
 /** @param {(html: string, route: string) => string[]} finder @param {[string, string][]} pages */
 const faultsOn = (finder, pages) => pages.flatMap(([route, html]) => finder(html, route).map((fault) => `${route}: ${fault}`));
 
@@ -579,6 +601,7 @@ await searchCheck('every <img> has alt text, width and height, and a WebP/AVIF/S
   assert.deepEqual(faultsOn(imageFaults, [...builtPages]), []);
   assert.ok((sampleProjectHtml.match(/<img\b/g) ?? []).length > 0, 'the hygiene sample has no <img>; the image check would pass vacuously');
   assert.equal(imageFaults('<img src="/images/x.png" alt="">').length, 3, 'planted image without alt, size or modern format not caught');
+  assert.deepEqual(imageFaults('<img src="/images/x.webp" alt="hay: product screen." width="1" height="1">'), ['generated alt text: /images/x.webp'], 'planted generated alt not caught');
 });
 
 await searchCheck('every internal link and asset resolves to a built file without a redirect hop', () => {
@@ -606,7 +629,42 @@ await searchCheck(`every indexable page has a meta description of at least ${DES
     const summary = html.match(/<p class="detail-summary"[^>]*>([^<]+)<\/p>/)?.[1];
     assert.ok(summary, `${route}: no visible summary (.detail-summary) to build the description from`);
     const lede = decodeEntities(summary);
-    assert.ok(description === lede || (description.startsWith(`${lede} `) && text.includes(description.slice(lede.length + 1))), `${route}: description is not the visible summary plus visible text: "${description}"`);
+    // The summary's leading sentences, or the whole summary followed by visible text (the problem statement's).
+    assert.ok(sentencePrefixes(lede).includes(description) || (description.startsWith(`${lede} `) && text.includes(description.slice(lede.length + 1))), `${route}: description is not the visible summary plus visible text: "${description}"`);
+  }
+});
+
+await searchCheck(`no description runs past ${DESCRIPTION_MAX} characters when an earlier sentence end would do`, () => {
+  assert.deepEqual(faultsOn(longDescriptionFaults, indexable), []);
+  const sentence = (/** @type {number} */ size) => `${'A'.repeat(size - 1)}.`;
+  assert.equal(longDescriptionFaults(`<meta name="description" content="${sentence(120)} ${sentence(120)}">`).length, 1, 'planted description with a spare sentence not caught');
+  assert.equal(longDescriptionFaults(`<meta name="description" content="${sentence(200)}">`).length, 0, 'one long sentence cannot be cut and must pass');
+  assert.equal(longDescriptionFaults(`<meta name="description" content="${sentence(90)} ${sentence(90)}">`).length, 0, 'two sentences both needed to reach the minimum must pass');
+});
+
+await searchCheck(`every project page links to ${RELATED_PROJECTS} other projects in its own language`, () => {
+  for (const route of projectRoutes) {
+    const links = relatedProjectLinks(builtPages.get(route) ?? '', route);
+    assert.equal(links.length, RELATED_PROJECTS, `${route}: ${links.length} related project links (${links.join(', ')})`);
+    for (const path of links) assert.ok(projectRoutes.includes(path), `${route}: related link ${path} is not a project page`);
+  }
+  assert.deepEqual(relatedProjectLinks('<main><a href="/work/">all</a><a href="/work/hay/">self</a><a href="/pt-br/work/stoa/">other language</a><a aria-hidden="true" href="/work/stoa/">hidden</a></main>', '/work/hay/'), [], 'planted page without related projects not flagged');
+  assert.deepEqual(relatedProjectLinks('<main><a href="/work/stoa/">STOA</a></main>', '/work/hay/'), ['/work/stoa/'], 'planted related project link not found');
+});
+
+// A section title that is only the nav label ("Work — Marcus Neves") tells a search result nothing about the page.
+const SECTION_TITLE_MIN = 40;
+await searchCheck(`section pages say what they hold in the title (at least ${SECTION_TITLE_MIN} characters)`, () => {
+  for (const route of ['/work/', '/about/', '/recommendations/', '/contact/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/']) {
+    const title = decodeEntities(builtPages.get(route)?.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
+    assert.ok([...title].length >= SECTION_TITLE_MIN, `${route}: title "${title}" has ${[...title].length} characters`);
+  }
+});
+
+await searchCheck('link previews name the X account the page links to', () => {
+  for (const [route, html] of indexable) {
+    for (const key of ['twitter:site', 'twitter:creator']) assert.equal(metaContent(html, key), '@mneves75', `${route}: ${key}`);
+    assert.ok(html.includes('href="https://x.com/mneves75"'), `${route}: the X profile named in twitter:site is not linked on the page`);
   }
 });
 

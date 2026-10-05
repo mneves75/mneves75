@@ -14,14 +14,23 @@ export function projectTitle(project: Project, locale: Locale) {
 
 /** A description shorter than this is a weak search snippet; the route test holds indexable pages to it. */
 const DESCRIPTION_MIN = 100;
+/** A search snippet shows about 160 characters; past this a description is cut mid-thought. */
+const DESCRIPTION_MAX = 165;
+/** A sentence ends at . ! ? followed by a space and a capital, digit or opening quote (so "0.2.0" does not split). */
+const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[\p{Lu}\d“"'(])/u;
 
 /**
  * The meta description: the summary, followed by the page's own problem statement when the summary alone is too
- * short to say what the project is for. Both sentences are visible on the page, so nothing new is claimed.
+ * short to say what the project is for. Only whole leading sentences are used, as many as fit DESCRIPTION_MAX while
+ * reaching DESCRIPTION_MIN; when none fits, the fewest that reach the minimum (a sentence is never cut). Every
+ * sentence is visible on the page, so nothing new is claimed.
  */
 export function projectDescription(project: Project, locale: Locale) {
   const summary = project.summary[locale];
-  return [...summary].length >= DESCRIPTION_MIN ? summary : `${summary} ${project.problem[locale]}`;
+  const text = [...summary].length >= DESCRIPTION_MIN ? summary : `${summary} ${project.problem[locale]}`;
+  const sentences = text.split(SENTENCE_BREAK);
+  const prefixes = sentences.map((_, index) => sentences.slice(0, index + 1).join(' ')).filter((prefix) => [...prefix].length >= DESCRIPTION_MIN);
+  return prefixes.findLast((prefix) => [...prefix].length <= DESCRIPTION_MAX) ?? prefixes[0] ?? text;
 }
 
 /**
