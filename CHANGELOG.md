@@ -37,7 +37,7 @@ English-only list gets 200, and a saved `mn-lang=en` choice still wins.
 ### Fixed
 
 - **`/` opens in Portuguese for a browser that accepts Portuguese anywhere in its list.** The 1.10.0 rule read only the
-  top language of `Accept-Language`. The owner's Mac is pt-BR, but his Chrome profile sends
+  top language of `Accept-Language`. The owner's Mac is pt-BR, but their Chrome profile sends
   `en-US,en;q=0.9,pt;q=0.8,de;q=0.7,zh-CN;q=0.6`, so `/` kept opening in English. `negotiate` (`worker/language.js`) now
   answers Portuguese for any `pt` or `pt-*` range with q above 0; a browser with no Portuguese gets English, `q=0`
   still excludes, and the language control's choice still wins. The gate's case table carries that exact header

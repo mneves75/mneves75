@@ -138,8 +138,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 
 - Custom domain `mvneves.dev` is attached **declaratively** via `routes` + `custom_domain: true` in `wrangler.jsonc` (2026-08-10). Before that the apex had **no DNS record at all** — prod only existed on workers.dev. Never go back to dashboard-only attachment.
 - **Root language, corrected 2026-10-05 (1.12.1)**: Portuguese when the browser accepts Portuguese *anywhere* in its
-  list, not only first. The owner's Mac is pt-BR, but his Chrome profile sends `en-US,en,pt,de,zh-CN`, so the 1.10.0
-  "top language" rule kept serving him English. Lesson: test a language rule with the owner's real browser header
+  list, not only first. The owner's Mac is pt-BR, but their Chrome profile sends `en-US,en,pt,de,zh-CN`, so the 1.10.0
+  "top language" rule kept serving them English. Lesson: test a language rule with the owner's real browser header
   (`intl.accept_languages` in the Chrome profile), not with a tidy `pt-BR,pt;q=0.9`.
 - **Root language (owner, 2026-09-25)**: `mvneves.dev/` follows the visitor's language ("pt-br or other → us"),
   replacing the 1.0.0 rule "No browser-language auto-redirect". Only `/` redirects, only on arrival, and the
