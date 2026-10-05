@@ -2,7 +2,17 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-05, 1.12.1 LIVE: prod `3bc55462`, tag `v1.12.1` @`448200bc`; staging `745b76cf`)
+## Current state (2026-10-05, 1.12.2 LIVE: prod `74bb75ad`, tag `v1.12.2` @`3a06c32e`; staging `e9c82741`)
+
+- 1.12.2: Busca Remédios moved to `buscaremediosbrasil.com` the day it was added (another session shipped the move);
+  link and "Live at" text follow. Lesson: before a release, re-check that a product URL added that day still answers
+  200 without a redirect; a sibling session can move it under you.
+- Lesson: an independent verifier given the product's README found "one reading" contradicted by its documented
+  second, AI-assisted reading. Qualifiers in a source ("only when", "except") must survive into the summary.
+- Open: the "choosing Portuguese sticks" browser check timed out on the first smoke run after three of today's six
+  deploys and never on a rerun. Make it wait on the cookie or route the POST instead of racing the navigation.
+
+## Earlier state (2026-10-05, 1.12.1: prod `3bc55462`, tag `v1.12.1` @`448200bc`; staging `745b76cf`)
 
 - 1.12.1: `/` opens in Portuguese for a browser that accepts Portuguese anywhere in its list (see Key decisions).
 - Lesson: the first smoke run right after a deploy can time out on "choosing Portuguese sticks": the keepalive

@@ -8,6 +8,12 @@ All notable changes to this repository are documented here. The format follows
 
 ## [1.12.2] - 2026-10-05
 
+**Deployed 2026-10-05**: staging Worker `e9c82741-d547-4262-a3fa-16271e434d6c` (tag `v1.12.2-beta2`; `-beta1` was the
+build before the one-sentence correction), production Worker `74bb75ad-e12e-4b6e-80a3-8e9d5623915b` (tag `v1.12.2`),
+both @`3a06c32e`. Smoke 24/24 on staging and apex at the first run; www timed out once on the keepalive `POST /lang`
+check and passed 24/24 on the rerun. Live, the project page links `https://buscaremediosbrasil.com/` and carries the
+corrected sentence.
+
 ### Fixed
 
 - **Busca Remédios Brasil links its new address.** The product moved to `https://buscaremediosbrasil.com/` (v0.14.0)
