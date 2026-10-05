@@ -274,8 +274,9 @@ await check('terminal stops writing once closed', async (page) => {
   assert.equal(await lines(), atClose, 'matrix kept writing after close');
 });
 
-// Root language (worker/index.js): an arrival at / whose browser's top language is Portuguese, or whose explicit
-// choice is Portuguese, goes to /pt-br/; every other language stays on the English x-default ("pt-br or other → us").
+// Root language (worker/index.js): an arrival at / whose browser accepts Portuguese anywhere in its list, or whose
+// explicit choice is Portuguese, goes to /pt-br/; every other browser stays on the English x-default ("pt-br or other
+// → us"). The owner's own Chrome lists English first and Portuguese third: reading only the top language served it English.
 // Crawlers send no Accept-Language; internal navigation never bounces.
 /** @param {string} name @param {() => Promise<void>} fn */
 const httpCheck = async (name, fn) => {
@@ -339,15 +340,20 @@ const languageCases = [
   ['en;q=0.5,pt;q=0.6', {}, 'pt'],
   ['fr;q=0.5,pt-BR;q=0.9', {}, 'pt'],
   ['pt;q=1.000,en', {}, 'pt'],
-  ['es-ES,es;q=0.9,pt;q=0.8', {}, 'en'],
-  ['de,pt;q=0.1', {}, 'en'],
+  // Portuguese anywhere in the list counts, whatever comes first.
+  ['en-US,en;q=0.9,pt;q=0.8,de;q=0.7,zh-CN;q=0.6', {}, 'pt'],
+  ['es-ES,es;q=0.9,pt;q=0.8', {}, 'pt'],
+  ['de,pt;q=0.1', {}, 'pt'],
+  ['en-US,pt-BR;q=0.9', {}, 'pt'],
+  ['en,pt', {}, 'pt'],
+  ['*,pt;q=0.9', {}, 'pt'],
   ['en-US,en;q=0.9', {}, 'en'],
-  ['en-US,pt-BR;q=0.9', {}, 'en'],
-  ['en,pt', {}, 'en'],
   ['es-ES,es;q=0.9', {}, 'en'],
+  // q=0 says "not acceptable"; a tag that only starts with the letters pt is another language.
   ['pt;q=0,en;q=0.5', {}, 'en'],
+  ['en-US,en;q=0.9,pt-BR;q=0.000', {}, 'en'],
+  ['ptx,en', {}, 'en'],
   ['*', {}, 'en'],
-  ['*,pt;q=0.9', {}, 'en'],
   [null, {}, 'en'],
   [';;q=abc,,pt;q=2', {}, 'en'],
   ['pt;q=1e0,en;q=0.9', {}, 'en'],

@@ -66,7 +66,8 @@ Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore
   other hidden subtrees). Titles are unique and at most 60 characters.
   The route test's search contract asserts all of this plus sitemap = indexable canonicals.
 - **Root language** (`worker/index.js`, run only for `/` and `/lang`): `/` stays the English x-default. An arrival
-  whose browser's top language is Portuguese (any `pt-*`; q-values per RFC 9110), or whose `mn-lang` cookie says
+  whose browser accepts Portuguese anywhere in its `Accept-Language` list (any `pt` or `pt-*` with q above 0, not only
+  the first language: a Brazilian's browser often lists English first), or whose `mn-lang` cookie says
   `pt`, gets a 302 to `/pt-br/` (`no-store`); `mn-lang=en` and every other language keep English. Internal navigation
   (`Sec-Fetch-Site: same-origin`, else a same-origin Referer) never redirects, so the language control
   (`data-lang-switch`) always works. Following it writes `mn-lang` and POSTs it to `/lang` (same-origin only), which

@@ -26,7 +26,7 @@ GitHub token is required.
 
 Since 1.10.0 the Worker has one script, `worker/index.js`, and `assets.run_worker_first: ["/", "/lang"]` invokes it
 only for the root and the language-choice endpoint; every other path is served straight from the assets. It sends an
-arrival at `/` whose browser's top language is Portuguese to `/pt-br/` (302, `Cache-Control: no-store`) and otherwise
+arrival at `/` whose browser accepts Portuguese anywhere in its `Accept-Language` list to `/pt-br/` (302, `Cache-Control: no-store`) and otherwise
 returns the English page from the `ASSETS` binding, where `_headers` still apply. Both carry
 `Vary: Accept-Language, Cookie`. `POST /lang?set=en|pt`, sent by the language control, answers 204 with the `mn-lang`
 cookie (403 unless the request comes from the site itself, 400 for another value, 405 for another method).

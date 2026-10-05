@@ -9,27 +9,22 @@ const QVALUE = /^(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/;
 export const isLanguage = (value) => value === 'en' || value === 'pt';
 
 /**
- * Portuguese when the browser's top language is Portuguese (any pt-* tag), English for everything else: the owner's
- * rule, "pt-br or other → us". Top: highest q, the first listed on a tie; q=0 excludes; a range whose q is not a valid
- * qvalue is ignored; `*` names no language.
+ * Portuguese when the browser accepts Portuguese at all: any pt or pt-* range with a q above 0, wherever it sits in
+ * the list. English for everything else: the owner's rule, "pt-br or other → us". Reading only the top language
+ * served English to a Brazilian whose browser lists English first (the owner's own Chrome sends
+ * "en-US,en;q=0.9,pt;q=0.8,..."). q=0 excludes; a range whose q is not a valid qvalue is ignored; `*` names no language.
  * @param {string | null} header
  * @returns {'en' | 'pt'}
  */
 export function negotiate(header) {
-  let top = '';
-  let topQ = 0;
   for (const part of (header ?? '').split(',')) {
     const [range = '', ...params] = part.split(';').map((piece) => piece.trim().toLowerCase());
-    if (!range) continue;
+    if (range.split('-')[0] !== 'pt') continue;
     const qParam = params.find((param) => param.startsWith('q='));
-    if (qParam !== undefined && !QVALUE.test(qParam.slice(2))) continue;
-    const q = qParam === undefined ? 1 : Number(qParam.slice(2));
-    if (q > topQ) {
-      top = range;
-      topQ = q;
-    }
+    if (qParam === undefined) return 'pt';
+    if (QVALUE.test(qParam.slice(2)) && Number(qParam.slice(2)) > 0) return 'pt';
   }
-  return top.split('-')[0] === 'pt' ? 'pt' : 'en';
+  return 'en';
 }
 
 /** @param {string | null} header @param {string} name */
@@ -82,7 +77,7 @@ export function isSameOrigin(request) {
 }
 
 /**
- * An arrival at / that should see /pt-br/: the explicit choice wins; without one, the browser's top language decides.
+ * An arrival at / that should see /pt-br/: the explicit choice wins; without one, a browser that accepts Portuguese.
  * @param {Request} request
  */
 export function redirectsToPortuguese(request) {

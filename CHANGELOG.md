@@ -6,6 +6,21 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-10-05
+
+### Fixed
+
+- **`/` opens in Portuguese for a browser that accepts Portuguese anywhere in its list.** The 1.10.0 rule read only the
+  top language of `Accept-Language`. The owner's Mac is pt-BR, but his Chrome profile sends
+  `en-US,en;q=0.9,pt;q=0.8,de;q=0.7,zh-CN;q=0.6`, so `/` kept opening in English. `negotiate` (`worker/language.js`) now
+  answers Portuguese for any `pt` or `pt-*` range with q above 0; a browser with no Portuguese gets English, `q=0`
+  still excludes, and the language control's choice still wins. The gate's case table carries that exact header
+  (it failed before the fix) and six cases changed side.
+- Verification note for 1.12.0: an independent verifier (another model, live surfaces only) passed seven of eight
+  criteria. It could not support six statements of the Busca Remédios page from the product's public pages alone (the
+  stack, the Workers KV cache, "an automatic page reading can be wrong"); each is stated in the product's private
+  repository (`package.json`, `wrangler.jsonc`, README), which this site's content rule accepts as a primary source.
+
 ## [1.12.0] - 2026-10-05
 
 **Deployed 2026-10-05**: staging Worker `4a070148-dc5f-4222-99a7-d82c4b81ada4` (tag `v1.12.0-beta1`), production Worker
