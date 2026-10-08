@@ -404,7 +404,8 @@ await searchCheck('the work index describes its list: mainEntity is an ItemList 
     assert.equal(str(list, '@type'), 'ItemList', `${route}: mainEntity is ${str(list, '@type') ?? 'missing'}`);
     const prefix = route === '/work/' ? '/work/' : '/pt-br/work/';
     // The rows' own links, in page order: each project once (a row links its title and its detail button).
-    const shown = [...new Set([...visibleMarkup(html).matchAll(/href="(\/(?:pt-br\/)?work\/[^"/]+\/)"/g)].map((m) => m[1]).filter((h) => h.startsWith(prefix)))];
+    const ledger = [...visibleMarkup(html).matchAll(/<article\b[^>]*\bdata-project-row\b[^>]*>[\s\S]*?<\/article>/g)].map((m) => m[0]).join('');
+    const shown = [...new Set([...ledger.matchAll(/href="(\/(?:pt-br\/)?work\/[^"/]+\/)"/g)].map((m) => m[1]).filter((h) => h.startsWith(prefix)))];
     assert.equal(shown.length, PROJECTS, `${route}: ${shown.length} project links shown, expected ${PROJECTS}`);
     const items = listOf(list, 'itemListElement');
     assert.deepEqual(items.map((item) => str(item, 'url')), shown.map((h) => `${SITE}${h}`), `${route}: ItemList urls differ from the rows shown`);

@@ -6,6 +6,19 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-10-08
+
+### Added
+
+- A manually flipped project book before the complete work index, in English and Brazilian Portuguese. The eight owner-selected projects keep their localized case studies and explicit Beta badges. Two covers per spread, buttons, keyboard and touch; no autoplay. Native pinch zoom, vertical scroll, focus safety, motion pause and the complete no-JavaScript list are preserved.
+- Browser regression coverage for the book at 320, 360, 390 and 1440 CSS pixels. Hidden book covers are excluded only from the existing rendered-image loading check; the complete ledger and its ItemList remain checked separately.
+
+### Security
+
+- Updated Astro (resolved 7.3.8) and compatible transitive dependencies: sharp 0.35.5, source-map-js 1.2.2, http-cache-semantics 4.3.0, smol-toml 1.9.0 and fast-uri 3.1.8. Removed the CI advisory ignore now that a patched cache dependency exists. The five advisories are recorded in the release evidence.
+
+Validation and deployment evidence: `docs/project-book-v1.13.0.md`. Release verification and Worker version receipts are recorded there as they complete.
+
 ## [1.12.2] - 2026-10-05
 
 **Deployed 2026-10-05**: staging Worker `e9c82741-d547-4262-a3fa-16271e434d6c` (tag `v1.12.2-beta2`; `-beta1` was the

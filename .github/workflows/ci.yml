@@ -29,10 +29,7 @@ jobs:
 
       - run: bun install --frozen-lockfile
       # Build-time dependencies only ship HTML, but a vulnerable toolchain still runs on this machine.
-      # GHSA-ch52-4w7c-c8xp (http-cache-semantics <=4.2.0, no patched release on 2026-10-03): a shared cache can leak
-      # another user's response. Astro uses it only to cache remote images at build time (assets/build/remote.js); this
-      # site is output: 'static' with no remote images, so no cache ever answers users. Remove the ignore once a fix ships.
-      - run: bun audit --audit-level=high --ignore=GHSA-ch52-4w7c-c8xp
+      - run: bun audit --audit-level=high
       - run: bun run check
       # A content change must ship with its lastmod manifest: in check mode a stale or missing
       # src/data/sitemap-lastmod.json fails the build instead of being rewritten (and re-dated) here.

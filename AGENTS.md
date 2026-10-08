@@ -19,8 +19,8 @@ bun run check && bun run build && bun run test
 interactive behaviour gets a check there, proved to fail without the fix. After every deploy run the same checks
 against the live site: `BASE_URL=<url> bun run smoke`. The gate routes `/` through `worker/index.js` like
 `run_worker_first`; a change to `worker/` is also run against real workerd (`wrangler dev`, see `DEPLOYMENT.md`).
-CI also runs `bun audit --audit-level=high`, ignoring only GHSA-ch52-4w7c-c8xp (build-time remote-image cache in
-Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore when a fix ships). Keep the lockfile on the pinned bun (`packageManager`), e.g.
+CI also runs `bun audit --audit-level=high` without advisory ignores. Security overrides in package.json pin
+patched compatible transitive releases; recheck them when upgrading Astro. Keep the lockfile on the pinned bun (`packageManager`), e.g.
 `bunx bun@1.3.14 install`, so CI's `--frozen-lockfile` accepts it.
 
 ## Invariants
@@ -47,6 +47,7 @@ Astro, no patched release; reason in `.github/workflows/ci.yml`; drop the ignore
   evidence and owner steps: `docs/google-search.md`.
 - **Motion** runs only under `html[data-motion='on']`; the header pause control (WCAG 2.2.2) and
   reduced-motion users both turn it off. Scroll reveals hide only `.reveal.reveal-pending`.
+- **Project book:** WorkIndex renders the eight owner-selected projects from canonical data before the complete ledger. Book leaves do not participate in filters. Keep no-JS links, text stages, native zoom, focus safety and motion opt-in; test both locales and 320/360/390/1440 px in the browser gate. The ItemList describes only the ledger rows.
 - **`[hidden]` wins** via a global `!important` rule; any new filterable list relies on it.
 - **CORP is `same-origin` except on link-preview assets**: `public/_headers` detaches it
   (`! Cross-Origin-Resource-Policy`) on the OG images, the project covers (`/images/projects/*`, whose

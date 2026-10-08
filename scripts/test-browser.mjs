@@ -490,6 +490,7 @@ await check('images below the first screen load lazily; images on it do not', as
   for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/dnschat/', '/about/']) {
     await page.goto(`${base}${path}`);
     const wrong = await page.evaluate(() => [...document.images].flatMap((img) => {
+      if (!img.getClientRects().length) return [];
       const belowFold = img.getBoundingClientRect().top >= window.innerHeight;
       return belowFold === (img.loading === 'lazy') ? [] : [`${img.getAttribute('src')} (${img.loading} at ${Math.round(img.getBoundingClientRect().top)}px)`];
     }));
@@ -556,6 +557,52 @@ await check('layout-shift probe registers a planted shift (positive control)', a
   const planted = (await layoutShift(page)) - baseline;
   assert.ok(planted > SHIFT_BUDGET, `a planted 1-line insertion above the content scored ${planted}, not above the ${SHIFT_BUDGET} budget`);
 }, { viewport: { width: 1280, height: 800 } });
+
+for (const path of ['/work/', '/pt-br/work/']) {
+  for (const width of [320, 360, 390, 1440]) {
+    await check(`project book: keyboard, links, stages, focus and motion ${path} ${width}px`, async (page) => {
+      await page.goto(`${base}${path}`);
+      const book = page.locator('[data-project-book]');
+      await book.locator('[data-book-controls]').waitFor({ state: 'visible', timeout: 5000 });
+      assert.equal(await book.locator('[data-book-leaf]').count(), 8);
+      assert.equal(await book.locator('[data-book-leaf]:visible').count(), 2);
+      assert.equal(await page.locator('[data-project-row]').count(), 49, 'the complete ledger must remain');
+      const slugs = ['busca-remedios', 'diario-neutro', 'arremataradar', 'whatsimovel', 'bolao-2026', 'openclaw-club-brasil', 'lume', 'drawing-with-love'];
+      assert.deepEqual(await book.locator('[data-book-leaf] a').evaluateAll((links) => links.map((a) => a.getAttribute('href'))), slugs.map((slug) => `${path}${slug}/`));
+      await book.locator('[data-book-list]').focus();
+      await page.keyboard.press('End');
+      assert.equal(await book.locator('[data-book-next]').getAttribute('aria-disabled'), 'true');
+      assert.equal(await book.locator('[data-book-leaf]:visible .book-stage').count(), 2);
+      await book.locator('[data-book-leaf]:visible a').first().focus();
+      await page.keyboard.press('Home');
+      assert.equal(await book.locator('[data-book-prev]').getAttribute('aria-disabled'), 'true');
+      assert.equal(await page.evaluate(() => document.activeElement?.closest('[hidden]') === null), true);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await book.locator('[data-book-next]').click();
+      assert.equal(await book.locator('[data-book-turn]').count(), 0);
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.evaluate(() => { delete document.documentElement.dataset.motion; });
+      await book.locator('[data-book-next]').click();
+      assert.equal(await book.locator('[data-book-turn]').count(), 0, 'pause removes the motion attribute');
+      await page.evaluate(() => { document.documentElement.dataset.motion = 'on'; });
+      await book.locator('[data-book-prev]').click();
+      assert.equal(await book.locator('[data-book-turn]').count(), 1);
+      assert.equal(await book.locator('[data-book-turn]').evaluate((leaf) => /** @type {HTMLElement} */ (leaf).inert), true);
+      await book.locator('[data-book-next]').click();
+      await page.waitForTimeout(700);
+      assert.equal(await book.locator('[data-book-turn]').count(), 0);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+      assert.equal(await book.locator('[data-book-list]').evaluate((list) => getComputedStyle(list).touchAction), 'pan-y pinch-zoom');
+    }, { viewport: { width, height: 900 } });
+  }
+  const context = await browser.newContext({ javaScriptEnabled: false, locale: 'en-US' });
+  try {
+    const page = await context.newPage();
+    await page.goto(`${base}${path}`);
+    assert.equal(await page.locator('[data-book-leaf]:visible').count(), 8, 'no-JS book must expose every project');
+    assert.equal(await page.locator('[data-book-controls]:visible').count(), 0);
+  } finally { await context.close(); }
+}
 
 await browser.close();
 server.close();

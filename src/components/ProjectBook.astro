@@ -1,0 +1,75 @@
+---
+import { href, stageLabels, stageOf, type Locale, type Project } from '../data/site';
+import { coverSrcset } from '../data/seo';
+interface Props { projects: Project[]; locale: Locale; }
+const { projects, locale } = Astro.props;
+const id = 'project-book';
+const label = locale === 'pt' ? 'Seleção de projetos' : 'Project selection';
+const copy = locale === 'pt'
+  ? { previous: 'Anterior', next: 'Próxima', pages: 'Páginas', hint: 'Folheie os projetos', keyboard: 'Projetos: use as setas para folhear' }
+  : { previous: 'Previous', next: 'Next', pages: 'Pages', hint: 'Flip through the projects', keyboard: 'Projects: use arrow keys to turn pages' };
+---
+
+<figure class="project-book" data-project-book data-book-pages={copy.pages} aria-labelledby={`${id}-label`}>
+  <figcaption id={`${id}-label`} class="book-heading">
+    <span>{label}</span><span class="book-hint">{copy.hint}</span>
+  </figcaption>
+  <div class="book-binding">
+    <ul class="book-list" data-book-list aria-label={copy.keyboard}>
+      {projects.map((project, index) => (
+        <li class="book-leaf" data-book-leaf>
+          <a href={href(locale, `/work/${project.slug}/`)} class="book-project">
+            <img src={project.image} srcset={coverSrcset(project.image!)} sizes="(min-width: 944px) 390px, calc((100vw - 7rem) / 2)" alt={project.alt[locale]} width="1600" height="1000" loading={index < 2 ? undefined : 'lazy'} decoding="async" />
+            <span class="book-project-name">{project.title}{stageOf(project) !== 'live' && <span class="book-stage">{stageLabels[stageOf(project)][locale]}</span>} <span aria-hidden="true">↗</span></span>
+          </a>
+          <span class="book-folio" aria-hidden="true">{index + 1}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <div class="book-controls" data-book-controls hidden>
+    <button type="button" data-book-prev aria-disabled="true"><span aria-hidden="true">←</span> {copy.previous}</button>
+    <span class="book-status" data-book-status aria-live="polite" aria-atomic="true"></span>
+    <button type="button" data-book-next>{copy.next} <span aria-hidden="true">→</span></button>
+  </div>
+</figure>
+
+<script>
+  import { mountProjectBooks } from './project-book';
+  mountProjectBooks();
+</script>
+
+<style>
+  .project-book { max-width: 56rem; margin: 0 auto; min-width: 0; color: var(--ink); }
+  .book-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; font-size: .75rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+  .book-hint { color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
+  .book-binding { position: relative; padding: .4rem .4rem .65rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper-deep); box-shadow: 0 3px 0 var(--line); }
+  .book-list { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; list-style: none; margin: 0; padding: 0; perspective: 1400px; touch-action: pan-y pinch-zoom; }
+  .book-list:focus-visible { outline: 2px solid var(--focus); outline-offset: 5px; }
+  .book-leaf { position: relative; min-width: 0; padding: clamp(.6rem, 1.4vw, 1.15rem); background: var(--paper); border-bottom: 1px solid var(--line); }
+  .book-leaf:nth-child(odd) { background-image: linear-gradient(to left, rgb(0 0 0 / .075), transparent 12%); border-right: 1px solid var(--line); }
+  .book-leaf:nth-child(even) { background-image: linear-gradient(to right, rgb(0 0 0 / .075), transparent 12%); }
+  .book-leaf[hidden] { display: none !important; }
+  .book-project { display: grid; gap: .85rem; color: inherit; text-decoration: none; }
+  .book-project img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); border-radius: 2px; }
+  .book-project-name { min-height: 4.2em; font-size: .8rem; line-height: 1.45; font-family: var(--mono); text-transform: uppercase; overflow-wrap: anywhere; }
+  .book-stage { display: inline-block; margin-left: .35em; padding: 0 .25em; border: 1px solid currentColor; color: var(--ink-soft); }
+  .book-project:hover, .book-project:focus-visible { color: var(--signal-text); }
+  .book-project:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .book-folio { display: block; margin-top: .7rem; text-align: center; color: var(--ink-soft); font-size: .65rem; font-family: var(--mono); }
+  .book-controls { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: 1.1rem; }
+  .book-controls[hidden] { display: none !important; }
+  .book-controls button { min-height: 44px; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 3px; background: var(--paper); color: inherit; font-size: .75rem; font-family: var(--mono); cursor: pointer; }
+  .book-controls button:hover:not([aria-disabled='true']) { border-color: currentColor; color: var(--signal-text); }
+  .book-controls button[aria-disabled='true'] { opacity: .5; cursor: default; }
+  .book-controls button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .book-status { font-size: .7rem; font-family: var(--mono); text-align: center; }
+  .book-turn { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 2; pointer-events: none; backface-visibility: hidden; }
+  .book-turn-forward { left: 50%; transform-origin: left center; animation: turn-forward 480ms ease-in-out both; }
+  .book-turn-back { left: 0; transform-origin: right center; animation: turn-back 480ms ease-in-out both; }
+  @keyframes turn-forward { to { transform: rotateY(-175deg); } }
+  @keyframes turn-back { to { transform: rotateY(175deg); } }
+  :global(html:not([data-motion='on'])) .book-turn { display: none; animation: none; }
+  @media (prefers-reduced-motion: reduce) { .book-turn { display: none; animation: none; } }
+  @media (max-width: 400px) { .book-controls button { padding-inline: .4rem; font-size: .7rem; } .book-project-name { font-size: .7rem; } .book-status { font-size: .65rem; } }
+</style>

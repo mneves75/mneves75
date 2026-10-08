@@ -51,6 +51,8 @@ I teach AI and development in Portuguese at [conhecendoia.com.br](https://conhec
 
 ## Let's Connect
 
+Explore the [portfolio](https://mvneves.dev/work/): flip through eight selected projects, then browse the complete work index.
+
 - 𝕏 [@mneves75](https://x.com/mneves75)
 - Writing about AI-native development and what 30 years of shipping taught me
 

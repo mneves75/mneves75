@@ -28,10 +28,11 @@ The site is read on desktop and mobile, in English or Brazilian Portuguese, most
 
 - English at `/`; Brazilian Portuguese at `/pt-br/`.
 - Primary pages: home, work index, project detail, about, recommendations, contact, and a not-found page in each locale.
+- The work index includes a manually paged book of eight owner-selected projects, followed by the complete filterable ledger. It works by keyboard, buttons and touch, preserves native zoom, and exposes every link without JavaScript. It never advances automatically.
 - Project content is local and canonical; the work index lists 49 projects (`src/data/site.ts` is the inventory): current work first, older and promotional work in an Archive group. Each project has a release stage (live, in App Store review, beta, in construction); only live projects with a public destination count as public, and unreleased ones carry a visible text badge and never a staging or pre-lookup store link. External project links remain useful but are not required to render the site.
 - No invented metrics, employers, clients, testimonials, contact details, or technical claims.
 - Browser language decides only at the root (owner decision 2026-09-25, replacing the 1.0.0 rule "no browser-language
-  auto-redirect"): an arrival at `/`, the English x-default, whose browser's top language is Portuguese (any `pt-*`)
+  auto-redirect"): an arrival at `/`, the English x-default, whose browser accepts Portuguese anywhere in its language list (any `pt-*` with q above 0)
   goes to `/pt-br/` with a 302; every other language stays English ("pt-br or other → us"). The language control's
   choice wins and is remembered (the `mn-lang` cookie).
   Internal navigation and every other URL never redirect; crawlers, which send no `Accept-Language`, get English.

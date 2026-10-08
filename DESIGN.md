@@ -12,6 +12,8 @@
 
 ## Durable system rules
 
+- Work index (1.13.0): a curated eight-project book precedes the complete ledger. Two pages per spread, manual controls, keyboard and touch; no autoplay. The existing ledger and filters remain separate. Links open localized case studies; release badges remain text. All pages remain visible without JavaScript. Native zoom and vertical scroll remain available. Page turns run only with `data-motion=on` and stop visually when paused.
+
 - Palette (naming is semantic: ink = foreground, paper = background):
   - Light: `--paper #f0eee9`, `--ink #1a1a18`, `--line #d8d6d0`, `--signal #c8481f` (fills/graphics), `--signal-text #a83a16` (AA small text).
   - Dark: `--paper #0e0e0d`, `--ink #f0ece0`, `--line #262624`, `--signal = --signal-text #ff6b35`.
