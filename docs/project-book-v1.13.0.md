@@ -39,4 +39,8 @@ Astro resolves to 7.3.8 within the updated 7.3.7 compatible range. Bun 1.3.14 ge
 
 ## Deployment
 
+Final independent reacceptance passed all 14 criteria: 32 viewport/spread/locale combinations, 16 destinations returning 200, native swipes/scroll/pinch, focus and pause, no-JavaScript fallback, CSP positive controls and over six minutes without autoplay. The verifier closed its isolated Chrome. Evidence: `.scratch/project-book-20261008/acceptance-personal-final/runtime-observations.json` in the studio checkout. No app rebuild or source change followed acceptance.
+
+The first Linux CI run passed install, audit, types and build, but read zoom scale 1 immediately after the pinch in both locales. The test now waits for the observable scale increase before retaining its strict assertion; local types and all 34 real-workerd checks passed. CI confirmation remains pending. This test-only correction does not change the frozen deployment inputs. References: [CDP pinch input](https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-synthesizePinchGesture), [Playwright condition waiting](https://playwright.dev/docs/api/class-page#page-wait-for-function).
+
 Account verified by canonical Wrangler 4.136.2: `534f5829e05a9a48adc018820257451c`, production Worker `mvneves-dev`; staging `mvneves-dev-staging`, routes empty. ASSETS is the only binding; no app database or secret is required. Tags must point to the code commit on origin/main. Staging and production use the same frozen dist/ and worker sources. No rebuild between environments. Post-deploy browser smoke is required on both URLs. Deployment receipts pending.

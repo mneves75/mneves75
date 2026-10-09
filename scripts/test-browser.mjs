@@ -629,6 +629,7 @@ for (const path of ['/work/', '/pt-br/work/']) {
       assert.match(await status.textContent() ?? '', /1–2/);
       const before = await page.evaluate(() => visualViewport?.scale ?? 1);
       await cdp.send('Input.synthesizePinchGesture', { x: box.x + box.width / 2, y: box.y + box.height / 2, scaleFactor: 1.4, gestureSourceType: 'touch' });
+      await page.waitForFunction((minimum) => (visualViewport?.scale ?? 1) > minimum, before + .1);
       const after = await page.evaluate(() => visualViewport?.scale ?? 1);
       assert.ok(after > before + .1, `native pinch scale ${before} → ${after}`);
       assert.match(await status.textContent() ?? '', /1–2/, 'pinch must not turn a page');
