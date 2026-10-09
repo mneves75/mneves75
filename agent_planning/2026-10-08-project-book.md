@@ -40,6 +40,8 @@ Fontes: [W3C WAI](https://www.w3.org/WAI/tutorials/carousels/), [APG](https://ww
 
 ## Correção de publicação — 1.13.1
 
+A aceitação completa fonte cega terminou com 14 PASS e um FAIL no critério 8: filtros habilitados sem JavaScript. Correção: reservar a geometria com visibility:hidden e expor os controles somente depois de instalar os handlers. Display:none seguido de inicialização foi rejeitado pelo deslocamento do ledger; botões desabilitados visíveis continuariam sem utilidade. O controle vermelho sem JS observou 10 filtros visíveis, esperado 0. Os oito projetos e 49 registros HTML permanecem. A correção exige novo artefato congelado e uma reaceitação completa dos 15 critérios, sem dispensar o finding.
+
 O smoke público 1.13.0 encontrou CLS de 0,009645/0,005116 ao hover de uma linha da home, acima do contrato 0,001. Diagnóstico independente da suíte mostrou padding 0→13,6 px e retângulos do texto deslocados; uma amostra isolada ficou abaixo do orçamento, mas confirmou a geometria variável. Escolha: retirar o padding variável do hover, preservar alinhamento inicial, destaque de fundo e seta. Reservar o inset em todos os estados alteraria o alinhamento padrão; mover o texto por transform esconderia CLS, mas manteria o deslocamento indesejado.
 
 1. Provar o controle vermelho de geometria e adicionar guarda permanente de posição/largura no hover.
@@ -48,3 +50,5 @@ O smoke público 1.13.0 encontrou CLS de 0,009645/0,005116 ao hover de uma linha
 4. Congelar novo artefato, verificar efeitos visuais e critérios completos novamente em contexto independente.
 5. CI no commit final; beta v1.13.1-beta1, smoke staging; produção v1.13.1, mesmos inputs, smokes apex/www e aceitação pública independente.
 6. Atualizar recibos/docs; integrar main e limpar somente recursos criados pela tarefa. Tags 1.13.0 preservadas.
+
+- Correção1.13.1: tipos/build/test/workerd34checksPASS; CI37871998786PASS nofonte a6098fec. Manifesto110páginas/108URLs semdatasalteradas. Diffadversarial0bloqueantes; guarda de hover efoco passou. Artefato313arquivos e143b90d07bbe7b696773e89c0fc9ae14b016b5624e5bab517b3ab0b3de7f978 congelado; aceitação independente15critérios emexecução.

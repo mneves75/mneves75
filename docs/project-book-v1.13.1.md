@@ -2,10 +2,16 @@
 
 ## What the review changed
 
+The complete source-blind acceptance found one remaining defect: the ten ledger filters remained focusable without JavaScript. The correction hides the toolbar with `visibility: hidden` until its click handlers are installed; this reserves its geometry and excludes inactive controls from keyboard navigation. All eight book projects and 49 ledger entries remain readable in the HTML. `display: none` followed by initialization was rejected because it would move the ledger; disabled visible controls would add useless controls. See [MDN visibility](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/visibility). The first verdict was 14 PASS and criterion 8 FAIL. After this correction, one fresh complete acceptance repeats all 15 criteria on the new frozen artifact.
+
 Public production smoke found hover layout shifts above the existing 0.001 budget. A diagnostic confirmed the home row padding changed from 0 to 13.6 px and moved text rectangles. Removing the changing padding preserves default alignment, background highlight and arrow feedback. Reserving the inset in every state would change default alignment; using transforms would preserve unwanted text movement. A geometry assertion complements the existing CLS positive control and unchanged budget.
 
 The 1.13.0 tags and Worker receipts remain historical evidence. This correction uses new 1.13.1 beta/production tags. No token rotation or valid new 50 ms measurement is implied. The original dirty performance/security checkout remains untouched.
 
 Red control: observed featured text rectangles move on the live 1.13.0 page; strict geometry assertion exits 1. Local/CI gates, artifact acceptance and deployment receipts follow in the JSON when complete.
 
-Local types, complete build with LASTMOD_CHECK and full route/browser tests exited 0. There are 110 outputs, 108 sitemap URLs and no changed significant dates. The strict hover/focus geometry guard and unchanged CLS budget passed. Focused adversarial plan/diff review found no blockers. Fresh full artifact acceptance and real-workerd smoke are running.
+The hover-only candidate passed local types, build, route/browser tests, real-workerd smoke (34/34) and [CI 37871998786](https://github.com/mneves75/mneves75/actions/runs/37871998786) on `a6098fecff3f01d56ee0fd16b5c3b454da96bdcb`. Its artifact `e143b90d07bbe7b696773e89c0fc9ae14b016b5624e5bab517b3ab0b3de7f978` was superseded after the independent no-JavaScript finding.
+
+The complete correction passes types and a full LASTMOD_CHECK build: 110 outputs, 108 sitemap URLs, no changed significant dates, three CSP script hashes. Its frozen 313-file artifact is `ee214634f5984fc31bd89b569e7c583a58319f673f96b8a97267ffe1ef281066`. Focused adversarial review found no confirmed defects. Full regression, CI and the fresh complete 15-criterion acceptance follow below; no rebuild after this freeze is planned.
+
+The first complete regression run caught a client-y geometry assertion while the browser scrolled the row into view. Diagnostics recorded the changing scroll offset; three atomic document-coordinate probes showed identical x/y/width/height. The guard now reads the rectangle and scroll offsets in one browser evaluation. All four hover dimensions, the 0.25 px tolerance and the 0.001 CLS budget remain unchanged; the application artifact is unchanged.

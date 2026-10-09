@@ -114,6 +114,7 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
     const shown = rows.filter((row) => !row.hidden).length;
     if (status) status.textContent = shown === 1 ? (status.dataset.one ?? '') : (status.dataset.many ?? '').replace('{n}', String(shown));
   }));
+  document.querySelector('.filter-bar')?.setAttribute('data-filters-ready', '');
 </script>
 
 <style>
@@ -123,12 +124,14 @@ const counts = projects.reduce<Record<string, number>>((totals, project) => {
   /* Contiguous lattice: 1px gaps closed by each cell's 1px shadow ring, so a
      trailing empty grid cell stays paper instead of a block of border colour. */
   .filter-bar {
+    visibility: hidden;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
     gap: 1px;
     margin-bottom: 2.8rem;
     padding: 1px;
   }
+  .filter-bar[data-filters-ready] { visibility: visible; }
   .filter-button {
     display: flex;
     align-items: center;

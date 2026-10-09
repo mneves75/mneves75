@@ -541,12 +541,16 @@ await check('no layout shift on load, on scroll past the header threshold, or on
   await settle(page, 600);
   const before = (await layoutShift(page));
   const text = row.locator('.featured-main');
-  const beforeRect = await text.boundingBox();
-  assert.ok(beforeRect);
+  // Hover can scroll the target into view. Read document coordinates atomically,
+  // so browser scrolling is not mistaken for a change in the text's layout.
+  const textRect = () => text.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { x: rect.x + window.scrollX, y: rect.y + window.scrollY, width: rect.width, height: rect.height };
+  });
+  const beforeRect = await textRect();
   await row.hover();
   await settle(page, 600);
-  const afterRect = await text.boundingBox();
-  assert.ok(afterRect);
+  const afterRect = await textRect();
   for (const dimension of /** @type {const} */ (['x', 'y', 'width', 'height'])) {
     assert.ok(Math.abs(afterRect[dimension] - beforeRect[dimension]) < .25, `hover changes featured text ${dimension}`);
   }
@@ -558,8 +562,7 @@ await check('no layout shift on load, on scroll past the header threshold, or on
   await page.keyboard.press('Tab');
   assert.equal(await row.evaluate((element) => element.matches(':focus-visible')), true);
   await settle(page, 600);
-  const focusedRect = await text.boundingBox();
-  assert.ok(focusedRect);
+  const focusedRect = await textRect();
   for (const dimension of /** @type {const} */ (['x', 'width'])) {
     assert.ok(Math.abs(focusedRect[dimension] - beforeRect[dimension]) < .25, `keyboard focus changes featured text ${dimension}`);
   }
@@ -623,6 +626,8 @@ for (const path of ['/work/', '/pt-br/work/']) {
     await page.goto(`${base}${path}`);
     assert.equal(await page.locator('[data-book-leaf]:visible').count(), 8, 'no-JS book must expose every project');
     assert.equal(await page.locator('[data-book-controls]:visible').count(), 0);
+    assert.equal(await page.locator('[data-project-row]:visible').count(), 49, 'no-JS index must expose every project');
+    assert.equal(await page.locator('[data-filter]:visible').count(), 0, 'no-JS filters must not expose inactive controls');
   } finally { await context.close(); }
 
   await check(`project book: native touch, pinch zoom and header pause ${path}`, async (page) => {

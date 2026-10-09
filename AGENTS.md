@@ -48,6 +48,7 @@ patched compatible transitive releases; recheck them when upgrading Astro. Keep 
 - **Motion** runs only under `html[data-motion='on']`; the header pause control (WCAG 2.2.2) and
   reduced-motion users both turn it off. Scroll reveals hide only `.reveal.reveal-pending`.
 - **Ledger interaction:** hover and keyboard focus must not change text geometry. Keep the 0.001 CLS budget and geometry regression guards; highlight through background/color and decorative arrow transforms.
+- **Ledger filters:** reserve toolbar geometry, but expose its controls only after their handlers are mounted. Without JavaScript, every ledger row stays reachable and inactive filters stay hidden.
 - **Project book:** WorkIndex renders the eight owner-selected projects from canonical data before the complete ledger. Book leaves do not participate in filters. Keep no-JS links, text stages, native zoom, focus safety and motion opt-in; test both locales and 320/360/390/1440 px in the browser gate. The ItemList describes only the ledger rows.
 - **`[hidden]` wins** via a global `!important` rule; any new filterable list relies on it.
 - **CORP is `same-origin` except on link-preview assets**: `public/_headers` detaches it
