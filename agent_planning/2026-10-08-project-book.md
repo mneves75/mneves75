@@ -28,4 +28,6 @@ Fontes: [W3C WAI](https://www.w3.org/WAI/tutorials/carousels/), [APG](https://ww
 - Worktree de origin/main 9f3f0b22 preparado; alterações anteriores preservadas.
 - Chrome aborta dentro do sandbox; o mesmo comando com perfil temporário isolado fora do sandbox passou no teste público do estúdio. Gates do site pessoal usarão esse ambiente autorizado.
 - Implementação e gates completos: check/build/test exit 0; 110 páginas, 108 URLs de sitemap, duas datas significativas alteradas. Duas auditorias exit 0, 321 pacotes sem vulnerabilidades, sem ignores. Versão 1.13.0; Astro resolve 7.3.8 no lockfile de Bun 1.3.14.
-- Aceitação independente pelo workerd real em andamento; artefato estável durante a verificação. Revisão do código, CI e releases pendentes.
+- Primeira aceitação independente: 14/14 PASS no workerd, builder gpt-6.1-sol confirmado e verificador gpt-6-astra. Revisão Spec: nenhum defeito confirmado. Revisão Standards: dois P3 corrigidos (foco azul e bordas retas); conferência focal confirmou as correções.
+- Gate permanente agora prova swipe nativo nos dois sentidos, ampliação real por pinça e pausa pelo cabeçalho durante a virada, nos dois idiomas. Tipos e regressão completa passaram após retirar do teste a restauração de zoom desnecessária. Build final com LASTMOD_CHECK: 110 páginas e 108 URLs, manifesto atual.
+- Reaceitação completa do artefato final em andamento, sem rebuild. Hash dos 313 arquivos dist/ e worker/: f0b7d868aa2875fcd9f4a1c294170315fa122141e471671a99013a8168ea1a01. CI e releases pendentes.

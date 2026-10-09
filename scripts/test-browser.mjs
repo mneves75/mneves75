@@ -570,10 +570,12 @@ for (const path of ['/work/', '/pt-br/work/']) {
       const slugs = ['busca-remedios', 'diario-neutro', 'arremataradar', 'whatsimovel', 'bolao-2026', 'openclaw-club-brasil', 'lume', 'drawing-with-love'];
       assert.deepEqual(await book.locator('[data-book-leaf] a').evaluateAll((links) => links.map((a) => a.getAttribute('href'))), slugs.map((slug) => `${path}${slug}/`));
       await book.locator('[data-book-list]').focus();
+      const focusColor = await book.locator('[data-book-list]').evaluate((node) => getComputedStyle(node).outlineColor);
       await page.keyboard.press('End');
       assert.equal(await book.locator('[data-book-next]').getAttribute('aria-disabled'), 'true');
       assert.equal(await book.locator('[data-book-leaf]:visible .book-stage').count(), 2);
       await book.locator('[data-book-leaf]:visible a').first().focus();
+      assert.equal(await book.locator('[data-book-leaf]:visible a').first().evaluate((node) => getComputedStyle(node).outlineColor), focusColor, 'project links must keep the functional-blue focus ring');
       await page.keyboard.press('Home');
       assert.equal(await book.locator('[data-book-prev]').getAttribute('aria-disabled'), 'true');
       assert.equal(await page.evaluate(() => document.activeElement?.closest('[hidden]') === null), true);
@@ -602,6 +604,47 @@ for (const path of ['/work/', '/pt-br/work/']) {
     assert.equal(await page.locator('[data-book-leaf]:visible').count(), 8, 'no-JS book must expose every project');
     assert.equal(await page.locator('[data-book-controls]:visible').count(), 0);
   } finally { await context.close(); }
+
+  await check(`project book: native touch, pinch zoom and header pause ${path}`, async (page) => {
+    await page.goto(`${base}${path}`);
+    const book = page.locator('[data-project-book]');
+    const list = book.locator('[data-book-list]');
+    const status = book.locator('[data-book-status]');
+    await list.scrollIntoViewIfNeeded();
+    const box = await list.boundingBox();
+    assert.ok(box);
+    const cdp = await page.context().newCDPSession(page);
+    try {
+      /** @param {number} from @param {number} to */
+      const swipe = async (from, to) => {
+        const y = box.y + box.height / 2;
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width * from, y }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: box.x + box.width * to, y }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      };
+      await swipe(.8, .2);
+      assert.match(await status.textContent() ?? '', /3–4/);
+      assert.equal(new URL(page.url()).pathname, path, 'a swipe must not open its project link');
+      await swipe(.2, .8);
+      assert.match(await status.textContent() ?? '', /1–2/);
+      const before = await page.evaluate(() => visualViewport?.scale ?? 1);
+      await cdp.send('Input.synthesizePinchGesture', { x: box.x + box.width / 2, y: box.y + box.height / 2, scaleFactor: 1.4, gestureSourceType: 'touch' });
+      const after = await page.evaluate(() => visualViewport?.scale ?? 1);
+      assert.ok(after > before + .1, `native pinch scale ${before} → ${after}`);
+      assert.match(await status.textContent() ?? '', /1–2/, 'pinch must not turn a page');
+      // Same task: pause the real header handler while the outgoing leaf is still animated.
+      const paused = await page.evaluate(() => {
+        document.querySelector('[data-book-next]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        document.querySelector('[data-motion-toggle]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        const turn = document.querySelector('[data-book-turn]');
+        return { motion: document.documentElement.dataset.motion, turnDisplay: turn ? getComputedStyle(turn).display : null };
+      });
+      assert.equal(paused.motion, undefined);
+      assert.equal(paused.turnDisplay, 'none', 'pause must stop an active turn');
+      await page.waitForTimeout(700);
+      assert.equal(await book.locator('[data-book-turn]').count(), 0);
+    } finally { await cdp.detach(); }
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 }
 
 await browser.close();

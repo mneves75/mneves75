@@ -43,7 +43,7 @@ const copy = locale === 'pt'
   .project-book { max-width: 56rem; margin: 0 auto; min-width: 0; color: var(--ink); }
   .book-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; font-size: .75rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: .08em; }
   .book-hint { color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
-  .book-binding { position: relative; padding: .4rem .4rem .65rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper-deep); box-shadow: 0 3px 0 var(--line); }
+  .book-binding { position: relative; padding: .4rem .4rem .65rem; border: 1px solid var(--line); border-radius: 0; background: var(--paper-deep); box-shadow: 0 3px 0 var(--line); }
   .book-list { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; list-style: none; margin: 0; padding: 0; perspective: 1400px; touch-action: pan-y pinch-zoom; }
   .book-list:focus-visible { outline: 2px solid var(--focus); outline-offset: 5px; }
   .book-leaf { position: relative; min-width: 0; padding: clamp(.6rem, 1.4vw, 1.15rem); background: var(--paper); border-bottom: 1px solid var(--line); }
@@ -51,15 +51,15 @@ const copy = locale === 'pt'
   .book-leaf:nth-child(even) { background-image: linear-gradient(to right, rgb(0 0 0 / .075), transparent 12%); }
   .book-leaf[hidden] { display: none !important; }
   .book-project { display: grid; gap: .85rem; color: inherit; text-decoration: none; }
-  .book-project img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); border-radius: 2px; }
+  .book-project img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); border-radius: 0; }
   .book-project-name { min-height: 4.2em; font-size: .8rem; line-height: 1.45; font-family: var(--mono); text-transform: uppercase; overflow-wrap: anywhere; }
   .book-stage { display: inline-block; margin-left: .35em; padding: 0 .25em; border: 1px solid currentColor; color: var(--ink-soft); }
   .book-project:hover, .book-project:focus-visible { color: var(--signal-text); }
-  .book-project:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .book-project:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
   .book-folio { display: block; margin-top: .7rem; text-align: center; color: var(--ink-soft); font-size: .65rem; font-family: var(--mono); }
   .book-controls { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: 1.1rem; }
   .book-controls[hidden] { display: none !important; }
-  .book-controls button { min-height: 44px; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 3px; background: var(--paper); color: inherit; font-size: .75rem; font-family: var(--mono); cursor: pointer; }
+  .book-controls button { min-height: 44px; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 0; background: var(--paper); color: inherit; font-size: .75rem; font-family: var(--mono); cursor: pointer; }
   .book-controls button:hover:not([aria-disabled='true']) { border-color: currentColor; color: var(--signal-text); }
   .book-controls button[aria-disabled='true'] { opacity: .5; cursor: default; }
   .book-controls button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }

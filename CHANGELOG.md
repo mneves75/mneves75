@@ -11,7 +11,7 @@ All notable changes to this repository are documented here. The format follows
 ### Added
 
 - A manually flipped project book before the complete work index, in English and Brazilian Portuguese. The eight owner-selected projects keep their localized case studies and explicit Beta badges. Two covers per spread, buttons, keyboard and touch; no autoplay. Native pinch zoom, vertical scroll, focus safety, motion pause and the complete no-JavaScript list are preserved.
-- Browser regression coverage for the book at 320, 360, 390 and 1440 CSS pixels. Hidden book covers are excluded only from the existing rendered-image loading check; the complete ledger and its ItemList remain checked separately.
+- Browser regression coverage for the book at 320, 360, 390 and 1440 CSS pixels, including native swipe, actual pinch zoom, blue focus and the header pause handler during a turn. Hidden book covers are excluded only from the existing rendered-image loading check; the complete ledger and its ItemList remain checked separately.
 
 ### Security
 

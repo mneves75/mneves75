@@ -2,6 +2,8 @@
 
 ## What the review changed
 
+The Standards review found two minor design-contract violations: copper focus outlines and rounded book chrome. The correction uses the existing functional-blue focus token and hard edges. A runtime red control proved the old focus color differed from the required token. The permanent browser gate now exercises native swipe in both directions, actual pinch zoom and the header pause handler during a turn, in both languages.
+
 The book lives on the bilingual work index, before the complete ledger; the personal home keeps its existing evidence selection. The curated eight projects derive from canonical data, link to localized case studies, and retain stage labels. Filters and structured data describe the ledger separately. Motion is positively gated on `data-motion=on`, including pause during a turn. Native zoom remains available. Acceptance includes 320 CSS pixels.
 
 The native Astro/CSS/TypeScript adaptation was chosen over scroll-snap (simpler, but no requested page turn) and keeping only the ledger (best for simultaneous comparison, but does not deliver the requested book). Keeping useful HTML without JavaScript avoids a long-term animation dependency. No new package was added.
@@ -32,7 +34,7 @@ Astro resolves to 7.3.8 within the updated 7.3.7 compatible range. Bun 1.3.14 ge
 - First implementation check: 0 errors, warnings or hints. Complete build: 110 pages, 108 sitemap URLs, only the two work-index lastmods changed.
 - First route run caught the broad ItemList link extractor including the curated selection before ledger rows. The check now scopes to actual `data-project-row` articles, still checking all 49 rows and exact structured-data order.
 - Complexity: cccc 1.8.0, focused TS and two Astro files, owning default config. Only TS analyzed (13 functions), 0 parse errors, maximum cognitive 11; Astro unsupported. Partial comprehension evidence does not establish correctness.
-- Final local check/build/test: exit 0. Route smoke verified 110 outputs and the full search contract; browser gate passed all existing checks plus eight book viewport/locale cases and no-JS controls. Full audit and CI audit: exit 0, no vulnerabilities among 321 packages. Independent runtime acceptance, CI and deployment: pending. Chrome runs in a fresh temporary profile outside the sandbox; the sandboxed executable aborts before opening a page.
+- Final local check/build/test: exit 0. Route smoke verified 110 outputs and the full search contract; browser gate passed all existing checks plus eight book viewport/locale cases, two native-gesture cases and no-JS controls. The first native gate failed when its unnecessary zoom-reset command used coordinates outside the newly enlarged viewport; removing that reset passed the complete suite. Full audit and CI audit: exit 0, no vulnerabilities among 321 packages. Initial independent runtime acceptance: 14/14 PASS, different-model builder gpt-6.1-sol and verifier gpt-6-astra, confirmed. Complete reacceptance after the visual correction, CI and deployment: pending. Chrome runs in a fresh temporary profile outside the sandbox; the sandboxed executable aborts before opening a page.
 - Runtime uses real workerd on a dedicated local port. The initial watcher exited when a rebuild briefly removed dist/ images; it was restarted after the complete build. No source or artifact rebuild takes place during independent acceptance.
 
 ## Deployment
