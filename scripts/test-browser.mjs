@@ -606,13 +606,24 @@ for (const path of ['/work/', '/pt-br/work/']) {
   } finally { await context.close(); }
 
   await check(`project book: native touch, pinch zoom and header pause ${path}`, async (page) => {
+    /** @param {import('playwright-core').CDPSession} client @param {number} x @param {number} y */
+    const pinch = async (client, x, y) => {
+      /** @param {number} distance */
+      const fingers = (distance) => [{ id: 1, x: x - distance, y }, { id: 2, x: x + distance, y }];
+      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: fingers(80) });
+      for (let step = 1; step <= 20; step++) {
+        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: fingers(80 + 90 * step / 20) });
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    };
     const control = await page.context().newPage();
     const controlCdp = await page.context().newCDPSession(control);
     try {
       await control.setContent('<meta name="viewport" content="width=device-width, initial-scale=1"><main>Native pinch control</main>');
       const viewport = control.viewportSize();
       assert.ok(viewport);
-      await controlCdp.send('Input.synthesizePinchGesture', { x: viewport.width / 2, y: viewport.height / 2, scaleFactor: 2, relativeSpeed: 200, gestureSourceType: 'touch' });
+      await pinch(controlCdp, viewport.width / 2, viewport.height / 2);
       await control.waitForFunction(() => (visualViewport?.scale ?? 1) > 1.1);
       assert.ok(await control.evaluate(() => (visualViewport?.scale ?? 1) > 1.1), 'the browser must zoom the plain-page pinch control');
     } finally {
@@ -642,7 +653,7 @@ for (const path of ['/work/', '/pt-br/work/']) {
       await swipe(.2, .8);
       assert.match(await status.textContent() ?? '', /1–2/);
       const before = await page.evaluate(() => visualViewport?.scale ?? 1);
-      await cdp.send('Input.synthesizePinchGesture', { x: box.x + box.width / 2, y: box.y + box.height / 2, scaleFactor: 2, relativeSpeed: 200, gestureSourceType: 'touch' });
+      await pinch(cdp, box.x + box.width / 2, box.y + box.height / 2);
       await page.waitForFunction((minimum) => (visualViewport?.scale ?? 1) > minimum, before + .1);
       const after = await page.evaluate(() => visualViewport?.scale ?? 1);
       assert.ok(after > before + .1, `native pinch scale ${before} → ${after}`);
