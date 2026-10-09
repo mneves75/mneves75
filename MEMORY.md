@@ -10,7 +10,7 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Lesson: an independent verifier given the product's README found "one reading" contradicted by its documented
   second, AI-assisted reading. Qualifiers in a source ("only when", "except") must survive into the summary.
 - Open: the "choosing Portuguese sticks" browser check timed out on the first smoke run after three of today's six
-  deploys and never on a rerun. Make it wait on the cookie or route the POST instead of racing the navigation.
+  deploys and never on a rerun. If it recurs, prove the real POST response and server Set-Cookie across navigation; waiting on the script-written cookie would hide a broken POST.
 
 ## Earlier state (2026-10-05, 1.12.1: prod `3bc55462`, tag `v1.12.1` @`448200bc`; staging `745b76cf`)
 

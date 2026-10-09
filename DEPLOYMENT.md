@@ -57,6 +57,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.13.0 (tag `v1.13.0-beta1` @`ce325a6c`, 2026-10-08): Worker `632c9013-c330-452b-9605-a7a874e3788b`, only workers.dev, 100% active; all 34 smoke checks passed. Both work-index HTML responses and five CSS/JS assets equal the accepted frozen build. See `docs/project-book-v1.13.0.json`.
+
 - 1.12.2 (tag `v1.12.2-beta2` @`3a06c32e`, 2026-10-05): Worker version `e9c82741-d547-4262-a3fa-16271e434d6c`, only the workers.dev trigger; all 24 smoke checks passed (`-beta1` @`4a6541f2`, Worker `990fa302`, passed 24 too before the copy correction).
 - 1.12.1 (tag `v1.12.1-beta1` @`448200bc`, 2026-10-05): Worker version `745b76cf-452f-43d2-b2de-d0c04e3aa886`, only the workers.dev trigger; smoke 23/24 then 24/24 on rerun (one timeout waiting for the keepalive `POST /lang` response right after the deploy); `Accept-Language: en-US,en;q=0.9,pt;q=0.8,de;q=0.7,zh-CN;q=0.6` → 302 `/pt-br/`.
 - 1.12.0 (tag `v1.12.0-beta1` @`21a44328`, 2026-10-05): Worker version `4a070148-dc5f-4222-99a7-d82c4b81ada4`, only the workers.dev trigger; all 24 smoke checks passed; `/pt-br/work/busca-remedios/` serves the new project with three related rows.
@@ -88,6 +90,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 - Remote smoke verified: App Store links by locale on `/work/dnschat/` (us) and `/pt-br/work/weathersunscreen/` (br), no ffts-grep image on `/work/cf-toolkit/`, nine skills, devtrim v0.9.6, hay 0.458, "no license yet" status on unlicensed repos, CSP without `'unsafe-inline'`.
 
 ### Latest production evidence
+
+- 1.13.0 (tag `v1.13.0` @`ce325a6c`, 2026-10-08): Worker `e17f9ab0-2a50-416a-9260-418c114f4b20`, apex/www, 100% active. Public book acceptance passed; full smoke 33/34 on both hosts due to the existing home hover geometry/CLS issue. Follow-up 1.13.1 removes it; do not describe this full smoke as PASS.
 
 - 1.12.2 (tag `v1.12.2` @`3a06c32e`, 2026-10-05): Worker version `74bb75ad-e12e-4b6e-80a3-8e9d5623915b`, only `mvneves.dev` and `www.mvneves.dev`; smoke 24/24 on apex, www 23/24 then 24/24 on rerun (the keepalive `POST /lang` timeout again); `/work/busca-remedios/` links `https://buscaremediosbrasil.com/`. Rollback: `wrangler rollback 3bc55462-8f5b-4ab4-b95c-e0525bc31d71 --env="" --config wrangler.jsonc`.
 - 1.12.1 (tag `v1.12.1` @`448200bc`, 2026-10-05): Worker version `3bc55462-8f5b-4ab4-b95c-e0525bc31d71`, only `mvneves.dev` and `www.mvneves.dev`; smoke 24/24 on www, apex 23/24 then 24/24 on rerun (same timeout as staging); the owner's Chrome header gets 302 to `/pt-br/` on both hosts. Rollback: `wrangler rollback 540dff98-7eba-43b6-844e-9e3cc4fadea6 --env="" --config wrangler.jsonc`.

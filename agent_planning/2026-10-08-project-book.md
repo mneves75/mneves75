@@ -34,3 +34,17 @@ Fontes: [W3C WAI](https://www.w3.org/WAI/tutorials/carousels/), [APG](https://ww
 - Dois CIs passaram install/audit/check/build, mas a pinça permaneceu em escala 1; esperar a ampliação não resolveu. Experimento seguinte: pinça nativa 2/200, com controle positivo de viewport simples e assertion de zoom real no livro. Tipos e todos os 34 checks locais no workerd passaram. App congelado inalterado; CI e releases ainda pendentes.
 
 - Terceiro CI: o controle positivo simples também falhou antes de abrir o livro. Duração maior não resolveu. Experimento seguinte usa eventos nativos de dois dedos e afastamento gradual; mantém as assertions de escala real e ausência de virada acidental.
+
+- CI Linux no commit ce325a6c: PASS, incluindo controle positivo e pinça real nos dois idiomas; a correção afeta somente testes. Staging beta1 publicado no Worker 632c9013-c330-452b-9605-a7a874e3788b, somente workers.dev.
+- Aceitação de publicação (congelada antes da promoção): verificador novo, fonte cega, somente URLs públicas. Conferir (1) livro manual nos dois idiomas da home do estúdio; (2) livro manual nos dois índices work pessoais, capas, Beta e ledger de 49 itens em desktop/mobile; (3) fallback sem JS e destinos acessíveis. Esta prova de publicação complementa os 14 critérios completos já aceitos no artefato local congelado.
+
+## Correção de publicação — 1.13.1
+
+O smoke público 1.13.0 encontrou CLS de 0,009645/0,005116 ao hover de uma linha da home, acima do contrato 0,001. Diagnóstico independente da suíte mostrou padding 0→13,6 px e retângulos do texto deslocados; uma amostra isolada ficou abaixo do orçamento, mas confirmou a geometria variável. Escolha: retirar o padding variável do hover, preservar alinhamento inicial, destaque de fundo e seta. Reservar o inset em todos os estados alteraria o alinhamento padrão; mover o texto por transform esconderia CLS, mas manteria o deslocamento indesejado.
+
+1. Provar o controle vermelho de geometria e adicionar guarda permanente de posição/largura no hover.
+2. Corrigir somente a regra global index-row; versão 1.13.1 e changelog.
+3. Rodar check/build/test, diagnóstico de geometria e revisão adversarial específica.
+4. Congelar novo artefato, verificar efeitos visuais e critérios completos novamente em contexto independente.
+5. CI no commit final; beta v1.13.1-beta1, smoke staging; produção v1.13.1, mesmos inputs, smokes apex/www e aceitação pública independente.
+6. Atualizar recibos/docs; integrar main e limpar somente recursos criados pela tarefa. Tags 1.13.0 preservadas.

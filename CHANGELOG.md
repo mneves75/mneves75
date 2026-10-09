@@ -6,6 +6,14 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-10-08
+
+### Fixed
+
+- Featured home rows keep their text geometry when hovered or focused. Removing the changing horizontal padding retains the background highlight and arrow response, without moving or rewrapping content. A geometry regression guard complements the unchanged CLS budget of 0.001.
+
+Verification and deployment receipts: `docs/project-book-v1.13.1.md`.
+
 ## [1.13.0] - 2026-10-08
 
 ### Added

@@ -1,0 +1,79 @@
+{
+  "observedAt": "2026-10-09T01:53:10.006212+00:00",
+  "version": "1.13.0",
+  "sourceCommit": "ce325a6ca66185ee29223c065e823d93e008de00",
+  "stagingTag": "v1.13.0-beta1",
+  "productionTag": "v1.13.0",
+  "frozenArtifact": {
+    "sha256": "f0b7d868aa2875fcd9f4a1c294170315fa122141e471671a99013a8168ea1a01",
+    "files": 313,
+    "scope": "dist/ and worker/, sorted relative paths + NUL + bytes + NUL"
+  },
+  "ci": {
+    "sourceVerdict": "PASS",
+    "url": "https://github.com/mneves75/mneves75/actions/runs/37868970004",
+    "linuxChrome": "154.0.8037.97",
+    "nativePinch": "two distinct fingers, gradual native touch moves; plain-page control and actual zoom assertions retained"
+  },
+  "local": {
+    "checkExit": 0,
+    "buildExit": 0,
+    "testExit": 0,
+    "workerdSmokeExit": 0,
+    "browserChecks": 34,
+    "pages": 110,
+    "sitemapUrls": 108
+  },
+  "dependencies": {
+    "fullAuditExit": 0,
+    "ciAuditExit": 0,
+    "packages": 321,
+    "advisoryIgnores": 0
+  },
+  "independentAcceptance": {
+    "verdict": "PASS",
+    "criteria": 14,
+    "builder": "gpt-6.1-sol",
+    "verifier": "gpt-6-astra",
+    "differentModel": true,
+    "sourceBlind": true,
+    "surface": "real local workerd, isolated Chrome desktop and emulated mobile"
+  },
+  "staging": {
+    "url": "https://mvneves-dev-staging.mvneves.workers.dev",
+    "versionId": "632c9013-c330-452b-9605-a7a874e3788b",
+    "percentage": 100,
+    "smokeExit": 0,
+    "checks": 34,
+    "publicHtmlAndAssets": "2 HTML routes + 5 CSS/JS assets equal local bytes"
+  },
+  "production": {
+    "url": "https://mvneves.dev",
+    "versionId": "e17f9ab0-2a50-416a-9260-418c114f4b20",
+    "percentage": 100,
+    "apexSmokeExit": 1,
+    "wwwSmokeExit": 1,
+    "checksPassed": 33,
+    "checksTotal": 34,
+    "finding": "Existing home-row hover changes padding and text geometry; CLS 0.009645 apex / 0.005116 www exceeds 0.001. Corrected in follow-up 1.13.1."
+  },
+  "rollback": {
+    "versionId": "74bb75ad-e12e-4b6e-80a3-8e9d5623915b",
+    "command": "wrangler rollback 74bb75ad-e12e-4b6e-80a3-8e9d5623915b --env=\"\" --config wrangler.jsonc"
+  },
+  "limits": [
+    "Prior dirty feat/perf-security-1.13 checkout preserved; unfinished performance harness and broader audit not imported.",
+    "No valid new 50 ms measurement; no full security audit or token-revocation claim.",
+    "Mobile interaction emulated in Chrome, not a physical phone."
+  ],
+  "publicBookAcceptance": {
+    "verdict": "PASS",
+    "criteria": 3,
+    "sourceBlind": true,
+    "builder": "gpt-6.1-sol",
+    "verifier": "gpt-6-astra",
+    "checks": 254,
+    "snapshot": "1.13.0"
+  },
+  "supersededBy": "1.13.1 correction in progress"
+}

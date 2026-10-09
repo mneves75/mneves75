@@ -313,8 +313,8 @@ html:not([data-motion='on']) .motion-glyph::before { content: '▶'; letter-spac
    Columns are set per page; the base gives rhythm, rules and hover.
 --------------------------------------------------------------------------- */
 .index-list { border-top: 1px solid var(--line); }
-.index-row { position: relative; display: grid; gap: 1.2rem; align-items: baseline; border-bottom: 1px solid var(--line); padding-block: 1.4rem; transition: background var(--t-fast), padding var(--t-fast); }
-a.index-row:hover, a.index-row:focus-visible, .index-row:has(a:focus-visible) { background: var(--paper-soft); padding-inline: .85rem; }
+.index-row { position: relative; display: grid; gap: 1.2rem; align-items: baseline; border-bottom: 1px solid var(--line); padding-block: 1.4rem; transition: background var(--t-fast); }
+a.index-row:hover, a.index-row:focus-visible, .index-row:has(a:focus-visible) { background: var(--paper-soft); }
 .index-row .row-arrow { color: var(--muted); font-family: var(--mono); transition: color var(--t-fast), transform var(--t-fast); }
 a.index-row:hover .row-arrow, .index-row:hover .row-arrow { color: var(--signal-text); transform: translate(3px, -3px); }
 

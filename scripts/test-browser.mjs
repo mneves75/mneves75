@@ -537,12 +537,32 @@ await check('no layout shift on load, on scroll past the header threshold, or on
   assert.ok(scrolled - load < SHIFT_BUDGET, `layout shift when the header reacts to scrolling: ${scrolled - load}`);
   const row = page.locator('a.featured-row').first();
   await row.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
   await settle(page, 600);
   const before = (await layoutShift(page));
+  const text = row.locator('.featured-main');
+  const beforeRect = await text.boundingBox();
+  assert.ok(beforeRect);
   await row.hover();
   await settle(page, 600);
+  const afterRect = await text.boundingBox();
+  assert.ok(afterRect);
+  for (const dimension of /** @type {const} */ (['x', 'y', 'width', 'height'])) {
+    assert.ok(Math.abs(afterRect[dimension] - beforeRect[dimension]) < .25, `hover changes featured text ${dimension}`);
+  }
   const hovered = (await layoutShift(page)) - before;
   assert.ok(hovered < SHIFT_BUDGET, `layout shift when hovering a project row: ${hovered}`);
+  await page.mouse.move(0, 0);
+  await row.focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  assert.equal(await row.evaluate((element) => element.matches(':focus-visible')), true);
+  await settle(page, 600);
+  const focusedRect = await text.boundingBox();
+  assert.ok(focusedRect);
+  for (const dimension of /** @type {const} */ (['x', 'width'])) {
+    assert.ok(Math.abs(focusedRect[dimension] - beforeRect[dimension]) < .25, `keyboard focus changes featured text ${dimension}`);
+  }
 }, { viewport: { width: 1280, height: 800 } });
 
 // Positive control for the check above: a planted shift must register, or a silent observer would pass it.
