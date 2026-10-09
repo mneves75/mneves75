@@ -57,6 +57,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 
 ### Latest staging evidence
 
+- 1.13.1 (`v1.13.1-beta1` @`a9993adb`, 2026-10-08): Worker `4e0c91cc-cf50-4736-aea9-7288f0d54ada`, only workers.dev, 100% active; all 34 smoke checks passed. Two work-index HTML responses and five CSS/JS assets equal the accepted frozen build. See `docs/project-book-v1.13.1.json`.
+
 - 1.13.0 (tag `v1.13.0-beta1` @`ce325a6c`, 2026-10-08): Worker `632c9013-c330-452b-9605-a7a874e3788b`, only workers.dev, 100% active; all 34 smoke checks passed. Both work-index HTML responses and five CSS/JS assets equal the accepted frozen build. See `docs/project-book-v1.13.0.json`.
 
 - 1.12.2 (tag `v1.12.2-beta2` @`3a06c32e`, 2026-10-05): Worker version `e9c82741-d547-4262-a3fa-16271e434d6c`, only the workers.dev trigger; all 24 smoke checks passed (`-beta1` @`4a6541f2`, Worker `990fa302`, passed 24 too before the copy correction).
@@ -90,6 +92,8 @@ The staging Worker name is `mvneves-dev-staging`. This publishes the static arti
 - Remote smoke verified: App Store links by locale on `/work/dnschat/` (us) and `/pt-br/work/weathersunscreen/` (br), no ffts-grep image on `/work/cf-toolkit/`, nine skills, devtrim v0.9.6, hay 0.458, "no license yet" status on unlicensed repos, CSP without `'unsafe-inline'`.
 
 ### Latest production evidence
+
+- 1.13.1 (`v1.13.1` @`a9993adb`, 2026-10-08): Worker `922789b4-863f-48d3-a4f1-5244079a4350`, only `mvneves.dev` and `www.mvneves.dev`, 100% active. All 34 smoke checks passed separately on each origin. Staging and production used the unchanged 313-file `dist/` + `worker/` fingerprint `ee214634f5984fc31bd89b569e7c583a58319f673f96b8a97267ffe1ef281066`; Wrangler configuration remained unchanged. [Source CI passed](https://github.com/mneves75/mneves75/actions/runs/37875574327), and fresh source-blind acceptance passed all 15 criteria. This corrects the 1.13.0 hover shift and hides filters until functional. Rollback: `wrangler rollback e17f9ab0-2a50-416a-9260-418c114f4b20 --env="" --config wrangler.jsonc` restores 1.13.0 with its known hover issue; pre-book version `74bb75ad-e12e-4b6e-80a3-8e9d5623915b` is also recorded. Rollback was not executed. Receipts and publication proof: `docs/project-book-v1.13.1.json`.
 
 - 1.13.0 (tag `v1.13.0` @`ce325a6c`, 2026-10-08): Worker `e17f9ab0-2a50-416a-9260-418c114f4b20`, apex/www, 100% active. Public book acceptance passed; full smoke 33/34 on both hosts due to the existing home hover geometry/CLS issue. Follow-up 1.13.1 removes it; do not describe this full smoke as PASS.
 

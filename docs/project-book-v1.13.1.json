@@ -1,0 +1,117 @@
+{
+  "version": "1.13.1",
+  "sourceCommit": "a9993adbffae6a543d18f4d521249d6045a2b7ae",
+  "artifact": {
+    "sha256": "ee214634f5984fc31bd89b569e7c583a58319f673f96b8a97267ffe1ef281066",
+    "files": 313,
+    "scope": "dist/ and worker/: sorted relative paths + NUL + bytes + NUL",
+    "wranglerConfigSha256": "4297ff50fb60e84649aa42b346c6fdd905f5816290d5e7a0262517ac971bc05c"
+  },
+  "local": {
+    "typesExit": 0,
+    "buildExit": 0,
+    "lastmodCheck": true,
+    "outputs": 110,
+    "sitemapUrls": 108,
+    "changedSignificantDates": 0,
+    "routesAndRealWorkerdBrowserExit": 0,
+    "browserChecks": 34,
+    "adversarialConfirmedDefects": 0
+  },
+  "independentAcceptance": {
+    "verdict": "PASS",
+    "criteria": 15,
+    "builderModel": "gpt-6.1-sol",
+    "verifierModel": "gpt-6-astra",
+    "freshContext": true,
+    "sourceBlind": true,
+    "surface": "real workerd, isolated Chrome, desktop and emulated mobile",
+    "originalNoJsFinding": "FIXED; actual Tab reaches all eight book links and 49 ledger entries in each locale, with inactive controls hidden",
+    "nativePinchScale": [
+      1,
+      5
+    ],
+    "dwellMilliseconds": {
+      "en": 360511,
+      "ptBR": 360479
+    },
+    "localizedCaseStudiesHttp200": 16,
+    "bookCLS": 2.9528356481481482e-06,
+    "canonicalFirstRowHoverCLS": 0,
+    "report": ".scratch/project-book-20261008/acceptance-personal-reverify/verdict.md"
+  },
+  "sourceCI": {
+    "url": "https://github.com/mneves75/mneves75/actions/runs/37875574327",
+    "status": "PASS"
+  },
+  "staging": {
+    "tag": "v1.13.1-beta1",
+    "worker": "mvneves-dev-staging",
+    "url": "https://mvneves-dev-staging.mvneves.workers.dev",
+    "workerVersion": "4e0c91cc-cf50-4736-aea9-7288f0d54ada",
+    "deploymentId": "7dd879a0-a592-4d1b-9101-4149179cab13",
+    "activePercentage": 100,
+    "smokeExit": 0,
+    "browserChecks": 34,
+    "publicByteCheckExit": 0,
+    "representativeResponses": "two work-index HTML responses and five CSS/JS assets equal the frozen build",
+    "artifactFingerprintUnchanged": true
+  },
+  "production": {
+    "tag": "v1.13.1",
+    "worker": "mvneves-dev",
+    "urls": [
+      "https://mvneves.dev",
+      "https://www.mvneves.dev"
+    ],
+    "workerVersion": "922789b4-863f-48d3-a4f1-5244079a4350",
+    "deploymentId": "72f06f64-5a25-4c69-a773-a5181f265b8a",
+    "activePercentage": 100,
+    "smokeExit": {
+      "apex": 0,
+      "www": 0
+    },
+    "browserChecksPerOrigin": 34,
+    "sameFrozenInputsAsStaging": true,
+    "publicByteChecks": {
+      "apexExit": 0,
+      "wwwExit": 0,
+      "cssJsAssetsPerOrigin": 5,
+      "assetsEqualFrozenBuild": true,
+      "htmlResponsesPerOrigin": 2,
+      "rawHtmlEqual": false,
+      "htmlEqualExceptCloudflareAnalytics": true,
+      "excludedInsertion": "one known Cloudflare analytics script and its appended newline only"
+    },
+    "independentPublicAcceptance": {
+      "verdict": "PASS",
+      "criteria": 3,
+      "scope": "studio and personal public routes, both locales, desktop 1440 and mobile 360",
+      "javascriptCombinations": 8,
+      "noJavascriptCombinations": 8,
+      "personalDestinationsHttp200": 16,
+      "runtimeCspErrors": 0,
+      "builderModel": "gpt-6.1-sol",
+      "verifierConfiguredModel": "gpt-6-astra",
+      "freshContext": true,
+      "sourceBlind": true,
+      "identityEvidence": "builder runtime and verifier dispatch metadata; provider backend not independently inspected",
+      "report": "acceptance-public-final/verdict.txt"
+    }
+  },
+  "rollback": {
+    "previousWorkerVersion": "e17f9ab0-2a50-416a-9260-418c114f4b20",
+    "previousVersionCaveat": "1.13.0 had a known home hover CLS failure in full production smoke",
+    "preBookWorkerVersion": "74bb75ad-e12e-4b6e-80a3-8e9d5623915b",
+    "command": "wrangler rollback <selected-version-id> --env=\"\" --config wrangler.jsonc",
+    "executed": false
+  },
+  "limitations": [
+    "No physical phone or Safari validation",
+    "No valid new 50 ms performance measurement; original dirty performance/security checkout remains untouched",
+    "Broader security audit and exposed-token revocation are not claimed complete",
+    "Extra home-wide repeated-scroll diagnostics recorded CLS 0.04119886574074074 EN / 0.37082206597222234 PT outside the frozen canonical first-row hover protocol; raw attribution and reconciliation are preserved"
+  ],
+  "observedAt": "2026-10-09T03:14:56.855078+00:00",
+  "evidenceRoot": "/Users/mneves/dev/MEUS_SITES/conhecendotudo/.scratch/project-book-20261008"
+}

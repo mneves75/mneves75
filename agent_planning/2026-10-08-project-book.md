@@ -51,4 +51,14 @@ O smoke público 1.13.0 encontrou CLS de 0,009645/0,005116 ao hover de uma linha
 5. CI no commit final; beta v1.13.1-beta1, smoke staging; produção v1.13.1, mesmos inputs, smokes apex/www e aceitação pública independente.
 6. Atualizar recibos/docs; integrar main e limpar somente recursos criados pela tarefa. Tags 1.13.0 preservadas.
 
-- Correção1.13.1: tipos/build/test/workerd34checksPASS; CI37871998786PASS nofonte a6098fec. Manifesto110páginas/108URLs semdatasalteradas. Diffadversarial0bloqueantes; guarda de hover efoco passou. Artefato313arquivos e143b90d07bbe7b696773e89c0fc9ae14b016b5624e5bab517b3ab0b3de7f978 congelado; aceitação independente15critérios emexecução.
+- Histórico do candidato de hover: tipos/build/test/workerd 34 checks PASS; CI 37871998786 PASS no fonte a6098fec. O artefato e143b90d foi substituído após a aceitação detectar filtros sem JS ainda focáveis.
+
+## Estado final — entregue
+
+- Fonte final `a9993adbffae6a543d18f4d521249d6045a2b7ae` integrado em `main`, CI 37875574327 PASS. Tipos, build LASTMOD_CHECK, rotas e navegador no workerd passaram; 110 saídas, 108 URLs, 34 checks e nenhuma data significativa alterada nesta correção.
+- A correção de readiness exclui controles inativos da navegação sem JS. A guarda de geometria mede o texto em relação à própria linha, com x/y/largura/altura e tolerância preservados; a guarda global de CLS continua separada, antes dela, com orçamento 0,001 inalterado. Revisão adversarial: nenhum defeito confirmado.
+- Aceitação independente completa em contexto novo e fonte cega: **15/15 PASS**; builder gpt-6.1-sol e verifier configurado gpt-6-astra. Modelos confirmados por runtime/dispatch, sem alegar introspecção do backend do provedor.
+- Tags `v1.13.1-beta1` e `v1.13.1` no fonte final. Staging Worker `4e0c91cc-cf50-4736-aea9-7288f0d54ada`; produção `922789b4-863f-48d3-a4f1-5244079a4350`, ambos 100%. Staging, apex e www passaram 34/34.
+- Mesmo artefato congelado nos dois uploads: 313 arquivos, SHA-256 `ee214634f5984fc31bd89b569e7c583a58319f673f96b8a97267ffe1ef281066`. Assets públicos idênticos; HTML de produção difere somente pelo beacon do Cloudflare e sua quebra de linha.
+- Aceitação pública final dos dois sites: **3/3 PASS**, oito combinações com JS e oito sem JS, 16 destinos pessoais 200. Recibos duráveis em `docs/project-book-v1.13.1.md` e `.json`; estados anteriores acima são históricos.
+- A branch original suja de segurança/desempenho foi preservada. Medição de 50 ms, diagnóstico suplementar amplo de CLS, auditoria global e revogação dos tokens não são encerrados por esta entrega.

@@ -2,7 +2,12 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-05, 1.12.2 LIVE: prod `74bb75ad`, tag `v1.12.2` @`3a06c32e`; staging `e9c82741`)
+## Current state (2026-10-08, 1.13.1 LIVE: prod `922789b4`, tag `v1.13.1` @`a9993adb`; staging `4e0c91cc`, `v1.13.1-beta1`)
+
+- Manual project book in both work indexes: eight selected projects, four spreads, real touch/zoom, pause and complete HTML fallback; full ledger remains 49 projects. Hover keeps internal text geometry, and filters appear only after their handlers are mounted. Local real-workerd and public apex/www smoke passed all 34 checks, source CI passed, and fresh source-blind acceptance passed 15 criteria. Receipts: `docs/project-book-v1.13.1.json`.
+- Preserve the original dirty `feat/perf-security-1.13` checkout. This isolated book delivery does not close its broader security/performance work or exposed-token revocation. The extra home-wide repeated-scroll CLS diagnostic is recorded separately from the passing canonical first-row hover protocol.
+
+## Earlier state (2026-10-05, 1.12.2: prod `74bb75ad`, tag `v1.12.2` @`3a06c32e`; staging `e9c82741`)
 
 - 1.12.2: Busca Remédios moved to `buscaremediosbrasil.com` the day it was added (another session shipped the move);
   link and "Live at" text follow. Lesson: before a release, re-check that a product URL added that day still answers
