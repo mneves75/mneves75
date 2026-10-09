@@ -538,24 +538,31 @@ await check('no layout shift on load, on scroll past the header threshold, or on
   const row = page.locator('a.featured-row').first();
   await row.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
+  // Measure hover after the scroll-triggered section reveal finishes.
+  await page.waitForFunction(() => {
+    const section = document.querySelector('a.featured-row')?.closest('.reveal');
+    return !section || getComputedStyle(section).transform === 'none';
+  });
   await settle(page, 600);
   const before = (await layoutShift(page));
-  const text = row.locator('.featured-main');
-  // Hover can scroll the target into view. Read document coordinates atomically,
-  // so browser scrolling is not mistaken for a change in the text's layout.
-  const textRect = () => text.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
-    return { x: rect.x + window.scrollX, y: rect.y + window.scrollY, width: rect.width, height: rect.height };
+  // Compare geometry inside this row; scrolling and content above it can move
+  // the whole row. The separate CLS assertion still measures global shifts.
+  const textRect = () => row.evaluate((element) => {
+    const text = element.querySelector('.featured-main');
+    if (!text) throw new Error('featured row has no text');
+    const rect = text.getBoundingClientRect();
+    const rowRect = element.getBoundingClientRect();
+    return { x: rect.x - rowRect.x, y: rect.y - rowRect.y, width: rect.width, height: rect.height };
   });
   const beforeRect = await textRect();
   await row.hover();
   await settle(page, 600);
   const afterRect = await textRect();
-  for (const dimension of /** @type {const} */ (['x', 'y', 'width', 'height'])) {
-    assert.ok(Math.abs(afterRect[dimension] - beforeRect[dimension]) < .25, `hover changes featured text ${dimension}`);
-  }
   const hovered = (await layoutShift(page)) - before;
   assert.ok(hovered < SHIFT_BUDGET, `layout shift when hovering a project row: ${hovered}`);
+  for (const dimension of /** @type {const} */ (['x', 'y', 'width', 'height'])) {
+    assert.ok(Math.abs(afterRect[dimension] - beforeRect[dimension]) < .25, `hover changes featured text ${dimension}: ${beforeRect[dimension]} → ${afterRect[dimension]}`);
+  }
   await page.mouse.move(0, 0);
   await row.focus();
   await page.keyboard.press('Shift+Tab');
