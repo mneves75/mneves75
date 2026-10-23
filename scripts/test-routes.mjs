@@ -16,7 +16,7 @@ const projectRoutes = [...sitemapXml.matchAll(/<loc>https:\/\/mvneves\.dev(\/(?:
 assert.equal(projectRoutes.length, 2 * PROJECTS, 'sitemap project routes do not match the inventory count');
 const routes = [
   '/', '/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/', '/404.html',
-  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/', '/pt-br/404.html',
+  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/sponsor/', '/pt-br/contact/', '/pt-br/404.html',
   ...projectRoutes,
 ];
 /** @param {string} route */

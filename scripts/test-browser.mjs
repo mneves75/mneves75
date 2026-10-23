@@ -50,7 +50,8 @@ const asset = (path) => {
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   const found = existsSync(file);
   if (!found) file = notFoundFile(path);
-  return { status: found ? 200 : 404, headers: { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' }, body: readFileSync(file) };
+  // Rule headers win over the extension type, as Cloudflare's _headers does (the security.txt rule sets a charset).
+  return { status: found ? 200 : 404, headers: { 'content-type': types[extname(file)] ?? 'application/octet-stream', ...headersFor(path) }, body: readFileSync(file) };
 };
 // The paths in wrangler.jsonc's `run_worker_first` go through worker/index.js, whose ASSETS binding is the static
 // server above; read from the config so the emulation cannot drift from production routing.
@@ -295,6 +296,11 @@ await httpCheck('served robots and sitemap preserve the intended policy and sign
   assert.equal(robots.status, 200, 'robots.txt is not accessible');
   assert.match(robots.headers.get('content-type') ?? '', /text\/plain/);
   assert.equal((await robots.text()).replace(/\r\n/g, '\n'), readFileSync(new URL('../public/robots.txt', import.meta.url), 'utf8'), 'served crawler policy differs from the reviewed policy');
+  // RFC 9116 wants UTF-8, and the _headers rule is the only thing that gives the asset a charset.
+  const securityTxt = await rootFetch('/.well-known/security.txt', {});
+  assert.equal(securityTxt.status, 200, 'security.txt is not accessible');
+  assert.equal(securityTxt.headers.get('content-type'), 'text/plain; charset=utf-8', `security.txt content-type: ${securityTxt.headers.get('content-type')}`);
+  assert.match(await securityTxt.text(), /^Contact: https:\/\//m, 'security.txt names no contact');
   const sitemap = await rootFetch('/sitemap.xml', {});
   assert.equal(sitemap.status, 200, 'sitemap is not accessible');
   assert.match(sitemap.headers.get('content-type') ?? '', /(?:application|text)\/xml/);
