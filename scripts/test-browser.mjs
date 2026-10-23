@@ -61,7 +61,12 @@ const ASSETS = {
   /** @param {Request} request */
   fetch: async (request) => {
     const { status, headers, body } = asset(decodeURIComponent(new URL(request.url).pathname));
-    return new Response(request.method === 'HEAD' ? null : new Uint8Array(body), { status, headers });
+    // The edge stamps cf-* and reporting headers on the root asset. They describe that subrequest, so the Worker must
+    // not copy them onto a response it builds itself (it used to advertise `cf-cache-status: HIT` on its `no-store` 302).
+    const edge = decodeURIComponent(new URL(request.url).pathname) === '/'
+      ? /** @type {Record<string, string>} */ ({ 'cf-cache-status': 'HIT', 'cf-ray': 'test-ray-GIG', 'report-to': '{"group":"cf-nel"}' })
+      : {};
+    return new Response(request.method === 'HEAD' ? null : new Uint8Array(body), { status, headers: { ...headers, ...edge } });
   },
 };
 
@@ -166,7 +171,7 @@ await check('script-src allows the analytics beacon path and nothing else on its
   assert.deepEqual(await violations(page), ['script-src-elem https://static.cloudflareinsights.com/other.js']);
 }, {}, { plantsViolations: true });
 
-const pages = ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/skills/', '/pt-br/work/dnschat/', '/about/', '/pt-br/about/', '/recommendations/', '/pt-br/recommendations/', '/contact/', '/pt-br/contact/'];
+const pages = ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/skills/', '/pt-br/work/dnschat/', '/about/', '/pt-br/about/', '/recommendations/', '/pt-br/recommendations/', '/sponsor/', '/pt-br/sponsor/', '/contact/', '/pt-br/contact/'];
 await check(`no CSP violations on ${pages.length} pages and both 404s`, async (page) => {
   for (const path of [...pages, '/missing/', '/pt-br/missing/']) {
     await page.goto(`${base}${path}`);
@@ -436,7 +441,7 @@ await httpCheck('POST /lang: only the site itself sets the choice, as an HTTP co
     assert.equal(response.headers.get('set-cookie'), null, `${method} ${path} set a cookie`);
   }
 });
-await httpCheck("the Worker's own responses carry the site's security headers (_headers /*)", async () => {
+await httpCheck("the Worker's own responses carry the site's security headers (_headers /*), never the subrequest's edge headers", async () => {
   // _headers applies only to asset responses, so the redirect and /lang would otherwise go out bare.
   const names = Object.keys(headersFor('/'));
   assert.ok(names.includes('content-security-policy') && names.includes('strict-transport-security'), `no /* security rule: ${names}`);
@@ -452,7 +457,11 @@ await httpCheck("the Worker's own responses carry the site's security headers (_
   };
   for (const [label, response] of Object.entries(generated)) {
     for (const name of names) assert.equal(response.headers.get(name), english.headers.get(name), `${label}: ${name}`);
+    // The local asset stub stamps these on the root asset; a response the Worker builds must not inherit them.
+    for (const name of ['cf-cache-status', 'cf-ray', 'report-to']) assert.equal(response.headers.get(name), null, `${label}: copied the subrequest's ${name}`);
   }
+  // Positive control: the pass-through root page does carry them, so the check above cannot pass vacuously.
+  for (const name of ['cf-cache-status', 'cf-ray', 'report-to']) assert.equal(english.headers.get(name) !== null, true, `the root asset lost its ${name}; the copy check is vacuous`);
 });
 await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {
   await page.goto(`${base}/`);
@@ -477,7 +486,7 @@ await check('root language: an English browser stays on /, and choosing Portugue
 }, { locale: 'en-US' });
 
 await check('no horizontal overflow at 360px', async (page) => {
-  for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/skills/', '/about/', '/contact/']) {
+  for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/skills/', '/about/', '/sponsor/', '/contact/']) {
     await page.goto(`${base}${path}`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, `horizontal overflow on ${path}`);
   }

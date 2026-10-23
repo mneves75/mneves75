@@ -4,8 +4,16 @@
 import { choiceCookie, explicitChoice, isLanguage, isSameOrigin, redirectsToPortuguese } from './language.js';
 
 const VARY = 'Accept-Language, Cookie';
-// Describe the root page's body, not the site: never copied onto a response the Worker builds itself.
-const PAGE_ONLY = new Set(['content-type', 'content-length', 'content-encoding', 'etag', 'last-modified', 'cache-control', 'vary', 'age', 'accept-ranges', 'date']);
+// Never copied onto a response the Worker builds itself. Two kinds live here: headers that describe the root page's
+// body (content-type, etag, cache-control…), and headers the edge generated for that one subrequest. Copying the
+// latter made the `/lang` 204 and the `/pt-br/` 302 advertise `cf-cache-status: HIT` while being `no-store`, and
+// carried an unrelated `cf-ray` (and its reporting token) into every generated response.
+const SUBREQUEST_ONLY = new Set([
+  'content-type', 'content-length', 'content-encoding', 'etag', 'last-modified', 'cache-control', 'vary', 'age',
+  'accept-ranges', 'date', 'set-cookie',
+  'cf-cache-status', 'cf-ray', 'cf-apo-via', 'cf-edge-cache', 'cf-bgj', 'server', 'alt-svc', 'report-to', 'nel',
+  'expect-ct', 'via', 'x-cache', 'x-served-by',
+]);
 
 /**
  * The headers every response of this site carries (public/_headers "/*": CSP, HSTS, framing, CORP…). _headers applies
@@ -16,7 +24,7 @@ const PAGE_ONLY = new Set(['content-type', 'content-length', 'content-encoding',
 async function siteHeaders(request, env) {
   const page = await env.ASSETS.fetch(new Request(new URL('/', request.url), { method: 'HEAD' }));
   const headers = new Headers();
-  for (const [name, value] of page.headers) if (!PAGE_ONLY.has(name)) headers.set(name, value);
+  for (const [name, value] of page.headers) if (!SUBREQUEST_ONLY.has(name)) headers.set(name, value);
   return headers;
 }
 
