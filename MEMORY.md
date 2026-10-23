@@ -2,7 +2,30 @@
 
 Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read both at session start.
 
-## Current state (2026-10-08, 1.13.1 LIVE: prod `922789b4`, tag `v1.13.1` @`a9993adb`; staging `4e0c91cc`, `v1.13.1-beta1`)
+## Current state (2026-10-23, 1.14.0 LIVE: prod `3212ed7e`, tag `v1.14.0` @`5772b27`; staging `c0b09482`, `v1.14.0-beta1` @`86e3e6c`)
+
+- 1.14.0: sponsor page at `/sponsor/` and `/pt-br/sponsor/` (nav, footer, palette, sitemap) listing the three funding
+  destinations GitHub exposes for the account; `site.sponsors` mirrors `mneves75/.github/.github/FUNDING.yml`
+  (GitHub Sponsors, Patreon `/cw/Marcus376`, PayPal). The repo-local `.github/FUNDING.yml` is gone: GitHub inherits the
+  account-wide file, so edit that one when a funding link changes, and re-check that the sponsor copy still names the
+  same three links.
+- 1.14.0 security: the root-language Worker no longer copies its inner asset subrequest's edge headers
+  (`cf-cache-status`, `cf-ray`, `server`, `alt-svc`, `report-to`, `nel`, `set-cookie`, …) onto responses it builds.
+  Production had been serving `/lang` 204 and `/pt-br/` 302 with `cf-cache-status: HIT` beside `no-store` and an
+  unrelated `cf-ray`. `Permissions-Policy` now denies display-capture, hid, serial, bluetooth, midi, idle-detection,
+  screen-wake-lock and clipboard read/write. RFC 9116 `security.txt` is live on both hosts as UTF-8, Wrangler
+  observability/Issues is on, and `.dev.vars*` is ignored.
+- Release gates: security verdict WAIVED on SEC-02, SEC-12, SEC-17, SEC-21, CMP-06, `gate:readiness`,
+  `gate:release-contract` (owner decision 2026-10-23, expiry 2026-11-30, see `.scratch/security-gate/86e3e6c…/`).
+  Staging, apex and www each passed the full browser smoke; PR #10 squash-merged, CI green.
+- Lesson: a squash merge over a main that moved with the last-seen bot changes the tree hash without touching the
+  artifact. Record the delta (README timestamp only) and prove the rebuilt `dist` fingerprint is unchanged
+  (`6c12b5c2…379e`, 315 files) instead of treating the merged tree as unaudited source or, worse, redeploying blind.
+- Lesson: adding a nav page is a count-coupled change in `scripts/test-routes.mjs` — palette `7 + 6`, sitemap
+  `2 * (6 + PROJECTS)`, the section-title list, and **the pt-BR `routes` array separately**, which otherwise skips that
+  page's language, title, hreflang and inline-style checks even though the search contract already walks it.
+
+## Earlier state (2026-10-08, 1.13.1: prod `922789b4`, tag `v1.13.1` @`a9993adb`; staging `4e0c91cc`, `v1.13.1-beta1`)
 
 - Manual project book in both work indexes: eight selected projects, four spreads, real touch/zoom, pause and complete HTML fallback; full ledger remains 49 projects. Hover keeps internal text geometry, and filters appear only after their handlers are mounted. Local real-workerd and public apex/www smoke passed all 34 checks, source CI passed, and fresh source-blind acceptance passed 15 criteria. Receipts: `docs/project-book-v1.13.1.json`.
 - Preserve the original dirty `feat/perf-security-1.13` checkout. This isolated book delivery does not close its broader security/performance work or exposed-token revocation. The extra home-wide repeated-scroll CLS diagnostic is recorded separately from the passing canonical first-row hover protocol.
@@ -157,6 +180,8 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
 - Scroll reveals are no-JS-safe: CSS hides only `.reveal.reveal-pending` (class added by the runtime). Never hide `.reveal` directly in CSS.
 - Nav: current page = bold + 2px copper underline; hover = 1px neutral, gated `@media (hover: hover)`. They were identical once and looked like two active pages.
 - Route tests are count-coupled (recommendations, project rows, palette items, sitemap locs, "Three decades shipping" on home). `scripts/test-routes.mjs` owns the numbers, derived from the inventory in `src/data/site.ts` where it can; update it in lockstep with content changes instead of restating counts here, which go stale.
+- Funding links have one source of truth outside this repo: `mneves75/.github/.github/FUNDING.yml` (github, patreon, custom). A repo-local FUNDING.yml is a duplicate that drifts — the deleted copy still pointed at an unpublished Patreon handle.
+- Adding a page to `nav` also moves the command-palette and sitemap counts, the section-title minimum list and both locale `routes` arrays; the browser gate's page lists should grow with it too.
 
 ## Open items
 
@@ -166,7 +191,11 @@ Curated long-term state. Daily journals live in `memory/YYYY-MM-DD.md`. Read bot
    `ProjectDetail.astro` throws at build time if a diagram step has no pt-BR label — do not add a step without one.
 3. CI runs `check`/`build`/`test` on every push and PR (`.github/workflows/ci.yml`); the last-seen cron runs every 6 h.
 4. Web Analytics automatic setup excludes EU visitors by default (dashboard toggle); a product decision, not code.
-5. Revoke Cloudflare API tokens pasted into agent chats (again on 2026-10-05: one marcusneves2005 token, unused, and
+5. Release waivers from 1.14.0 expire 2026-11-30: Cloudflare/GitHub 2FA evidence (SEC-02), token revocation (SEC-12,
+   see item 6), a scoped deploy token instead of the operator OAuth session (SEC-17), an incident runbook (SEC-21), an
+   erasure/retention note (CMP-06), a readiness ledger and `release.sh`/`verify-live.sh`. `security.txt` expires
+   2027-09-30 and the route test fails the day it lapses.
+6. Revoke Cloudflare API tokens pasted into agent chats (again on 2026-10-05: one marcusneves2005 token, unused, and
    the conhecendo.contato "FULL" token, used for two cache rules and a purge): marcusneves2005 account (2026-09-23, unused) and the
    conhecendo.contato account "FULL" token (2026-09-23, used for purges + one cache rule; it lacks RUM write), plus
    the two from 2026-09-15 listed in conhecendoia `plans/README.md`. Tokens go through 1Password, never chat.
@@ -193,4 +222,11 @@ promise no tracking and stay off.
 ## Tooling lessons
 
 - `agent-browser press <char>` on a non-editable target repeats the key forever and floods the next focused input — harness bug, not a site bug. Use `eval` + synthetic KeyboardEvent for key-trigger tests.
+- Independent acceptance needs a lane with shell, network and write access. On 2026-10-23 codex-exec's sandbox had no
+  DNS and no writes, claude-code was out of weekly quota, cursor-agent's parser never reached a terminal state, and the
+  pi reviewer has no shell: the gate was closed with operator-lane execution evidence adjudicated by a second model,
+  recorded with that caveat. Check lane capability before promising a distinct-model verification.
+- The browser gate's sentinel header assertions are local-only by construction: the stub values do not exist live, and
+  the edge re-adds `cf-ray`/`server`/`nel` itself, so the live run proves the `_headers` set and the code path, while
+  the local run is the regression proof.
 - autoreview refuses binary diffs: park `og-image*.png` (`git show HEAD:path > path`) and the untracked `.woff2` files in the scratchpad before review, restore after.
