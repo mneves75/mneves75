@@ -3,7 +3,7 @@ import { href, localeConfig, projects, site } from '../data/site';
 
 // Generated from `projects` so a new entry can never be missing from the sitemap.
 const locales = Object.keys(localeConfig) as (keyof typeof localeConfig)[];
-const pages = ['', '/work/', '/about/', '/recommendations/', '/contact/'];
+const pages = ['', '/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/'];
 
 const urls = [
   ...locales.flatMap((locale) => pages.map((page) => href(locale, page))),

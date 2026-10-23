@@ -15,7 +15,7 @@ const sitemapXml = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const projectRoutes = [...sitemapXml.matchAll(/<loc>https:\/\/mvneves\.dev(\/(?:pt-br\/)?work\/[^<]+\/)<\/loc>/g)].map((match) => match[1]);
 assert.equal(projectRoutes.length, 2 * PROJECTS, 'sitemap project routes do not match the inventory count');
 const routes = [
-  '/', '/work/', '/about/', '/recommendations/', '/contact/', '/404.html',
+  '/', '/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/', '/404.html',
   '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/', '/pt-br/404.html',
   ...projectRoutes,
 ];
@@ -74,6 +74,17 @@ for (const asset of ['/og-image.png', '/og-image-pt.png', '/favicon.svg', '/imag
   assert.ok(headers.includes(`${asset}\n! Cross-Origin-Resource-Policy`), `${asset} does not detach Cross-Origin-Resource-Policy`);
 }
 assert.match(home, /Three decades shipping/);
+// The sponsor page lists exactly the funding destinations GitHub exposes for the account (mneves75/.github's
+// FUNDING.yml: github, patreon, custom), in both locales, and says where they come from. Its nav entry is what keeps
+// it out of the orphan check, so assert it is really there.
+const fundingLinks = ['https://github.com/sponsors/mneves75', 'https://www.patreon.com/cw/Marcus376', 'https://www.paypal.com/paypalme/mnevespt'];
+for (const route of ['/sponsor/', '/pt-br/sponsor/']) {
+  const html = readFileSync(outputFile(route), 'utf8');
+  for (const url of fundingLinks) assert.ok(html.includes(`href="${url}"`), `${route}: missing funding link ${url}`);
+  assert.match(html, /funding file|arquivo de financiamento/, `${route}: the page no longer says where the links come from`);
+}
+assert.match(home, /href="\/sponsor\/"/, 'the English nav lost its sponsor entry');
+assert.match(ptHome, /href="\/pt-br\/sponsor\/"/, 'the pt-BR nav lost its sponsor entry');
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");
 assert.match(headers, /script-src 'self' 'sha256-[A-Za-z0-9+/=]+'/, 'script-src has no inline script hash');
@@ -95,7 +106,7 @@ assert.ok(!existsSync(join(root, 'pt-br', '404')), 'pt-BR 404 left behind as a r
 assert.match(home, /<span class="decoder"[^>]*aria-hidden="true"/, 'hero decoder must stay out of the heading accessible name');
 assert.match(home, /data-motion-toggle[^>]*aria-pressed=/, 'motion pause control missing (WCAG 2.2.2)');
 assert.match(home, /<svg class="signal-trace"[^>]*aria-hidden="true"/, 'decorative signal trace exposed to assistive tech');
-assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 5 + PROJECTS, 'palette must list actions, pages and every project');
+assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 6 + PROJECTS, 'palette must list actions, pages and every project');
 assert.match(ptHome, /Abrir GitHub/, 'pt-BR palette label not localized');
 assert.match(home, /"@type":"ProfilePage"/, 'home JSON-LD should be ProfilePage');
 assert.match(work, /"@type":"WebPage"/, 'work index JSON-LD should be WebPage');
@@ -109,7 +120,7 @@ assert.equal((ptWork.match(/data-project-row data-category/g) ?? []).length, PRO
 assert.match(work, /Bolão 2026/);
 assert.match(bolao, /Free web app for 2026 World Cup predictions/);
 assert.doesNotMatch(bolao, /class="detail-pending"/, 'a case-study TODO block reappeared on a project page');
-assert.equal((sitemap.match(/<loc>/g) ?? []).length, 2 * (5 + PROJECTS), 'sitemap URL count changed; verify all locale routes');
+assert.equal((sitemap.match(/<loc>/g) ?? []).length, 2 * (6 + PROJECTS), 'sitemap URL count changed; verify all locale routes');
 assert.match(sitemap, /https:\/\/mvneves\.dev\/work\/bolao-2026\//);
 assert.match(sitemap, /https:\/\/mvneves\.dev\/pt-br\/work\/cruzadas-fluminense\//);
 assert.match(ptRecommendations, /lang="pt-BR"/);
@@ -667,7 +678,7 @@ await searchCheck(`every project page links to ${RELATED_PROJECTS} other project
 // A section title that is only the nav label ("Work — Marcus Neves") tells a search result nothing about the page.
 const SECTION_TITLE_MIN = 40;
 await searchCheck(`section pages say what they hold in the title (at least ${SECTION_TITLE_MIN} characters)`, () => {
-  for (const route of ['/work/', '/about/', '/recommendations/', '/contact/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/']) {
+  for (const route of ['/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/sponsor/', '/pt-br/contact/']) {
     const title = decodeEntities(builtPages.get(route)?.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
     assert.ok([...title].length >= SECTION_TITLE_MIN, `${route}: title "${title}" has ${[...title].length} characters`);
   }

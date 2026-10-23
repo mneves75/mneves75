@@ -8,6 +8,16 @@ export const site = {
   linkedin: 'https://www.linkedin.com/in/mvneves',
   teaching: 'https://conhecendoia.com.br',
   x: 'https://x.com/mneves75',
+  /**
+   * The funding links GitHub exposes for this account (mneves75/.github/.github/FUNDING.yml: github, patreon,
+   * custom), resolved to the destination each one redirects to. Keep them in step with that file: the sponsor page
+   * says it lists the same links, so a changed FUNDING.yml makes this block wrong.
+   */
+  sponsors: {
+    github: 'https://github.com/sponsors/mneves75',
+    patreon: 'https://www.patreon.com/cw/Marcus376',
+    paypal: 'https://www.paypal.com/paypalme/mnevespt',
+  },
 };
 
 export const localeConfig = {
@@ -27,6 +37,7 @@ export const nav = [
   { path: '/work/', en: 'Work', pt: 'Trabalho' },
   { path: '/about/', en: 'About', pt: 'Sobre' },
   { path: '/recommendations/', en: 'Recommendations', pt: 'Recomendações' },
+  { path: '/sponsor/', en: 'Sponsor', pt: 'Apoie' },
   { path: '/contact/', en: 'Contact', pt: 'Contato' },
 ] as const;
 
