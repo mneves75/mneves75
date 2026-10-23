@@ -60,7 +60,10 @@ for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDo
 // charset), and its Expires stays under a year out. This fails the day it lapses: renew it then.
 const securityTxt = readFileSync(join(root, '.well-known', 'security.txt'), 'utf8');
 assert.match(securityTxt, /^Contact: https:\/\/github\.com\/mneves75\/mneves75\/security\/advisories\/new$/m, 'security.txt names no contact');
-assert.match(securityTxt, /^Canonical: https:\/\/mvneves\.dev\/\.well-known\/security\.txt$/m, 'security.txt canonical');
+// www serves the same assets (wrangler.jsonc routes), so it must be a Canonical too (RFC 9116 §2.5.2).
+for (const host of ['mvneves.dev', 'www.mvneves.dev']) {
+  assert.ok(securityTxt.includes(`\nCanonical: https://${host}/.well-known/security.txt\n`), `security.txt canonical for ${host}`);
+}
 const securityTxtDays = (Date.parse(/^Expires: (\S+)$/m.exec(securityTxt)?.[1] ?? '') - Date.now()) / 86_400_000;
 assert.ok(securityTxtDays > 0 && securityTxtDays <= 366, `security.txt Expires is ${Math.round(securityTxtDays)} days away`);
 assert.ok(headers.includes('/.well-known/security.txt\nContent-Type: text/plain; charset=utf-8'), 'security.txt is not served as UTF-8');
