@@ -56,6 +56,14 @@ const headers = readFileSync(join(root, '_headers'), 'utf8');
 for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
   assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
 }
+// RFC 9116: security.txt names SECURITY.md's channel, is served as UTF-8 (the asset server sends .txt without a
+// charset), and its Expires stays under a year out. This fails the day it lapses: renew it then.
+const securityTxt = readFileSync(join(root, '.well-known', 'security.txt'), 'utf8');
+assert.match(securityTxt, /^Contact: https:\/\/github\.com\/mneves75\/mneves75\/security\/advisories\/new$/m, 'security.txt names no contact');
+assert.match(securityTxt, /^Canonical: https:\/\/mvneves\.dev\/\.well-known\/security\.txt$/m, 'security.txt canonical');
+const securityTxtDays = (Date.parse(/^Expires: (\S+)$/m.exec(securityTxt)?.[1] ?? '') - Date.now()) / 86_400_000;
+assert.ok(securityTxtDays > 0 && securityTxtDays <= 366, `security.txt Expires is ${Math.round(securityTxtDays)} days away`);
+assert.ok(headers.includes('/.well-known/security.txt\nContent-Type: text/plain; charset=utf-8'), 'security.txt is not served as UTF-8');
 // Link-preview images (the site cards and the project covers, each project page's og:image) and the favicon must stay
 // embeddable cross-site, so these rules detach CORP. The search contract below also resolves every page's og:image
 // against these rules.
