@@ -6,6 +6,21 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-10-23
+
+### Added
+
+- Sponsor page at `/sponsor/` and `/pt-br/sponsor/`, in the primary nav, the footer, the command palette and the sitemap. It links the three funding destinations GitHub exposes for the account — GitHub Sponsors, Patreon and PayPal — resolved from the account-wide funding file (`mneves75/.github/.github/FUNDING.yml`), and states the support goes to the open-source tools, the Portuguese teaching and this site. No ads, paywall or newsletter claim goes beyond what the site itself shows.
+- The route test holds the sponsor page to those three links and to the sentence that says where they come from; the browser gate covers both locales for CSP violations and horizontal overflow (360 px, plus 320 px where the five-item nav is tightest).
+
+### Security
+
+- `worker/index.js` no longer copies the edge headers of its inner asset subrequest onto responses it builds itself. The `/lang` 204 and the `/pt-br/` 302 were advertising `cf-cache-status: HIT` while carrying `no-store`, and an unrelated `cf-ray` and reporting token reached every generated response. `cf-cache-status`, `cf-ray`, `cf-apo-via`, `cf-edge-cache`, `cf-bgj`, `server`, `alt-svc`, `report-to`, `nel`, `expect-ct`, `via`, `x-cache`, `x-served-by` and `set-cookie` now stay with the subrequest. The browser gate stamps all of them on the local root asset and fails if a Worker-built response inherits one; it compares sentinel values, so the same check also runs against a deployed site, where the edge stamps its own `cf-ray`, `server`, `alt-svc` and `nel` on every response.
+- `Permissions-Policy` additionally denies `display-capture`, `hid`, `serial`, `bluetooth`, `midi`, `idle-detection`, `screen-wake-lock` and clipboard read/write, none of which this site uses. The route test names every directive, because a misspelled one is silently ignored by browsers.
+- The root-language Worker (`worker/index.js`) has observability and Issues turned on in `wrangler.jsonc`: an exception is logged and grouped with an alert instead of becoming an unrecorded 1101. No page changes.
+- `/.well-known/security.txt` (RFC 9116) names the private GitHub Security Advisories channel from `SECURITY.md`, lists both hosts that serve it (`mvneves.dev` and `www.mvneves.dev`) as Canonical, is served as UTF-8, and expires 2027-09-30; the route test fails the day it lapses.
+- `.gitignore` covers `.dev.vars*`, so a local Wrangler secrets file cannot be committed.
+
 ## [1.13.1] - 2026-10-08
 
 ### Fixed

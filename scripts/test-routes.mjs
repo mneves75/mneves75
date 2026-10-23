@@ -15,8 +15,8 @@ const sitemapXml = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const projectRoutes = [...sitemapXml.matchAll(/<loc>https:\/\/mvneves\.dev(\/(?:pt-br\/)?work\/[^<]+\/)<\/loc>/g)].map((match) => match[1]);
 assert.equal(projectRoutes.length, 2 * PROJECTS, 'sitemap project routes do not match the inventory count');
 const routes = [
-  '/', '/work/', '/about/', '/recommendations/', '/contact/', '/404.html',
-  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/', '/pt-br/404.html',
+  '/', '/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/', '/404.html',
+  '/pt-br/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/sponsor/', '/pt-br/contact/', '/pt-br/404.html',
   ...projectRoutes,
 ];
 /** @param {string} route */
@@ -56,6 +56,23 @@ const headers = readFileSync(join(root, '_headers'), 'utf8');
 for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
   assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
 }
+// Every powerful feature this site does not use is denied, including the ones added with the sponsor release. A
+// misspelled directive is silently ignored by browsers, so each one is asserted by name.
+const permissionsPolicy = headers.match(/^Permissions-Policy: (.+)$/m)?.[1] ?? '';
+for (const directive of ['camera', 'microphone', 'geolocation', 'payment', 'usb', 'browsing-topics', 'display-capture', 'hid', 'serial', 'bluetooth', 'midi', 'idle-detection', 'screen-wake-lock', 'clipboard-read', 'clipboard-write']) {
+  assert.ok(permissionsPolicy.includes(`${directive}=()`), `Permissions-Policy does not deny ${directive}`);
+}
+// RFC 9116: security.txt names SECURITY.md's channel, is served as UTF-8 (the asset server sends .txt without a
+// charset), and its Expires stays under a year out. This fails the day it lapses: renew it then.
+const securityTxt = readFileSync(join(root, '.well-known', 'security.txt'), 'utf8');
+assert.match(securityTxt, /^Contact: https:\/\/github\.com\/mneves75\/mneves75\/security\/advisories\/new$/m, 'security.txt names no contact');
+// www serves the same assets (wrangler.jsonc routes), so it must be a Canonical too (RFC 9116 §2.5.2).
+for (const host of ['mvneves.dev', 'www.mvneves.dev']) {
+  assert.ok(securityTxt.includes(`\nCanonical: https://${host}/.well-known/security.txt\n`), `security.txt canonical for ${host}`);
+}
+const securityTxtDays = (Date.parse(/^Expires: (\S+)$/m.exec(securityTxt)?.[1] ?? '') - Date.now()) / 86_400_000;
+assert.ok(securityTxtDays > 0 && securityTxtDays <= 366, `security.txt Expires is ${Math.round(securityTxtDays)} days away`);
+assert.ok(headers.includes('/.well-known/security.txt\nContent-Type: text/plain; charset=utf-8'), 'security.txt is not served as UTF-8');
 // Link-preview images (the site cards and the project covers, each project page's og:image) and the favicon must stay
 // embeddable cross-site, so these rules detach CORP. The search contract below also resolves every page's og:image
 // against these rules.
@@ -63,6 +80,21 @@ for (const asset of ['/og-image.png', '/og-image-pt.png', '/favicon.svg', '/imag
   assert.ok(headers.includes(`${asset}\n! Cross-Origin-Resource-Policy`), `${asset} does not detach Cross-Origin-Resource-Policy`);
 }
 assert.match(home, /Three decades shipping/);
+// The sponsor page lists exactly the funding destinations GitHub exposes for the account (mneves75/.github's
+// FUNDING.yml: github, patreon, custom), in both locales, and says where they come from. Its nav entry is what keeps
+// it out of the orphan check, so assert it is really there.
+const fundingLinks = ['https://github.com/sponsors/mneves75', 'https://www.patreon.com/cw/Marcus376', 'https://www.paypal.com/paypalme/mnevespt'];
+for (const route of ['/sponsor/', '/pt-br/sponsor/']) {
+  const html = readFileSync(outputFile(route), 'utf8');
+  for (const url of fundingLinks) assert.ok(html.includes(`href="${url}"`), `${route}: missing funding link ${url}`);
+  // Body only: the meta description carries the same sentence, and that would make this pass with the visible note gone.
+  assert.match(html.slice(html.indexOf('</head>')), /funding file|arquivo de financiamento/, `${route}: the visible page no longer says where the links come from`);
+}
+/** The header nav block of a page. @param {string} html */
+const navBlock = (html) => html.match(/<nav class="nav"[\s\S]*?<\/nav>/)?.[0] ?? '';
+// The footer and the palette link the page too, so only the nav block proves the nav entry that keeps it from being an orphan.
+assert.ok(navBlock(home).includes('href="/sponsor/"'), 'the English nav lost its sponsor entry');
+assert.ok(navBlock(ptHome).includes('href="/pt-br/sponsor/"'), 'the pt-BR nav lost its sponsor entry');
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");
 assert.match(headers, /script-src 'self' 'sha256-[A-Za-z0-9+/=]+'/, 'script-src has no inline script hash');
@@ -84,7 +116,7 @@ assert.ok(!existsSync(join(root, 'pt-br', '404')), 'pt-BR 404 left behind as a r
 assert.match(home, /<span class="decoder"[^>]*aria-hidden="true"/, 'hero decoder must stay out of the heading accessible name');
 assert.match(home, /data-motion-toggle[^>]*aria-pressed=/, 'motion pause control missing (WCAG 2.2.2)');
 assert.match(home, /<svg class="signal-trace"[^>]*aria-hidden="true"/, 'decorative signal trace exposed to assistive tech');
-assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 5 + PROJECTS, 'palette must list actions, pages and every project');
+assert.equal((home.match(/data-palette-item/g) ?? []).length, 7 + 6 + PROJECTS, 'palette must list actions, pages and every project');
 assert.match(ptHome, /Abrir GitHub/, 'pt-BR palette label not localized');
 assert.match(home, /"@type":"ProfilePage"/, 'home JSON-LD should be ProfilePage');
 assert.match(work, /"@type":"WebPage"/, 'work index JSON-LD should be WebPage');
@@ -98,7 +130,7 @@ assert.equal((ptWork.match(/data-project-row data-category/g) ?? []).length, PRO
 assert.match(work, /Bolão 2026/);
 assert.match(bolao, /Free web app for 2026 World Cup predictions/);
 assert.doesNotMatch(bolao, /class="detail-pending"/, 'a case-study TODO block reappeared on a project page');
-assert.equal((sitemap.match(/<loc>/g) ?? []).length, 2 * (5 + PROJECTS), 'sitemap URL count changed; verify all locale routes');
+assert.equal((sitemap.match(/<loc>/g) ?? []).length, 2 * (6 + PROJECTS), 'sitemap URL count changed; verify all locale routes');
 assert.match(sitemap, /https:\/\/mvneves\.dev\/work\/bolao-2026\//);
 assert.match(sitemap, /https:\/\/mvneves\.dev\/pt-br\/work\/cruzadas-fluminense\//);
 assert.match(ptRecommendations, /lang="pt-BR"/);
@@ -656,7 +688,7 @@ await searchCheck(`every project page links to ${RELATED_PROJECTS} other project
 // A section title that is only the nav label ("Work — Marcus Neves") tells a search result nothing about the page.
 const SECTION_TITLE_MIN = 40;
 await searchCheck(`section pages say what they hold in the title (at least ${SECTION_TITLE_MIN} characters)`, () => {
-  for (const route of ['/work/', '/about/', '/recommendations/', '/contact/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/contact/']) {
+  for (const route of ['/work/', '/about/', '/recommendations/', '/sponsor/', '/contact/', '/pt-br/work/', '/pt-br/about/', '/pt-br/recommendations/', '/pt-br/sponsor/', '/pt-br/contact/']) {
     const title = decodeEntities(builtPages.get(route)?.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
     assert.ok([...title].length >= SECTION_TITLE_MIN, `${route}: title "${title}" has ${[...title].length} characters`);
   }

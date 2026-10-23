@@ -50,18 +50,44 @@ const asset = (path) => {
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   const found = existsSync(file);
   if (!found) file = notFoundFile(path);
-  return { status: found ? 200 : 404, headers: { ...headersFor(path), 'content-type': types[extname(file)] ?? 'application/octet-stream' }, body: readFileSync(file) };
+  // Rule headers win over the extension type, as Cloudflare's _headers does (the security.txt rule sets a charset).
+  return { status: found ? 200 : 404, headers: { 'content-type': types[extname(file)] ?? 'application/octet-stream', ...headersFor(path) }, body: readFileSync(file) };
 };
 // The paths in wrangler.jsonc's `run_worker_first` go through worker/index.js, whose ASSETS binding is the static
 // server above; read from the config so the emulation cannot drift from production routing.
 const wrangler = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8').replace(/^\s*\/\/.*$/gm, ''));
 /** @type {Set<string>} */
 const workerFirst = new Set(wrangler.assets.run_worker_first);
+/** Edge-owned headers the Worker must not copy onto a response it builds, each with a sentinel value. Comparing
+ * against the sentinel instead of absence keeps the same check valid against a deployed site, where the edge stamps
+ * its own `cf-ray`, `server`, `alt-svc` and `nel` on Worker-generated responses too. @type {Record<string, string>} */
+const EDGE_STUB = {
+  'cf-cache-status': 'test-stub-status',
+  'cf-ray': 'test-stub-ray',
+  'cf-apo-via': 'test-stub-apo-via',
+  'cf-edge-cache': 'test-stub-edge-cache',
+  'cf-bgj': 'test-stub-bgj',
+  server: 'test-stub-server',
+  'alt-svc': 'test-stub-alt-svc',
+  'report-to': 'test-stub-report-to',
+  nel: 'test-stub-nel',
+  'expect-ct': 'test-stub-expect-ct',
+  via: 'test-stub-via',
+  'x-cache': 'test-stub-x-cache',
+  'x-served-by': 'test-stub-x-served-by',
+};
+const EDGE_STUB_COOKIE = 'mn-lang=stub; Path=/';
 const ASSETS = {
   /** @param {Request} request */
   fetch: async (request) => {
     const { status, headers, body } = asset(decodeURIComponent(new URL(request.url).pathname));
-    return new Response(request.method === 'HEAD' ? null : new Uint8Array(body), { status, headers });
+    // The edge stamps these on the root asset. They describe that subrequest, so the Worker must not copy them onto a
+    // response it builds itself (it used to advertise `cf-cache-status: HIT` on its `no-store` 302). The set-cookie
+    // stands in for one the asset never sends: it appears only on the HEAD whose headers the Worker borrows.
+    const edge = decodeURIComponent(new URL(request.url).pathname) === '/'
+      ? { ...EDGE_STUB, ...(request.method === 'HEAD' ? { 'set-cookie': EDGE_STUB_COOKIE } : {}) }
+      : {};
+    return new Response(request.method === 'HEAD' ? null : new Uint8Array(body), { status, headers: { ...headers, ...edge } });
   },
 };
 
@@ -166,7 +192,7 @@ await check('script-src allows the analytics beacon path and nothing else on its
   assert.deepEqual(await violations(page), ['script-src-elem https://static.cloudflareinsights.com/other.js']);
 }, {}, { plantsViolations: true });
 
-const pages = ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/skills/', '/pt-br/work/dnschat/', '/about/', '/pt-br/about/', '/recommendations/', '/pt-br/recommendations/', '/contact/', '/pt-br/contact/'];
+const pages = ['/', '/pt-br/', '/work/', '/pt-br/work/', '/work/skills/', '/pt-br/work/dnschat/', '/about/', '/pt-br/about/', '/recommendations/', '/pt-br/recommendations/', '/sponsor/', '/pt-br/sponsor/', '/contact/', '/pt-br/contact/'];
 await check(`no CSP violations on ${pages.length} pages and both 404s`, async (page) => {
   for (const path of [...pages, '/missing/', '/pt-br/missing/']) {
     await page.goto(`${base}${path}`);
@@ -290,6 +316,11 @@ await httpCheck('served robots and sitemap preserve the intended policy and sign
   assert.equal(robots.status, 200, 'robots.txt is not accessible');
   assert.match(robots.headers.get('content-type') ?? '', /text\/plain/);
   assert.equal((await robots.text()).replace(/\r\n/g, '\n'), readFileSync(new URL('../public/robots.txt', import.meta.url), 'utf8'), 'served crawler policy differs from the reviewed policy');
+  // RFC 9116 wants UTF-8, and the _headers rule is the only thing that gives the asset a charset.
+  const securityTxt = await rootFetch('/.well-known/security.txt', {});
+  assert.equal(securityTxt.status, 200, 'security.txt is not accessible');
+  assert.equal(securityTxt.headers.get('content-type'), 'text/plain; charset=utf-8', `security.txt content-type: ${securityTxt.headers.get('content-type')}`);
+  assert.match(await securityTxt.text(), /^Contact: https:\/\//m, 'security.txt names no contact');
   const sitemap = await rootFetch('/sitemap.xml', {});
   assert.equal(sitemap.status, 200, 'sitemap is not accessible');
   assert.match(sitemap.headers.get('content-type') ?? '', /(?:application|text)\/xml/);
@@ -436,7 +467,7 @@ await httpCheck('POST /lang: only the site itself sets the choice, as an HTTP co
     assert.equal(response.headers.get('set-cookie'), null, `${method} ${path} set a cookie`);
   }
 });
-await httpCheck("the Worker's own responses carry the site's security headers (_headers /*)", async () => {
+await httpCheck("the Worker's own responses carry the site's security headers (_headers /*), never the subrequest's edge headers", async () => {
   // _headers applies only to asset responses, so the redirect and /lang would otherwise go out bare.
   const names = Object.keys(headersFor('/'));
   assert.ok(names.includes('content-security-policy') && names.includes('strict-transport-security'), `no /* security rule: ${names}`);
@@ -452,7 +483,14 @@ await httpCheck("the Worker's own responses carry the site's security headers (_
   };
   for (const [label, response] of Object.entries(generated)) {
     for (const name of names) assert.equal(response.headers.get(name), english.headers.get(name), `${label}: ${name}`);
+    // The local asset stub stamps these on the root asset; a response the Worker builds must not inherit them. Each
+    // assertion is sentinel-based, so it stays true against a deployed site, where the edge re-adds its own values.
+    for (const [name, sentinel] of Object.entries(EDGE_STUB)) assert.notEqual(response.headers.get(name), sentinel, `${label}: copied the subrequest's ${name}`);
+    assert.notEqual(response.headers.get('set-cookie'), EDGE_STUB_COOKIE, `${label}: copied the subrequest's set-cookie`);
   }
+  // Positive control: the pass-through root page carries an edge cf-ray (the stub's locally, the real one live), so a
+  // copied header would be visible on the responses above rather than absent everywhere.
+  assert.ok(english.headers.get('cf-ray') !== null, 'the root page carries no cf-ray; the copy check is vacuous');
 });
 await check('root language: a Portuguese browser lands on /pt-br/, and choosing English sticks', async (page) => {
   await page.goto(`${base}/`);
@@ -477,11 +515,21 @@ await check('root language: an English browser stays on /, and choosing Portugue
 }, { locale: 'en-US' });
 
 await check('no horizontal overflow at 360px', async (page) => {
-  for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/skills/', '/about/', '/contact/']) {
+  for (const path of ['/', '/pt-br/', '/work/', '/pt-br/work/skills/', '/about/', '/sponsor/', '/pt-br/sponsor/', '/contact/']) {
     await page.goto(`${base}${path}`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, `horizontal overflow on ${path}`);
   }
 }, { viewport: { width: 360, height: 780 } });
+
+// The design contract's minimum is 320px, where the five-item header nav and the sponsor rows are tightest in pt-BR.
+await check('no horizontal overflow at 320px, header nav included', async (page) => {
+  for (const path of ['/', '/pt-br/', '/sponsor/', '/pt-br/sponsor/']) {
+    await page.goto(`${base}${path}`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, `horizontal overflow on ${path}`);
+    const nav = await page.locator('.nav').evaluate((node) => node.scrollWidth <= node.clientWidth);
+    assert.equal(nav, true, `header nav overflow on ${path}`);
+  }
+}, { viewport: { width: 320, height: 780 } });
 
 // An eager image below the first screen is fetched by the preload scanner alongside the render-blocking CSS and the
 // fonts, which on a slow phone connection delays the first paint; an image on the first screen must not be lazy, or

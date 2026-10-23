@@ -1,0 +1,104 @@
+---
+// Funding links come from site.sponsors, which mirrors the GitHub funding file; every claim below is either about
+// this site (which the page itself shows) or names a page/repository the site already links.
+import { site, type Locale } from '../data/site';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const copy = locale === 'en' ? {
+  title: 'Keep the work public.',
+  intro: 'Everything here is built and maintained by one person. If a tool, an app or a text on this site found a place in your work, these are the ways to back it.',
+  channels: 'Channels',
+  channelsHeading: 'Three ways to back the work.',
+  channelsNote: 'The same three links GitHub shows in my funding file.',
+  github: 'GitHub Sponsors',
+  patreon: 'Patreon',
+  paypal: 'PayPal',
+  support: 'Support',
+  supportHeading: 'Where the support goes',
+  openSource: 'Open-source tools',
+  openSourceText: 'The open-source projects on the work index stay public — among them devtrim, hay, skills, cf-toolkit and DNSChat.',
+  teaching: 'Teaching in Portuguese',
+  teachingText: 'conhecendoia.com.br, where I teach AI and development in Portuguese.',
+  site: 'This site',
+  siteText: 'No ads, no paywall, no newsletter. Every page stays readable without an account.',
+} : {
+  title: 'Mantenha o trabalho público.',
+  intro: 'Tudo aqui é construído e mantido por uma pessoa. Se uma ferramenta, um app ou um texto deste site entrou no seu trabalho, estas são as formas de apoiar.',
+  channels: 'Canais',
+  channelsHeading: 'Três formas de apoiar o trabalho.',
+  channelsNote: 'Os mesmos três links que o GitHub mostra no meu arquivo de financiamento.',
+  github: 'GitHub Sponsors',
+  patreon: 'Patreon',
+  paypal: 'PayPal',
+  support: 'Apoio',
+  supportHeading: 'Para onde vai o apoio',
+  openSource: 'Ferramentas open source',
+  openSourceText: 'Os projetos open source do índice de trabalho continuam públicos — entre eles devtrim, hay, skills, cf-toolkit e DNSChat.',
+  teaching: 'Ensino em português',
+  teachingText: 'conhecendoia.com.br, onde ensino IA e desenvolvimento em português.',
+  site: 'Este site',
+  siteText: 'Sem anúncios, sem paywall, sem newsletter. Toda página continua legível sem conta.',
+};
+const channels = [
+  { protocol: 'github.com/sponsors/mneves75', label: copy.github, url: site.sponsors.github },
+  { protocol: 'patreon.com/cw/Marcus376', label: copy.patreon, url: site.sponsors.patreon },
+  { protocol: 'paypal.com/paypalme/mnevespt', label: copy.paypal, url: site.sponsors.paypal },
+];
+const support = [
+  { label: copy.openSource, text: copy.openSourceText },
+  { label: copy.teaching, text: copy.teachingText },
+  { label: copy.site, text: copy.siteText },
+];
+---
+
+<section class="page-intro">
+  <p class="eyebrow">MN://SPONSOR</p>
+  <h1>{copy.title}</h1>
+  <p class="lede">{copy.intro}</p>
+</section>
+
+<section class="section reveal">
+  <div class="section-heading">
+    <div><p class="eyebrow">01 / {copy.channels}</p><h2>{copy.channelsHeading}</h2></div>
+    <p>{copy.channelsNote}</p>
+  </div>
+  <div class="index-list channels">
+    {channels.map((channel) => (
+      <a class="index-row channel" href={channel.url} target="_blank" rel="noreferrer">
+        <span class="label-mono protocol">{channel.protocol}</span>
+        <span class="channel-label">{channel.label}</span>
+        <span class="row-arrow" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="section-heading">
+    <div><p class="eyebrow">02 / {copy.support}</p><h2>{copy.supportHeading}</h2></div>
+  </div>
+  <div class="index-list">
+    {support.map((item) => (
+      <div class="index-row support">
+        <span class="label-mono">{item.label}</span>
+        <span class="support-text">{item.text}</span>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .channel { grid-template-columns: minmax(0, 18rem) minmax(0, 1fr) auto; align-items: center; }
+  .channel .protocol { text-transform: lowercase; }
+  .channel .channel-label { font-family: var(--display); font-size: var(--step-1); font-weight: 700; letter-spacing: -.035em; }
+  .channel:hover .protocol, .channel:focus-visible .protocol { color: var(--signal-text); }
+  .support { grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); align-items: baseline; }
+  .support-text { max-width: 52ch; color: var(--ink-soft); }
+
+  @media (max-width: 700px) {
+    .channel { grid-template-columns: minmax(0, 1fr) auto; gap: .35rem 1rem; }
+    .channel .protocol { grid-column: 1 / -1; order: -1; overflow-wrap: anywhere; }
+    .support { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+  }
+</style>

@@ -15,6 +15,9 @@
     // A dashboard Redirect Rule (www -> apex 301) can replace this later.
     { "pattern": "www.mvneves.dev", "custom_domain": true }
   ],
+  // Logs plus Issues (grouped errors with an alert) for worker/index.js; without it a throw is an unlogged 1101.
+  // Keep it here: a deploy without the key turns off Issues enabled from the dashboard.
+  "observability": { "enabled": true, "issues": { "enabled": true } },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
