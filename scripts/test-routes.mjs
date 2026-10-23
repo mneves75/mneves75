@@ -56,6 +56,12 @@ const headers = readFileSync(join(root, '_headers'), 'utf8');
 for (const header of ['Strict-Transport-Security: max-age=31536000; includeSubDomains', 'X-Content-Type-Options: nosniff', "frame-ancestors 'none'", "base-uri 'self'", 'Cross-Origin-Resource-Policy: same-origin', 'X-Frame-Options: DENY']) {
   assert.ok(headers.includes(header), `security header missing from _headers: ${header}`);
 }
+// Every powerful feature this site does not use is denied, including the ones added with the sponsor release. A
+// misspelled directive is silently ignored by browsers, so each one is asserted by name.
+const permissionsPolicy = headers.match(/^Permissions-Policy: (.+)$/m)?.[1] ?? '';
+for (const directive of ['camera', 'microphone', 'geolocation', 'payment', 'usb', 'browsing-topics', 'display-capture', 'hid', 'serial', 'bluetooth', 'midi', 'idle-detection', 'screen-wake-lock', 'clipboard-read', 'clipboard-write']) {
+  assert.ok(permissionsPolicy.includes(`${directive}=()`), `Permissions-Policy does not deny ${directive}`);
+}
 // RFC 9116: security.txt names SECURITY.md's channel, is served as UTF-8 (the asset server sends .txt without a
 // charset), and its Expires stays under a year out. This fails the day it lapses: renew it then.
 const securityTxt = readFileSync(join(root, '.well-known', 'security.txt'), 'utf8');
@@ -81,10 +87,14 @@ const fundingLinks = ['https://github.com/sponsors/mneves75', 'https://www.patre
 for (const route of ['/sponsor/', '/pt-br/sponsor/']) {
   const html = readFileSync(outputFile(route), 'utf8');
   for (const url of fundingLinks) assert.ok(html.includes(`href="${url}"`), `${route}: missing funding link ${url}`);
-  assert.match(html, /funding file|arquivo de financiamento/, `${route}: the page no longer says where the links come from`);
+  // Body only: the meta description carries the same sentence, and that would make this pass with the visible note gone.
+  assert.match(html.slice(html.indexOf('</head>')), /funding file|arquivo de financiamento/, `${route}: the visible page no longer says where the links come from`);
 }
-assert.match(home, /href="\/sponsor\/"/, 'the English nav lost its sponsor entry');
-assert.match(ptHome, /href="\/pt-br\/sponsor\/"/, 'the pt-BR nav lost its sponsor entry');
+/** The header nav block of a page. @param {string} html */
+const navBlock = (html) => html.match(/<nav class="nav"[\s\S]*?<\/nav>/)?.[0] ?? '';
+// The footer and the palette link the page too, so only the nav block proves the nav entry that keeps it from being an orphan.
+assert.ok(navBlock(home).includes('href="/sponsor/"'), 'the English nav lost its sponsor entry');
+assert.ok(navBlock(ptHome).includes('href="/pt-br/sponsor/"'), 'the pt-BR nav lost its sponsor entry');
 // The post-build step replaces 'unsafe-inline' with hashes of the emitted inline scripts; a served policy must never regress to it.
 assert.doesNotMatch(headers, /script-src [^;]*'unsafe-inline'/, "script-src still allows 'unsafe-inline'");
 assert.match(headers, /script-src 'self' 'sha256-[A-Za-z0-9+/=]+'/, 'script-src has no inline script hash');

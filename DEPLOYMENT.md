@@ -174,7 +174,7 @@ Reviewed 2026-08-10 against the deployed site and the repository configuration.
 Reviewed again 2026-09-15 for 1.6.0 (independent source-grounded audit: no Critical/High findings; the Medium
 items — vulnerable build toolchain and `style-src 'unsafe-inline'` — are fixed).
 
-Error monitoring (1.13.2): `wrangler.jsonc` turns on Workers observability (logs) and Issues, so an exception in
+Error monitoring (1.14.0): `wrangler.jsonc` turns on Workers observability (logs) and Issues, so an exception in
 `worker/index.js` is logged and grouped instead of being an unrecorded 1101. Issues routes alerts through the
 account's notification settings. A deploy without the key turns Issues off, so it stays in the config.
 
