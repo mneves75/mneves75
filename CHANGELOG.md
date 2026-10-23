@@ -21,6 +21,8 @@ All notable changes to this repository are documented here. The format follows
 - `/.well-known/security.txt` (RFC 9116) names the private GitHub Security Advisories channel from `SECURITY.md`, lists both hosts that serve it (`mvneves.dev` and `www.mvneves.dev`) as Canonical, is served as UTF-8, and expires 2027-09-30; the route test fails the day it lapses.
 - `.gitignore` covers `.dev.vars*`, so a local Wrangler secrets file cannot be committed.
 
+Verification and deployment receipts: staging `v1.14.0-beta1` @`86e3e6c` (Worker `c0b09482`, workers.dev only) and production `v1.14.0` @`5772b27` (Worker `3212ed7e`, apex and www), 2026-10-23. The full browser smoke passed on staging, apex and www separately; live proof covered both sponsor pages, the UTF-8 `security.txt` on both hosts, the `no-store`/`Vary` language redirect and the same-origin `/lang` cookie endpoint. Staging and production served the unchanged 315-file `dist/` fingerprint `6c12b5c2…379e` (PR #10 squash-merged; the merged tree differs from the audited tree only by the README last-seen timestamp). Security gate: WAIVED (SEC-02, SEC-12, SEC-17, SEC-21, CMP-06, `gate:readiness`, `gate:release-contract`; owner decision 2026-10-23, expiry 2026-11-30); independent acceptance passed. Rollback: `wrangler rollback 922789b4-863f-48d3-a4f1-5244079a4350 --env="" --config wrangler.jsonc` restores 1.13.1; rollback was not executed.
+
 ## [1.13.1] - 2026-10-08
 
 ### Fixed
