@@ -6,6 +6,14 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-10-23
+
+### Security
+
+- The root-language Worker (`worker/index.js`) now has observability and Issues turned on in `wrangler.jsonc`: an exception is logged and grouped with an alert instead of becoming an unrecorded 1101. No page changes.
+- `/.well-known/security.txt` (RFC 9116) names the private GitHub Security Advisories channel from `SECURITY.md`, lists both hosts that serve it (`mvneves.dev` and `www.mvneves.dev`) as Canonical, is served as UTF-8, and expires 2027-09-30; the route test fails the day it lapses.
+- `.gitignore` covers `.dev.vars*`, so a local Wrangler secrets file cannot be committed.
+
 ## [1.13.1] - 2026-10-08
 
 ### Fixed
