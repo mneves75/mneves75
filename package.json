@@ -12,7 +12,8 @@
     "test:routes": "node scripts/test-routes.mjs",
     "test:browser": "node scripts/test-browser.mjs",
     "smoke": "node scripts/test-browser.mjs",
-    "lint:design": "npx --yes impeccable@3.6.1 detect src public --json"
+    "lint:design": "npx --yes impeccable@3.6.1 detect src public --json",
+    "dev:portless": "ASTRO_DEV_BACKGROUND=0 portless"
   },
   "dependencies": {
     "astro": "^7.3.7"
@@ -33,5 +34,6 @@
     "http-cache-semantics": "^4.3.0",
     "smol-toml": "^1.9.0",
     "fast-uri": "^3.1.8"
-  }
+  },
+  "portless": "mvneves"
 }
