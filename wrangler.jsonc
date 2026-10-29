@@ -26,10 +26,11 @@
   },
   "env": {
     "staging": {
+      "preview_urls": false,
       "name": "mvneves-dev-staging",
       // Named envs inherit top-level "routes" — override so staging never claims the prod custom domains.
       "routes": [],
-      "workers_dev": true
+      "workers_dev": false
     }
   }
 }
