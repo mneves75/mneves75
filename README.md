@@ -12,6 +12,7 @@ I'm an **AI-native developer** now. Claude is my copilot. The three decades of e
 
 | Project | What it does | Why it matters |
 |---------|--------------|----------------|
+| [relembra](https://mneves75.github.io/relembra/) · [Source](https://github.com/mneves75/relembra) | Memory for AI agents: scoped, bounded, durable, erasable. A TypeScript library, a SQLite store and a CLI any coding agent calls from a session hook. `npm i relembra@beta` | An agent reads only the scopes it is granted, and a redaction erases the text everywhere, SQLite WAL included |
 | [htmlgate](https://htmlgate.com) | Self-hosted HTML and static-site sharing for AI agents, running in your own Cloudflare account | Gated by default, with explicit public sharing and expiring links |
 | [devtrim](https://mneves75.github.io/devtrim/) | Safe disk hygiene for macOS developer machines: measure, classify, trim with danger-scored guardrails and Trash-first deletion | Reclaimed 250+ GB on my own machine before anyone else ran it |
 | [hay](https://mneves75.github.io/hay/) | Ranked grep for coding agents — rg's exact matches, reordered so the declaration comes first | Agents read page one. Now page one has the answer. |
