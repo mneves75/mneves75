@@ -6,6 +6,10 @@ All notable changes to this repository are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Agent enforcement in `.claude/settings.json`: agents may not edit the generated `src/data/sitemap-lastmod.json` and `src/data/og-covers.json`; a production Wrangler deploy, a version deploy and a rollback ask first; a Stop gate runs `bun run check && bun run build && bun run test` when the tree changed. No instruction lines needed correcting.
+
 ## [1.14.0] - 2026-10-23
 
 ### Added
