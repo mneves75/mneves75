@@ -6,7 +6,7 @@ Banking. Insurance. Telecom. Government. Real money, real consequences, not demo
 
 I'm an **AI-native developer** now. Claude is my copilot. The three decades of enterprise experience? That's what keeps me from over-engineering and under-delivering.
 
-🕐 <!--LAST_SEEN_BEGIN-->Last seen: 2026-11-19 11:52:17 -03<!--LAST_SEEN_END-->
+🕐 <!--LAST_SEEN_BEGIN-->Last seen: 2026-11-19 20:59:25 -03<!--LAST_SEEN_END-->
 
 ## What I'm Building
 
